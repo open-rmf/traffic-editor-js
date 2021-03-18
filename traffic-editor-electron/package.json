@@ -1,0 +1,19 @@
+{
+  "name": "traffic-editor-electron",
+  "version": "0.0.1",
+  "description": "RMF Traffic Editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:deb": "electron-builder --linux deb"
+  },
+  "keywords": [],
+  "author": "Morgan Quigley <morgan@openrobotics.org>",
+  "homepage": "https://github.com/open-rmf",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5"
+  }
+}
