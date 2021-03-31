@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 import { Building } from './building';
 
+const building = new Building();
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,
@@ -11,6 +13,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+  win.webContents.openDevTools();
 
   win.loadFile(path.join(__dirname, 'index.html'))
 }
@@ -35,8 +38,8 @@ const fileOpen = exports.fileOpen = () => {
     return;
   const filename = files[0];
   console.log(filename);
-  const content = fs.readFileSync(filename).toString();
-  console.log(content);
+  const yamlString = fs.readFileSync(filename).toString();
+  building.fromYamlString(yamlString);
 }
 
 const menuTemplate: Electron.MenuItemConstructorOptions[] = [
