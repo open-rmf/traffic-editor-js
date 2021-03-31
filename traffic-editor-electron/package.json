@@ -2,11 +2,27 @@
   "name": "traffic-editor-electron",
   "version": "0.0.1",
   "description": "RMF Traffic Editor",
-  "main": "main.js",
+  "build": {
+    "appId": "org.openrobotics.traffic-editor",
+    "productName": "traffic-editor",
+    "files": [
+      "./build/**/*"
+    ],
+    "linux": {
+      "category": "Development",
+      "target": [ "AppImage" ]
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    }
+  },
+  "main": "build/main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder",
-    "build:deb": "electron-builder --linux deb"
+    "compile": "tsc && copyfiles -f index.html style.css preload.js build",
+    "watch": "tsc -w",
+    "start": "npm run compile && electron ./build/main.js",
+    "build": "npm run compile && electron-builder"
   },
   "keywords": [],
   "author": "Morgan Quigley <morgan@openrobotics.org>",
@@ -14,6 +30,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "electron": "^12.0.1",
-    "electron-builder": "^22.10.5"
-  }
+    "electron-builder": "^22.10.5",
+    "copyfiles": "^2.4.1",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {}
 }
