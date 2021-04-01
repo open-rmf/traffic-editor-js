@@ -3,8 +3,10 @@ import './App.css';
 
 function openClick() {
   console.log('openClick');
-  if (!('showDirectoryPicker' in window))
+  if (!('showDirectoryPicker' in window)) {
+    alert('This browser does not support the File System Access API');
     return;
+  }
   window.showDirectoryPicker();
   // next call getDirectoryHandle()
 }
