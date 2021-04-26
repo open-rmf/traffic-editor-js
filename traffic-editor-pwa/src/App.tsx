@@ -2,13 +2,13 @@ import React from 'react';
 import Directory from './Directory';
 import './App.css';
 
-function openClick() {
+async function openClick() {
   console.log('openClick');
   if (!('showDirectoryPicker' in window)) {
-    alert('This browser does not support the File System Access API');
+    alert('This browser does not support the File System Access API.');
     return;
   }
-  window.showDirectoryPicker();
+  const dirHandle = await window.showDirectoryPicker();
   // next call getDirectoryHandle()
 }
 
