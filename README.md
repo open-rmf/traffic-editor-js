@@ -14,6 +14,7 @@ npm i
 
 # run stuff
 ```
-cd traffic-editor
+cd traffic-editor-pwa
 npm run start
 ```
+Now open `localhost:3000` in Chrome (has to be Chrome for local filesystem acecss)
