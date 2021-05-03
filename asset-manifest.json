@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/traffic-editor-js/static/css/main.1eaf1511.chunk.css",
+    "main.js": "/traffic-editor-js/static/js/main.59c079d9.chunk.js",
+    "main.js.map": "/traffic-editor-js/static/js/main.59c079d9.chunk.js.map",
+    "runtime-main.js": "/traffic-editor-js/static/js/runtime-main.11369d98.js",
+    "runtime-main.js.map": "/traffic-editor-js/static/js/runtime-main.11369d98.js.map",
+    "static/js/2.63a26477.chunk.js": "/traffic-editor-js/static/js/2.63a26477.chunk.js",
+    "static/js/2.63a26477.chunk.js.map": "/traffic-editor-js/static/js/2.63a26477.chunk.js.map",
+    "static/js/3.7d1103c9.chunk.js": "/traffic-editor-js/static/js/3.7d1103c9.chunk.js",
+    "static/js/3.7d1103c9.chunk.js.map": "/traffic-editor-js/static/js/3.7d1103c9.chunk.js.map",
+    "index.html": "/traffic-editor-js/index.html",
+    "static/css/main.1eaf1511.chunk.css.map": "/traffic-editor-js/static/css/main.1eaf1511.chunk.css.map",
+    "static/js/2.63a26477.chunk.js.LICENSE.txt": "/traffic-editor-js/static/js/2.63a26477.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.11369d98.js",
+    "static/js/2.63a26477.chunk.js",
+    "static/css/main.1eaf1511.chunk.css",
+    "static/js/main.59c079d9.chunk.js"
+  ]
+}
