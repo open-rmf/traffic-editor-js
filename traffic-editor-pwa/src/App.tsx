@@ -9,6 +9,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import OpenDialog from './OpenDialog';
+import Building from './Building';
+import BuildingSummary from './BuildingSummary';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [openDialogOpen, setOpenDialogOpen] = React.useState(false);
+  const [building, setBuilding] = React.useState(new Building());
 
   const classes = useStyles(props);
 
@@ -47,9 +51,12 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
     setOpenDialogOpen(false);
   }
 
-  const onOpenDialogOpen = () => {
-    window.alert('open it now');
+  const onOpenDialogOpen = async (filename: string, handle: FileSystemDirectoryHandle | undefined) => {
     setOpenDialogOpen(false);
+    if (handle) {
+      await building.load_file(filename, handle);
+      // todo: this doesn't force an immediate re-render of BuildingSummary :(
+    }
   }
 
   return (
@@ -86,9 +93,8 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
       </AppBar>
       <div className={classes.toolbarMargin} />
       <OpenDialog open={openDialogOpen} onOpen={onOpenDialogOpen} onCancel={onOpenDialogClose} />
-      <div>
-        hello world
-      </div>
+      <BuildingSummary building={building} />
+      {!building.filename && <div>Click the menu icon above to load a building.</div>}
     </div>
   );
 }

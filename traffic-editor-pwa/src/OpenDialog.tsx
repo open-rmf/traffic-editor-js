@@ -3,10 +3,17 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MapIcon from '@material-ui/icons/Map';
 
-const useStyles = makeStyles(theme => ({
+import Button from '@material-ui/core/Button';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
   directoryButton: {
     fontSize: theme.typography.h5.fontSize
   },
@@ -14,47 +21,52 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.h5.fontSize,
     textDecoration: 'underline'
   },
-  li: {
-    fontSize: theme.typography.h3.fontSize,
-  }
+  dialog: {
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
-
 
 type OpenDialogProps = {
   open: boolean;
-  onOpen: () => void;
+  onOpen: (filename: string, handle: FileSystemDirectoryHandle | undefined) => void;
   onCancel: () => void;
 };
 
 export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const classes = useStyles(props);
   const [buildingFileNames, setBuildingFileNames] = React.useState<string[]>([]);
+  const [directoryHandle, setDirectoryHandle] = React.useState<FileSystemDirectoryHandle>();
 
   const onDirectoryClick = async () => {
     setBuildingFileNames([]);
-    const directoryHandle = await window.showDirectoryPicker();
-    for await (const entry of directoryHandle.values()) {
+    const handle = await window.showDirectoryPicker();
+    await setDirectoryHandle(handle);
+    for await (const entry of handle.values()) {
       if (entry.name.endsWith('.building.yaml'))
         setBuildingFileNames(previous => [...previous, entry.name]);
     }
-  }
-
-  const onFilenameClick = (name: string) => {
-    window.alert(name);
   }
 
   const buildingFileList = () => {
     if (buildingFileNames.length > 0)
       return (
         <div>
-          <h3>Available Files</h3>
-          <ul>
-            {buildingFileNames.map((filename) =>
-              <li>
-                <span className={classes.filename} onClick={e => onFilenameClick(filename)}>{filename}</span>
-              </li>)
+          <List
+            subheader={
+              <ListSubheader component="div">
+                Available Files
+              </ListSubheader>
             }
-          </ul>
+          >
+            {buildingFileNames.map((filename) =>
+              <ListItem button>
+                <ListItemIcon>
+                  <MapIcon />
+                </ListItemIcon>
+                <ListItemText primary={filename} onClick={e => props.onOpen(filename, directoryHandle)} />
+              </ListItem>)
+            }
+          </List>
         </div>
       );
   }
@@ -62,19 +74,15 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   return (
     <Dialog open={props.open} onClose={props.onCancel}>
       <DialogTitle>Open Building Map</DialogTitle>
-      <DialogContent>
-        <p>
-          To open a local building map file, first you need to choose the directory on your computer that has the building map. The button below will pop up a dialog box from Google Chrome allowing you to do this, granting access to a particular directory on your machine to this application. Once you have chosen the directory, the available building map files in it will appear towards the bottom of this box.
-        </p>
-        <button className={classes.directoryButton} onClick={onDirectoryClick}>Choose Directory...</button>
+      <DialogContent className={classes.dialog}>
+        <Button variant="contained" color="primary" onClick={onDirectoryClick}>
+          Select Directory...
+        </Button>
         {buildingFileList()}
       </DialogContent>
       <DialogActions>
         <Button onClick={props.onCancel} color="primary">
           Cancel
-        </Button>
-        <Button variant="contained" onClick={props.onOpen} color="primary">
-          Open
         </Button>
       </DialogActions>
     </Dialog>
