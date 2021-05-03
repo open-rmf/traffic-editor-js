@@ -8,8 +8,15 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   directoryButton: {
-    fontSize: theme.typography.h4.fontSize
+    fontSize: theme.typography.h5.fontSize
   },
+  filename: {
+    fontSize: theme.typography.h5.fontSize,
+    textDecoration: 'underline'
+  },
+  li: {
+    fontSize: theme.typography.h3.fontSize,
+  }
 }));
 
 
@@ -39,13 +46,16 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const buildingFileList = () => {
     if (buildingFileNames.length > 0)
       return (
-        <ul>
-          {buildingFileNames.map((filename) =>
-            <li>
-              <span onClick={e => onFilenameClick(filename)}>{filename}</span>
-            </li>)
-          }
-        </ul>
+        <div>
+          <h3>Available Files</h3>
+          <ul>
+            {buildingFileNames.map((filename) =>
+              <li>
+                <span className={classes.filename} onClick={e => onFilenameClick(filename)}>{filename}</span>
+              </li>)
+            }
+          </ul>
+        </div>
       );
   }
 
