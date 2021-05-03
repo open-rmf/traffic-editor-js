@@ -8,8 +8,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import Directory from './Directory';
-import './App.css';
+import OpenDialog from './OpenDialog';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,21 +25,31 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const [openDialogOpen, setOpenDialogOpen] = React.useState(false);
 
   const classes = useStyles(props);
 
   const menuClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
+    setMenuAnchorEl(event.currentTarget);
   }
 
   const menuClose = () => {
-    setAnchorEl(null);
+    setMenuAnchorEl(null);
   }
 
   const menuOpen = () => {
-    window.alert('hello');
-    setAnchorEl(null);
+    setOpenDialogOpen(true);
+    setMenuAnchorEl(null);
+  }
+
+  const onOpenDialogClose = () => {
+    setOpenDialogOpen(false);
+  }
+
+  const onOpenDialogOpen = () => {
+    window.alert('open it now');
+    setOpenDialogOpen(false);
   }
 
   return (
@@ -57,11 +66,14 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           </IconButton>
           <Menu
             keepMounted
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
             onClose={menuClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+            transformOrigin={{vertical: 'top', horizontal: 'center'}}
           >
-            <MenuItem onClick={menuOpen}>Open</MenuItem>
+            <MenuItem onClick={menuOpen}>Open Building Map</MenuItem>
           </Menu>
           <Typography
             variant="h5"
@@ -73,8 +85,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
         </ToolBar>
       </AppBar>
       <div className={classes.toolbarMargin} />
-      <Directory>
-      </Directory>
+      <OpenDialog open={openDialogOpen} onOpen={onOpenDialogOpen} onCancel={onOpenDialogClose} />
       <div>
         hello world
       </div>
