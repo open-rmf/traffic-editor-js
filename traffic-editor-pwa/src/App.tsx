@@ -81,7 +81,3 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
     </div>
   );
 }
-
-/*
-{!building.filename && <div>Click the menu icon above to load a building.</div>}
-*/
