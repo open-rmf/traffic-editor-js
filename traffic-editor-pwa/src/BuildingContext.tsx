@@ -1,11 +1,4 @@
 import React from 'react';
-import Building from './Building';
+import { Building, BuildingDefault } from './Building';
 
-/*
-export interface Building {
-  yaml: string = '';
-  filename: string = '';
-}
-*/
-
-export default BuildingContext = React.createContext<Building>(new Building());
+export const BuildingContext = React.createContext<Building>(BuildingDefault);

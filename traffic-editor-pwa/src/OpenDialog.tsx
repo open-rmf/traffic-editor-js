@@ -12,7 +12,8 @@ import MapIcon from '@material-ui/icons/Map';
 
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import BuildingContext from './BuildingContext';
+import { BuildingParseYAML } from './Building';
+import { BuildingContext } from './BuildingContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   directoryButton: {
@@ -35,7 +36,7 @@ type OpenDialogProps = {
 
 export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const classes = useStyles(props);
-  const building = useContext(BuildingContext);
+  const building = React.useContext(BuildingContext);
   const [buildingFileNames, setBuildingFileNames] = React.useState<string[]>([]);
   const [directoryHandle, setDirectoryHandle] = React.useState<FileSystemDirectoryHandle>();
 
@@ -49,8 +50,13 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
     }
   }
 
-  const loadFile = async(filename) => {
-    await building.load_file(filename, directoryHandle);
+  const loadFile = async(filename: string) => {
+    if (directoryHandle) {
+      const fileHandle = await directoryHandle.getFileHandle(filename);
+      const file = await fileHandle.getFile();
+      const text = await file.text();
+      BuildingParseYAML(building, filename, text);
+    }
     props.onOpen();
   }
 
@@ -66,7 +72,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
             }
           >
             {buildingFileNames.map((filename) =>
-              <ListItem button>
+              <ListItem button key={filename}>
                 <ListItemIcon>
                   <MapIcon />
                 </ListItemIcon>

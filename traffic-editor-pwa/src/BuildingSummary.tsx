@@ -1,14 +1,13 @@
-import Building from './Building';
+import React from 'react';
+import { Building } from './Building';
+import { BuildingContext } from './BuildingContext';
 
-type BuildingSummaryProps = {
-  building: Building;
-}
-
-export default function BuildingSummary(props: BuildingSummaryProps): JSX.Element {
+export default function BuildingSummary(): JSX.Element {
+  const building = React.useContext<Building>(BuildingContext);
   return (
     <div>
-      <h3>{props.building.filename}</h3>
-      {props.building.xml}
+      <h3>{building.filename}</h3>
+      {building.yaml}
     </div>
   );
 }

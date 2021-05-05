@@ -1,14 +1,16 @@
-export default class Building
-{
-  xml: string = '';
-  filename: string = '';
-  
-  async load_file(_filename: string, directoryHandle: FileSystemDirectoryHandle): Promise<boolean>
-  {
-    this.filename = _filename;
-    const fileHandle = await directoryHandle.getFileHandle(_filename);
-    const file = await fileHandle.getFile();
-    this.xml = await file.text();
-    return true;
-  }
+//import yaml from 'js-yaml';
+
+export interface Building {
+  filename: string;
+  yaml: string;
+}
+
+export const BuildingDefault: Building = {
+  filename: '',
+  yaml: '',
+}
+
+export const BuildingParseYAML = (building: Building, filename: string, yaml: string) => {
+  building.yaml = yaml;
+  building.filename = filename;
 }

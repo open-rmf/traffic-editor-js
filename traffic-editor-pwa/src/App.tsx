@@ -9,9 +9,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import OpenDialog from './OpenDialog';
-import Building from './Building';
 import BuildingSummary from './BuildingSummary';
-import BuildingContext from './BuildingContext';
+import { BuildingContext } from './BuildingContext';
+import { BuildingDefault } from './Building';
 
 
 const useStyles = makeStyles(theme => ({
@@ -30,43 +30,20 @@ const useStyles = makeStyles(theme => ({
 
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  const [openDialogOpen, setOpenDialogOpen] = React.useState(false);
-  //const [building, setBuilding] = React.useState(new Building());
+  const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
 
   const classes = useStyles(props);
 
-  const menuClick = (event: any) => {
-    setMenuAnchorEl(event.currentTarget);
-  }
-
-  const menuClose = () => {
-    setMenuAnchorEl(null);
-  }
-
-  const menuOpen = () => {
-    setOpenDialogOpen(true);
-    setMenuAnchorEl(null);
-  }
-
-  const onOpenDialogClose = () => {
-    setOpenDialogOpen(false);
-  }
-
-  const onOpenDialogOpen = () => {
-    //async (filename: string, handle: FileSystemDirectoryHandle | undefined) => {
-    setOpenDialogOpen(false);
-  }
-
   return (
     <div className={classes.root}>
-      <BuildingContext.Provider value={new Building()}>
+      <BuildingContext.Provider value={BuildingDefault}>
         <AppBar position="fixed">
           <ToolBar>
             <IconButton
               className={classes.menuButton}
               color="inherit"
               aria-label="Menu"
-              onClick={menuClick}
+              onClick={(e: any) => { setMenuAnchorEl(e.currentTarget); }}
             >
               <MenuIcon />
             </IconButton>
@@ -74,24 +51,31 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
               keepMounted
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}
-              onClose={menuClose}
+              onClose={() => setMenuAnchorEl(null)}
               getContentAnchorEl={null}
               anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
               transformOrigin={{vertical: 'top', horizontal: 'center'}}
             >
-              <MenuItem onClick={menuOpen}>Open Building Map</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setIsOpenDialogOpen(true);
+                  setMenuAnchorEl(null);
+                }}
+              >
+                Open Building Map
+              </MenuItem>
             </Menu>
-            <Typography
-              variant="h5"
-              color="inherit"
-              className={classes.flex}
-            >
+            <Typography variant="h5" color="inherit" className={classes.flex}>
               Traffic Editor
             </Typography>
           </ToolBar>
         </AppBar>
         <div className={classes.toolbarMargin} />
-        <OpenDialog open={openDialogOpen} onOpen={onOpenDialogOpen} onCancel={onOpenDialogClose} />
+        <OpenDialog
+          open={isOpenDialogOpen}
+          onOpen={() => setIsOpenDialogOpen(false)}
+          onCancel={() => setIsOpenDialogOpen(false)}
+        />
         <BuildingSummary />
       </BuildingContext.Provider>
     </div>
