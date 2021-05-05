@@ -11,6 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import OpenDialog from './OpenDialog';
 import Building from './Building';
 import BuildingSummary from './BuildingSummary';
+import BuildingContext from './BuildingContext';
 
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [openDialogOpen, setOpenDialogOpen] = React.useState(false);
-  const [building, setBuilding] = React.useState(new Building());
+  //const [building, setBuilding] = React.useState(new Building());
 
   const classes = useStyles(props);
 
@@ -51,50 +52,52 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
     setOpenDialogOpen(false);
   }
 
-  const onOpenDialogOpen = async (filename: string, handle: FileSystemDirectoryHandle | undefined) => {
+  const onOpenDialogOpen = () => {
+    //async (filename: string, handle: FileSystemDirectoryHandle | undefined) => {
     setOpenDialogOpen(false);
-    if (handle) {
-      await building.load_file(filename, handle);
-      // todo: this doesn't force an immediate re-render of BuildingSummary :(
-    }
   }
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed">
-        <ToolBar>
-          <IconButton
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="Menu"
-            onClick={menuClick}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            keepMounted
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={menuClose}
-            getContentAnchorEl={null}
-            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-            transformOrigin={{vertical: 'top', horizontal: 'center'}}
-          >
-            <MenuItem onClick={menuOpen}>Open Building Map</MenuItem>
-          </Menu>
-          <Typography
-            variant="h5"
-            color="inherit"
-            className={classes.flex}
-          >
-            Traffic Editor
-          </Typography>
-        </ToolBar>
-      </AppBar>
-      <div className={classes.toolbarMargin} />
-      <OpenDialog open={openDialogOpen} onOpen={onOpenDialogOpen} onCancel={onOpenDialogClose} />
-      <BuildingSummary building={building} />
-      {!building.filename && <div>Click the menu icon above to load a building.</div>}
+      <BuildingContext.Provider value={new Building()}>
+        <AppBar position="fixed">
+          <ToolBar>
+            <IconButton
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="Menu"
+              onClick={menuClick}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              keepMounted
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={menuClose}
+              getContentAnchorEl={null}
+              anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+              transformOrigin={{vertical: 'top', horizontal: 'center'}}
+            >
+              <MenuItem onClick={menuOpen}>Open Building Map</MenuItem>
+            </Menu>
+            <Typography
+              variant="h5"
+              color="inherit"
+              className={classes.flex}
+            >
+              Traffic Editor
+            </Typography>
+          </ToolBar>
+        </AppBar>
+        <div className={classes.toolbarMargin} />
+        <OpenDialog open={openDialogOpen} onOpen={onOpenDialogOpen} onCancel={onOpenDialogClose} />
+        <BuildingSummary />
+      </BuildingContext.Provider>
     </div>
   );
 }
+
+/*
+{!building.filename && <div>Click the menu icon above to load a building.</div>}
+*/
