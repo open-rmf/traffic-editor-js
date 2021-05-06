@@ -13,11 +13,12 @@ import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
 import { BuildingDefault } from './Building';
-
+import Scene from './Scene';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    minHeight: '100vh',
   },
   flex: {
     flex: 1
@@ -81,12 +82,12 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           onOpen={() => setIsOpenDialogOpen(false)}
           onCancel={() => setIsOpenDialogOpen(false)}
         />
-        <Grid container spacing={3}>
+        <Grid container spacing={0}>
           <Grid item xs={3}>
             <BuildingSummary />
           </Grid>
-          <Grid item xs={9}>
-            <div className={classes.workingArea}>hello world</div>
+          <Grid item xs={9} className={classes.workingArea}>
+            <Scene />
           </Grid>
         </Grid>
       </BuildingContext.Provider>
