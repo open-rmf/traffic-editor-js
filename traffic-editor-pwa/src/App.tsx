@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Grid from '@material-ui/core/Grid';
 
 import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
@@ -25,7 +26,11 @@ const useStyles = makeStyles(theme => ({
     marginLeft: -12,
     marginRight: 20
   },
-  toolbarMargin: theme.mixins.toolbar
+  toolbarMargin: theme.mixins.toolbar,
+  workingArea: {
+    backgroundColor: "black",
+    height: `calc(100vh - 64px)`,
+  },
 }));
 
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
@@ -76,7 +81,14 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           onOpen={() => setIsOpenDialogOpen(false)}
           onCancel={() => setIsOpenDialogOpen(false)}
         />
-        <BuildingSummary />
+        <Grid container spacing={3}>
+          <Grid item xs={3}>
+            <BuildingSummary />
+          </Grid>
+          <Grid item xs={9}>
+            <div className={classes.workingArea}>hello world</div>
+          </Grid>
+        </Grid>
       </BuildingContext.Provider>
     </div>
   );
