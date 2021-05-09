@@ -13,7 +13,7 @@ import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
 import { BuildingDefault } from './Building';
-import Scene from './Scene';
+import EditorScene from './EditorScene';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -87,7 +87,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
             <BuildingSummary />
           </Grid>
           <Grid item xs={9} className={classes.workingArea}>
-            <Scene />
+            <EditorScene />
           </Grid>
         </Grid>
       </BuildingContext.Provider>

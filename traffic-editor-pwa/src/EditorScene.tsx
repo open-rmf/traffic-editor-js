@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import React, { useRef, useState } from 'react'
 import { MapControls } from '@react-three/drei'
 import { Building, Level, Vertex } from './Building';
@@ -24,7 +24,7 @@ function Box(props: JSX.IntrinsicElements['mesh']) {
   )
 }
 
-export default function Scene(): JSX.Element {
+export default function EditorScene(): JSX.Element {
   const building = React.useContext<Building>(BuildingContext);
 
   const renderVertex = (vertex: Vertex): JSX.Element => {
@@ -38,6 +38,8 @@ export default function Scene(): JSX.Element {
   const renderLevel = (level: Level): JSX.Element[] => {
     return level.vertices.map((vertex) => renderVertex(vertex));
   }
+
+  const camera = useThree((state) => state.camera);
 
   return (
     <Canvas frameloop="demand">
