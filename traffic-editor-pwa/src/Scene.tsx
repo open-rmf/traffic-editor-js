@@ -1,29 +1,23 @@
 import * as THREE from 'three'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import React, { useRef, useState } from 'react'
-//import { Stats } from '@react-three/drei'
-import { OrbitControls } from '@react-three/drei'
-
-/*
-function Scene(props: JSX.IntrinsicElements['mesh']) {
-  return (
-  )
-}
-*/
+import { MapControls } from '@react-three/drei'
+import { Building, Level, Vertex } from './Building';
+import { BuildingContext } from './BuildingContext';
 
 function Box(props: JSX.IntrinsicElements['mesh']) {
   const mesh = useRef<THREE.Mesh>(null!)
   const [hovered, setHover] = useState(false)
   const [active, setActive] = useState(false)
-  //useFrame((state, delta) => (mesh.current.rotation.x += 0.01))
   return (
     <mesh
       {...props}
       ref={mesh}
-      scale={active ? 1.5 : 1}
+      scale={active ? 1.0 : 0.5}
       onClick={(event) => setActive(!active)}
       onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}>
+      onPointerOut={(event) => setHover(false)}
+    >
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
     </mesh>
@@ -31,13 +25,33 @@ function Box(props: JSX.IntrinsicElements['mesh']) {
 }
 
 export default function Scene(): JSX.Element {
+  const building = React.useContext<Building>(BuildingContext);
+
+  const renderVertex = (vertex: Vertex): JSX.Element => {
+    const x = vertex.x / 50.0;
+    const y = vertex.y / 50.0;
+    return (
+      <Box position={[x, 0, y]} />
+    );
+  }
+
+  const renderLevel = (level: Level): JSX.Element[] => {
+    return level.vertices.map((vertex) => renderVertex(vertex));
+  }
+
   return (
-    <Canvas>
+    <Canvas frameloop="demand">
+      <axesHelper />
+      <gridHelper args={[100, 20]}/>
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      <Box position={[-1.2, 0, 0]} />
-      <Box position={[1.2, 0, 0]} />
-      <OrbitControls />
+      <MapControls enableDamping={false} />
+      {building.levels.map((level) => renderLevel(level))}
     </Canvas>
   )
 }
+
+/*
+<Box position={[-1.2, 0, 0]} />
+<Box position={[1.2, 0, 0]} />
+ */
