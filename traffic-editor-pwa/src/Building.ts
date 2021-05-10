@@ -1,33 +1,77 @@
 //const yaml = require('js-yaml');
 import YAML from 'yaml'
 
+export interface Param {
+  type_idx: number;
+  name: string;
+  value: any;
+}
+
+export interface Wall {
+  start_idx: number;
+  end_idx: number;
+  params: Param[];
+}
+
 export interface Vertex {
   x: number;
   y: number;
   name: string;
+  params: Param[];
+}
+
+const ParamArrayFromYAML = (params_data: any | null) => {
+  if (!params_data)
+    return [];
+  const p = [];
+  for (const param_name in params_data) {
+    const param_data = params_data[param_name];
+    const param: Param = {
+      name: param_name,
+      type_idx: param_data[0],
+      value: param_data[1],
+    };
+    p.push(param);
+  }
+  return p;
 }
 
 const VertexFromYAML = (vertex_data: any): Vertex => {
   const vertex: Vertex = {
     x: vertex_data[0],
-    y: vertex_data[1],
+    y: -vertex_data[1],
     name: vertex_data[3],
+    params: ParamArrayFromYAML(vertex_data[4])
   };
   return vertex;
+}
+
+const WallFromYAML = (wall_data: any): Wall => {
+  const wall: Wall = {
+    start_idx: wall_data[0],
+    end_idx: wall_data[1],
+    params: ParamArrayFromYAML(wall_data[2]),
+  }
+  return wall;
 }
 
 export interface Level {
   name: string;
   vertices: Vertex[];
+  walls: Wall[];
 }
 
 const LevelFromYAML = (level_name: string, level_data: any): Level => {
   const level: Level = {
     name: level_name,
-    vertices: []
+    vertices: [],
+    walls: []
   };
   for (const vertex_data of level_data['vertices']) {
     level.vertices.push(VertexFromYAML(vertex_data));
+  }
+  for (const wall_data of level_data['walls']) {
+    level.walls.push(WallFromYAML(wall_data));
   }
   return level;
 }
@@ -51,13 +95,13 @@ export const BuildingDefault: Building = {
   yaml: '',
   levels: [],
   lifts: [],
-  crowd_sim: undefined
+  crowd_sim: undefined,
 }
 
 export const BuildingParseYAML = (building: Building, filename: string, yaml_text: string) => {
   building.filename = filename;
   building.yaml = yaml_text;
-  const y = YAML.parse(yaml_text);  //load(yaml_text);
+  const y = YAML.parse(yaml_text);
   building.name = y['name'];
   building.crowd_sim = y['crowd_sim'];
   building.levels = [];
