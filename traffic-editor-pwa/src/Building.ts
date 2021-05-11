@@ -73,6 +73,7 @@ const LaneFromYAML = (lane_data: any): Wall => {
 
 export interface Level {
   name: string;
+  elevation: number;
   vertices: Vertex[];
   walls: Wall[];
   lanes: Lane[];
@@ -81,10 +82,12 @@ export interface Level {
 const LevelFromYAML = (level_name: string, level_data: any): Level => {
   const level: Level = {
     name: level_name,
+    elevation: 0,
     vertices: [],
     walls: [],
     lanes: []
   };
+  level.elevation = level_data['elevation'];
   for (const vertex_data of level_data['vertices']) {
     level.vertices.push(VertexFromYAML(vertex_data));
   }
