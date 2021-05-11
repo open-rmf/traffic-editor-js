@@ -69,7 +69,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
       }
       if(typeof e.target.result === 'string')
       {
-        BuildingParseYAML(building, "", e.target.result);
+        BuildingParseYAML(building, filename, e.target.result);
         props.onOpen();
       }
     };
