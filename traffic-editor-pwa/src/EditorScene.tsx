@@ -2,9 +2,10 @@ import * as THREE from 'three'
 import { Canvas, useThree } from '@react-three/fiber'
 import React, { useRef, useState } from 'react'
 import { MapControls } from '@react-three/drei'
-import { Building, Level, Vertex, Wall } from './Building';
+import { Building, Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
 
+/*
 function Box(props: JSX.IntrinsicElements['mesh']) {
   const mesh = useRef<THREE.Mesh>(null!)
   const [hovered, setHover] = useState(false)
@@ -23,6 +24,7 @@ function Box(props: JSX.IntrinsicElements['mesh']) {
     </mesh>
   )
 }
+*/
 
 export default function EditorScene(): JSX.Element {
   const building = React.useContext<Building>(BuildingContext);
@@ -60,7 +62,29 @@ export default function EditorScene(): JSX.Element {
         scale={1.0}
       >
         <boxGeometry args={[len, 0.1, 2]} />
-        <meshStandardMaterial color={'grey'} />
+        <meshStandardMaterial color={'#8080d0'} />
+      </mesh>
+    );
+  }
+
+  const renderLane = (lane: Lane, vertices: Vertex[]): JSX.Element => {
+    const v1 = vertices[lane.start_idx];
+    const v2 = vertices[lane.end_idx];
+    const cx = (v1.x + v2.x) / 2 / 50;
+    const cy = (v1.y + v2.y) / 2 / 50;
+    const dx = v2.x - v1.x;
+    const dy = v2.y - v1.y;
+    const len = Math.sqrt(dx*dx + dy*dy) / 50;
+    const xyrot = Math.atan2(dy, dx);
+
+    return (
+      <mesh
+        position={[cx, cy, 0.0]}
+        rotation={new THREE.Euler(0, 0, xyrot)}
+        scale={1.0}
+      >
+        <boxGeometry args={[len, 1.0, 0.1]} />
+        <meshStandardMaterial color={'#d08080'} />
       </mesh>
     );
   }
@@ -68,7 +92,8 @@ export default function EditorScene(): JSX.Element {
   const renderLevel = (level: Level): JSX.Element[] => {
     const vertices = level.vertices.map((vertex) => renderVertex(vertex));
     const walls = level.walls.map((wall) => renderWall(wall, level.vertices));
-    return [...vertices, ...walls];
+    const lanes = level.lanes.map((lane) => renderLane(lane, level.vertices));
+    return [...vertices, ...walls, ...lanes];
   }
 
   const Controls = (): JSX.Element => {
@@ -86,7 +111,7 @@ export default function EditorScene(): JSX.Element {
       <Controls />
       <axesHelper />
       <gridHelper
-        args={[100, 20]}
+        args={[100, 100]}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
         position={new THREE.Vector3(50, -50, 0)}/>
       <ambientLight />

@@ -7,6 +7,12 @@ export interface Param {
   value: any;
 }
 
+export interface Lane {
+  start_idx: number;
+  end_idx: number;
+  params: Param[];
+}
+
 export interface Wall {
   start_idx: number;
   end_idx: number;
@@ -55,23 +61,38 @@ const WallFromYAML = (wall_data: any): Wall => {
   return wall;
 }
 
+const LaneFromYAML = (lane_data: any): Wall => {
+  const lane: Lane = {
+    start_idx: lane_data[0],
+    end_idx: lane_data[1],
+    params: ParamArrayFromYAML(lane_data[2]),
+  }
+  return lane;
+}
+
+
 export interface Level {
   name: string;
   vertices: Vertex[];
   walls: Wall[];
+  lanes: Lane[];
 }
 
 const LevelFromYAML = (level_name: string, level_data: any): Level => {
   const level: Level = {
     name: level_name,
     vertices: [],
-    walls: []
+    walls: [],
+    lanes: []
   };
   for (const vertex_data of level_data['vertices']) {
     level.vertices.push(VertexFromYAML(vertex_data));
   }
   for (const wall_data of level_data['walls']) {
     level.walls.push(WallFromYAML(wall_data));
+  }
+  for (const lane_data of level_data['lanes']) {
+    level.lanes.push(LaneFromYAML(lane_data));
   }
   return level;
 }
