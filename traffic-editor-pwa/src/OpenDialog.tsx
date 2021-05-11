@@ -40,7 +40,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const [buildingFileNames, setBuildingFileNames] = React.useState<string[]>([]);
   const [directoryHandle, setDirectoryHandle] = React.useState<FileSystemDirectoryHandle>();
   const [buildingFileBlob, setBuildingFileBlob] = React.useState<File[]>([]);
-
+  ///TODO: Toggle between APIS?
   const onDirectoryClick = async () => {
     setBuildingFileNames([]);
     const handle = await window.showDirectoryPicker();
