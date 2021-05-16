@@ -12,7 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
-import { BuildingDefault } from './Building';
+import { BuildingDefault, BuildingLoadFromServer } from './Building';
 import EditorScene from './EditorScene';
 
 const useStyles = makeStyles(theme => ({
@@ -37,12 +37,13 @@ const useStyles = makeStyles(theme => ({
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
+  const [ building, updateBuilding ] = React.useState(BuildingDefault);
 
   const classes = useStyles(props);
 
   return (
     <div className={classes.root}>
-      <BuildingContext.Provider value={BuildingDefault}>
+      <BuildingContext.Provider value={{ building, updateBuilding }}>
         <AppBar position="fixed">
           <ToolBar>
             <IconButton
@@ -63,12 +64,20 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
               transformOrigin={{vertical: 'top', horizontal: 'center'}}
             >
               <MenuItem
+                onClick={async () => {
+                  updateBuilding(await BuildingLoadFromServer());
+                  setMenuAnchorEl(null);
+                }}
+              >
+                Open map from localhost server
+              </MenuItem>
+              <MenuItem
                 onClick={() => {
                   setIsOpenDialogOpen(true);
                   setMenuAnchorEl(null);
                 }}
               >
-                Open Building Map
+                Open map from local file...
               </MenuItem>
             </Menu>
             <Typography variant="h5" color="inherit" className={classes.flex}>

@@ -3,7 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 //import React, { useRef, useState } from 'react'
 import React from 'react'
 import { MapControls } from '@react-three/drei'
-import { Building, Lane, Level, Vertex, Wall } from './Building';
+import { Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
 
 /*
@@ -28,7 +28,7 @@ function Box(props: JSX.IntrinsicElements['mesh']) {
 */
 
 export default function EditorScene(): JSX.Element {
-  const building = React.useContext<Building>(BuildingContext);
+  const { building } = React.useContext(BuildingContext);
 
   const renderVertex = (vertex: Vertex, elevation: number): JSX.Element => {
     const x = vertex.x / 50.0;

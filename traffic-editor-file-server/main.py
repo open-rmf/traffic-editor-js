@@ -7,8 +7,8 @@ import sys
 
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.logging import ColourizedFormatter
-
 
 logger = logging.getLogger('traffic-editor-file-server')
 console_formatter = ColourizedFormatter(
@@ -39,6 +39,13 @@ map_filename = map_filenames[0]
 logger.info(f"using {map_filename} as the map")
 
 app = FastAPI()
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=['*'],
+  allow_credentials=True,
+  allow_methods=['*'],
+  allow_headers=['*']
+)
 
 @app.get("/file/{filename}")
 async def get_file(filename: str):

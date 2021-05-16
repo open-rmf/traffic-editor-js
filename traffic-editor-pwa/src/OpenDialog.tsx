@@ -36,7 +36,7 @@ type OpenDialogProps = {
 
 export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const classes = useStyles(props);
-  const building = React.useContext(BuildingContext);
+  const { updateBuilding } = React.useContext(BuildingContext);
   const [buildingFileNames, setBuildingFileNames] = React.useState<string[]>([]);
   const [directoryHandle, setDirectoryHandle] = React.useState<FileSystemDirectoryHandle>();
 
@@ -55,7 +55,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
       const fileHandle = await directoryHandle.getFileHandle(filename);
       const file = await fileHandle.getFile();
       const text = await file.text();
-      BuildingParseYAML(building, filename, text);
+      updateBuilding(BuildingParseYAML(filename, text));
     }
     props.onOpen();
   }

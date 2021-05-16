@@ -122,7 +122,8 @@ export const BuildingDefault: Building = {
   crowd_sim: undefined,
 }
 
-export const BuildingParseYAML = (building: Building, filename: string, yaml_text: string) => {
+export const BuildingParseYAML = (filename: string, yaml_text: string): Building => {
+  let building = {} as Building;
   building.filename = filename;
   building.yaml = yaml_text;
   const y = YAML.parse(yaml_text);
@@ -134,4 +135,11 @@ export const BuildingParseYAML = (building: Building, filename: string, yaml_tex
     building.levels.push(LevelFromYAML(level_name, level_data));
   }
   console.log('parsed it');
+  return building;
+}
+
+export const BuildingLoadFromServer = async (): Promise<Building> => {
+  return fetch('http://localhost:8000/map_file')
+    .then(response => response.text())
+    .then(text => BuildingParseYAML('foo', text));
 }
