@@ -69,7 +69,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
                   setMenuAnchorEl(null);
                 }}
               >
-                Open map from localhost server
+                Open map from localhost:8000
               </MenuItem>
               <MenuItem
                 onClick={() => {
