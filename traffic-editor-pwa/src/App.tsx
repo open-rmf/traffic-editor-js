@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
-import { BuildingDefault, BuildingLoadFromServer } from './Building';
+import { BuildingDefault, BuildingLoadFromServer, BuildingLoadDemo } from './Building';
 import EditorScene from './EditorScene';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -90,6 +90,14 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
                 }}
               >
                 Open map from localhost:8000
+              </MenuItem>
+              <MenuItem
+                onClick={async () => {
+                  updateBuilding(await BuildingLoadDemo('office'));
+                  setMenuAnchorEl(null);
+                }}
+              >
+                Open demo map
               </MenuItem>
               <MenuItem
                 onClick={() => {

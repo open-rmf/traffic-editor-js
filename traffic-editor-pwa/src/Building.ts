@@ -143,3 +143,9 @@ export const BuildingLoadFromServer = async (): Promise<Building> => {
     .then(response => response.text())
     .then(text => BuildingParseYAML('foo', text));
 }
+
+export const BuildingLoadDemo = async (name: string): Promise<Building> => {
+  return fetch(`traffic-editor-js/demos/${name}/${name}.building.yaml`)
+    .then(response => response.text())
+    .then(text => BuildingParseYAML(name, text));
+}
