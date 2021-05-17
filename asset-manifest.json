@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/traffic-editor-js/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/traffic-editor-js/static/js/main.e8790934.chunk.js",
-    "main.js.map": "/traffic-editor-js/static/js/main.e8790934.chunk.js.map",
+    "main.js": "/traffic-editor-js/static/js/main.b95c253b.chunk.js",
+    "main.js.map": "/traffic-editor-js/static/js/main.b95c253b.chunk.js.map",
     "runtime-main.js": "/traffic-editor-js/static/js/runtime-main.dbabff02.js",
     "runtime-main.js.map": "/traffic-editor-js/static/js/runtime-main.dbabff02.js.map",
-    "static/js/2.2dd18436.chunk.js": "/traffic-editor-js/static/js/2.2dd18436.chunk.js",
-    "static/js/2.2dd18436.chunk.js.map": "/traffic-editor-js/static/js/2.2dd18436.chunk.js.map",
+    "static/js/2.9c49d7fd.chunk.js": "/traffic-editor-js/static/js/2.9c49d7fd.chunk.js",
+    "static/js/2.9c49d7fd.chunk.js.map": "/traffic-editor-js/static/js/2.9c49d7fd.chunk.js.map",
     "index.html": "/traffic-editor-js/index.html",
     "static/css/main.6dea0f05.chunk.css.map": "/traffic-editor-js/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.2dd18436.chunk.js.LICENSE.txt": "/traffic-editor-js/static/js/2.2dd18436.chunk.js.LICENSE.txt"
+    "static/js/2.9c49d7fd.chunk.js.LICENSE.txt": "/traffic-editor-js/static/js/2.9c49d7fd.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.dbabff02.js",
-    "static/js/2.2dd18436.chunk.js",
+    "static/js/2.9c49d7fd.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.e8790934.chunk.js"
+    "static/js/main.b95c253b.chunk.js"
   ]
 }
