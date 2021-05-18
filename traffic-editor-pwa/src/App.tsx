@@ -5,6 +5,7 @@ import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
+import Switch from '@material-ui/core/Switch';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   toggleButton: {
     background: theme.palette.primary.light,
+    //boxSizing: 'border-box',
     color: theme.palette.primary.contrastText,
     "&.Mui-selected": {
       background: theme.palette.primary.dark,
@@ -53,10 +55,15 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [building, updateBuilding] = React.useState(BuildingDefault);
   const [editorMode, setEditorMode] = React.useState<string | null>('3d');
+  const [is3D, setIs3D] = React.useState(true);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
       setEditorMode(newMode);
+  };
+
+  const onIs3D = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIs3D(event.target.checked);
   };
 
   const classes = useStyles(props);
@@ -108,7 +115,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
                 Open map from local file...
               </MenuItem>
             </Menu>
-            <Typography variant="h5" color="inherit" className={classes.flex}>
+            <Typography variant="h6" color="inherit" className={classes.flex}>
               Traffic Editor
             </Typography>
             <ToggleButtonGroup
@@ -116,10 +123,26 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
               exclusive
               onChange={onModeChange}
               aria-label="editor mode"
+              style={{ marginRight: 32 }}
             >
               <ToggleButton className={classes.toggleButton} value="3d">3D</ToggleButton>
               <ToggleButton className={classes.toggleButton} value="2d">2D</ToggleButton>
             </ToggleButtonGroup>
+            <Typography component="div">
+              <Grid component="label" container alignItems="center" spacing={0}>
+                <Grid item>2D</Grid>
+                <Grid item>
+                  <Switch
+                    checked={is3D}
+                    onChange={onIs3D}
+                    defaultChecked
+                    color="default"
+                    name="is3D"
+                  />
+                </Grid>
+                <Grid item>3D</Grid>
+              </Grid>
+            </Typography>
           </ToolBar>
         </AppBar>
         <div className={classes.toolbarMargin} />
