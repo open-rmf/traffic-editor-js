@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { Canvas, useThree } from '@react-three/fiber'
 //import React, { useRef, useState } from 'react'
 import React from 'react'
-import { MapControls } from '@react-three/drei'
+import { MapControls, OrbitControls } from '@react-three/drei'
 import { Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
 
@@ -27,7 +27,11 @@ function Box(props: JSX.IntrinsicElements['mesh']) {
 }
 */
 
-export default function EditorScene(): JSX.Element {
+type EditorSceneProps = {
+  mode: string;
+};
+
+export default function EditorScene(props: EditorSceneProps): JSX.Element {
   const { building } = React.useContext(BuildingContext);
 
   const renderVertex = (vertex: Vertex, elevation: number): JSX.Element => {
@@ -106,21 +110,69 @@ export default function EditorScene(): JSX.Element {
 
   const Controls = (): JSX.Element => {
     const camera = useThree(({ camera }) => camera);
-    camera.up = new THREE.Vector3(0, 0, 1);
-    THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
-    return <MapControls enableDamping={false} camera={camera} />
+    if (props.mode === '3d') {
+      camera.up = new THREE.Vector3(0, 0, 1);
+      camera.position.x = 20;
+      camera.position.y = -20;
+      camera.position.z = 5;
+      THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
+      camera.updateProjectionMatrix();
+
+      return (
+        <MapControls
+          enableDamping={false}
+          camera={camera}
+          target={[20, -10, 0]}
+        />
+      );
+    }
+    else {
+      camera.zoom = 10;
+      camera.position.z = 5;
+      camera.updateProjectionMatrix();
+
+      return (
+        <OrbitControls
+          enableDamping={false}
+          target={[10, -10, 0]}
+          camera={camera}
+          maxPolarAngle={0}
+          minAzimuthAngle={0}
+          maxAzimuthAngle={0}
+        />
+      );
+    }
+  }
+
+  const EditorCanvas = (canvasProps: any) => {
+    if (props.mode === '3d') {
+      return (
+        <Canvas
+          frameloop = "demand"
+        >
+          {canvasProps ? canvasProps.children : <></>}
+        </Canvas>
+      );
+    }
+    else {
+      return (
+        <Canvas
+          frameloop = "demand"
+          orthographic
+        >
+          {canvasProps ? canvasProps.children : <></>}
+        </Canvas>
+      );
+    }
   }
 
   return (
-    <Canvas
-      frameloop="demand"
-      camera={{ position: [3, -10, 5] }}
-    >
+    <EditorCanvas>
       <Controls />
       <axesHelper />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       {building.levels.map((level) => renderLevel(level))}
-    </Canvas>
+    </EditorCanvas>
   )
 }

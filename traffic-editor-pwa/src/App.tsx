@@ -64,7 +64,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [building, updateBuilding] = React.useState(BuildingDefault);
-  const [editorMode, setEditorMode] = React.useState<string | null>('3d');
+  const [editorMode, setEditorMode] = React.useState<string>('3d');
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
@@ -146,7 +146,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
             <BuildingSummary />
           </Grid>
           <Grid item xs={9} className={classes.workingArea}>
-            <EditorScene />
+            <EditorScene mode={editorMode} />
           </Grid>
         </Grid>
       </BuildingContext.Provider>
