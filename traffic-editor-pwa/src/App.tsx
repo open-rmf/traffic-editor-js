@@ -1,11 +1,10 @@
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import Switch from '@material-ui/core/Switch';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
@@ -30,19 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: -12,
     marginRight: 20
   },
-  toggleButton: {
-    background: theme.palette.primary.light,
-    //boxSizing: 'border-box',
-    color: theme.palette.primary.contrastText,
-    "&.Mui-selected": {
-      background: theme.palette.primary.dark,
-      color: theme.palette.primary.contrastText
-    },
-    "&.Mui-selected:hover, &:hover": {
-      background: 'yellow',
-      color: 'black'
-    }
-  },
   toolbarMargin: theme.mixins.toolbar,
   workingArea: {
     backgroundColor: "black",
@@ -50,20 +36,39 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
+  root: {
+    backgroundColor: theme.palette.primary.dark,
+    padding: theme.spacing(0.5)
+  },
+  grouped: {
+    color: theme.palette.primary.contrastText,
+    //background: theme.palette.primary.dark,
+    "&.Mui-selected:hover, &:hover": {
+      background: theme.palette.primary.light,
+    },
+    "&.Mui-selected": {
+      background: theme.palette.primary.light,
+      color: theme.palette.primary.contrastText
+    },
+    '&:not(:first-child)': {
+      borderRadius: '5px',
+    },
+    '&:first-child': {
+      borderRadius: '5px',
+    },
+  }
+}))(ToggleButtonGroup);
+
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [building, updateBuilding] = React.useState(BuildingDefault);
   const [editorMode, setEditorMode] = React.useState<string | null>('3d');
-  const [is3D, setIs3D] = React.useState(true);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
       setEditorMode(newMode);
-  };
-
-  const onIs3D = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIs3D(event.target.checked);
   };
 
   const classes = useStyles(props);
@@ -118,31 +123,16 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
             <Typography variant="h6" color="inherit" className={classes.flex}>
               Traffic Editor
             </Typography>
-            <ToggleButtonGroup
+            <StyledToggleButtonGroup
               value={editorMode}
+              size="small"
               exclusive
               onChange={onModeChange}
               aria-label="editor mode"
-              style={{ marginRight: 32 }}
             >
-              <ToggleButton className={classes.toggleButton} value="3d">3D</ToggleButton>
-              <ToggleButton className={classes.toggleButton} value="2d">2D</ToggleButton>
-            </ToggleButtonGroup>
-            <Typography component="div">
-              <Grid component="label" container alignItems="center" spacing={0}>
-                <Grid item>2D</Grid>
-                <Grid item>
-                  <Switch
-                    checked={is3D}
-                    onChange={onIs3D}
-                    defaultChecked
-                    color="default"
-                    name="is3D"
-                  />
-                </Grid>
-                <Grid item>3D</Grid>
-              </Grid>
-            </Typography>
+              <ToggleButton value="3d">3D</ToggleButton>
+              <ToggleButton value="2d">2D</ToggleButton>
+            </StyledToggleButtonGroup>
           </ToolBar>
         </AppBar>
         <div className={classes.toolbarMargin} />
