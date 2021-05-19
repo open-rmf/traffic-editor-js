@@ -1,7 +1,12 @@
 import React from 'react';
-import { Building, BuildingDefault } from './Building';
+import { Building } from './Building';
 
-export const BuildingContext = React.createContext({
-  building: BuildingDefault,
-  updateBuilding: (nextBuilding: Building) => {}
+interface BuildingContextProps {
+  building: Building;
+  updateBuilding: (nextBuilding: Building) => void;
+}
+
+export const BuildingContext = React.createContext<BuildingContextProps>({
+  building: new Building(),
+  updateBuilding: () => {}
 });

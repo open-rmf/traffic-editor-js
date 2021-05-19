@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
-import { BuildingDefault, BuildingLoadFromServer, BuildingLoadDemo } from './Building';
+import { Building } from './Building';
 import EditorScene from './EditorScene';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -63,7 +63,7 @@ const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
-  const [building, updateBuilding] = React.useState(BuildingDefault);
+  const [building, updateBuilding] = React.useState<Building>(new Building());
   const [editorMode, setEditorMode] = React.useState<string>('3d');
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
@@ -97,7 +97,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
             >
               <MenuItem
                 onClick={async () => {
-                  updateBuilding(await BuildingLoadFromServer());
+                  updateBuilding(await Building.fromURL('http://localhost:8000/map_file'));
                   setMenuAnchorEl(null);
                 }}
               >
@@ -105,7 +105,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
               </MenuItem>
               <MenuItem
                 onClick={async () => {
-                  updateBuilding(await BuildingLoadDemo('office'));
+                  updateBuilding(await Building.fromDemo('office'));
                   setMenuAnchorEl(null);
                 }}
               >

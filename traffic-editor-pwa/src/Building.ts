@@ -1,61 +1,111 @@
 //const yaml = require('js-yaml');
 import YAML from 'yaml'
 
-export interface Param {
-  type_idx: number;
-  name: string;
-  value: any;
+export class Param {
+  type_idx: number = 0;
+  name: string = '';
+  value: any = null;
+
+  static fromYAML(params_data: any): Param {
+    let p = new Param();
+    p.name = this.name;
+    return p;
+  }
+  /*
+  if (!params_data)
+    return [];
+  const p = [];
+  for (const param_name in params_data) {
+    const param_data = params_data[param_name];
+    const param: Param = {
+      name: param_name,
+      type_idx: param_data[0],
+      value: param_data[1],
+    };
+    p.push(param);
+  }
+  return p;
+  */
 }
 
-export interface Lane {
-  start_idx: number;
-  end_idx: number;
-  params: Param[];
+export class Lane {
+  start_idx: number = -1;
+  end_idx: number = -1;
+  params: Param[] = [];
 }
 
-export interface Wall {
-  start_idx: number;
-  end_idx: number;
-  params: Param[];
+export class Wall {
+  start_idx: number = -1;
+  end_idx: number = -1;
+  params: Param[] = [];
 }
 
-export interface Vertex {
-  x: number;
-  y: number;
-  name: string;
-  params: Param[];
+export class Vertex {
+  x: number = 0;
+  y: number = 0;
+  name: string = '';
+  params: Param[] = [];
 }
 
-export interface Level {
-  name: string;
-  elevation: number;
-  vertices: Vertex[];
-  walls: Wall[];
-  lanes: Lane[];
+export class Level {
+  name: string = '';
+  elevation: number = 0;
+  vertices: Vertex[] = [];
+  walls: Wall[] = [];
+  lanes: Lane[] = [];
 }
 
-export interface Lift {
-  name: string;
+export class Lift {
+  name: string = '';
 }
 
-export interface Building {
-  name: string;
-  filename: string;
-  yaml: string;
-  levels: Level[];
-  lifts: Lift[];
-  crowd_sim: any;
-}
+export class Building {
+  name: string = '';
+  filename: string = '';
+  yaml: string = '';
+  levels: Level[] = [];
+  lifts: Lift[] = [];
+  crowd_sim: any = undefined;
 
-///////////////////////////////////////////////////////////////////
+  constructor() {
+    this.clear();
+  }
 
-export const BuildingDefault: Building = {
-  name: '',
-  filename: '',
-  yaml: '',
-  levels: [],
-  lifts: [],
-  crowd_sim: undefined,
+  clear() {
+    this.name = '';
+    this.filename = '';
+    this.yaml = '';
+    this.levels = [];
+    this.lifts = [];
+    this.crowd_sim = undefined;
+  }
+
+  static fromYAML(yaml_text: string): Building {
+    let building = new Building();
+    building.yaml = yaml_text;
+    const y = YAML.parse(yaml_text);
+    building.name = y['name'];
+    building.crowd_sim = y['crowd_sim'];
+    building.levels = [];
+    for (const level_name in y['levels']) {
+      const level_data = y['levels'][level_name];
+      building.levels.push(LevelFromYAML(level_name, level_data));
+    }
+    return building;
+  }
+
+  static async fromURL(uri: string): Promise<Building> {
+    return fetch(uri)
+      .then(response => response.text())
+      .then(text => Building.fromYAML(text));
+  }
+
+  static async fromDemo(name: string): Promise<Building> {
+    return fetch(process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`)
+      .then(response => response.text())
+      .then(text => Building.fromYAML(text));
+  }
+
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -123,32 +173,4 @@ const LevelFromYAML = (level_name: string, level_data: any): Level => {
     level.lanes.push(LaneFromYAML(lane_data));
   }
   return level;
-}
-
-export const BuildingParseYAML = (filename: string, yaml_text: string): Building => {
-  let building = {} as Building;
-  building.filename = filename;
-  building.yaml = yaml_text;
-  const y = YAML.parse(yaml_text);
-  building.name = y['name'];
-  building.crowd_sim = y['crowd_sim'];
-  building.levels = [];
-  for (const level_name in y['levels']) {
-    const level_data = y['levels'][level_name];
-    building.levels.push(LevelFromYAML(level_name, level_data));
-  }
-  console.log('parsed it');
-  return building;
-}
-
-export const BuildingLoadFromServer = async (): Promise<Building> => {
-  return fetch('http://localhost:8000/map_file')
-    .then(response => response.text())
-    .then(text => BuildingParseYAML('foo', text));
-}
-
-export const BuildingLoadDemo = async (name: string): Promise<Building> => {
-  return fetch(process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`)
-    .then(response => response.text())
-    .then(text => BuildingParseYAML(name, text));
 }
