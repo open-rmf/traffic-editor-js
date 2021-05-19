@@ -26,6 +26,40 @@ export interface Vertex {
   params: Param[];
 }
 
+export interface Level {
+  name: string;
+  elevation: number;
+  vertices: Vertex[];
+  walls: Wall[];
+  lanes: Lane[];
+}
+
+export interface Lift {
+  name: string;
+}
+
+export interface Building {
+  name: string;
+  filename: string;
+  yaml: string;
+  levels: Level[];
+  lifts: Lift[];
+  crowd_sim: any;
+}
+
+///////////////////////////////////////////////////////////////////
+
+export const BuildingDefault: Building = {
+  name: '',
+  filename: '',
+  yaml: '',
+  levels: [],
+  lifts: [],
+  crowd_sim: undefined,
+}
+
+///////////////////////////////////////////////////////////////////
+
 const ParamArrayFromYAML = (params_data: any | null) => {
   if (!params_data)
     return [];
@@ -70,15 +104,6 @@ const LaneFromYAML = (lane_data: any): Wall => {
   return lane;
 }
 
-
-export interface Level {
-  name: string;
-  elevation: number;
-  vertices: Vertex[];
-  walls: Wall[];
-  lanes: Lane[];
-}
-
 const LevelFromYAML = (level_name: string, level_data: any): Level => {
   const level: Level = {
     name: level_name,
@@ -98,28 +123,6 @@ const LevelFromYAML = (level_name: string, level_data: any): Level => {
     level.lanes.push(LaneFromYAML(lane_data));
   }
   return level;
-}
-
-export interface Lift {
-  name: string;
-}
-
-export interface Building {
-  name: string;
-  filename: string;
-  yaml: string;
-  levels: Level[];
-  lifts: Lift[];
-  crowd_sim: any;
-}
-
-export const BuildingDefault: Building = {
-  name: '',
-  filename: '',
-  yaml: '',
-  levels: [],
-  lifts: [],
-  crowd_sim: undefined,
 }
 
 export const BuildingParseYAML = (filename: string, yaml_text: string): Building => {
