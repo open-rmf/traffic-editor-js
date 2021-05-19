@@ -38,25 +38,30 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
   root: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.light,
     padding: theme.spacing(0.5)
   },
   grouped: {
+    //marginRight: theme.spacing(0.5),
+    //marginLeft: theme.spacing(0.5),
+    //margin: theme.spacing(0.5),
     color: theme.palette.primary.contrastText,
     //background: theme.palette.primary.dark,
     "&.Mui-selected:hover, &:hover": {
-      background: theme.palette.primary.light,
+      background: theme.palette.primary.dark,
     },
     "&.Mui-selected": {
-      background: theme.palette.primary.light,
+      background: theme.palette.primary.dark,
       color: theme.palette.primary.contrastText
     },
+    /*
     '&:not(:first-child)': {
       borderRadius: '5px',
     },
     '&:first-child': {
       borderRadius: '5px',
     },
+    */
   }
 }))(ToggleButtonGroup);
 

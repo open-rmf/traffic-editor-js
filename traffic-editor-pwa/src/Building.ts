@@ -1,4 +1,3 @@
-//const yaml = require('js-yaml');
 import YAML from 'yaml'
 
 export class Param {
@@ -6,38 +5,53 @@ export class Param {
   name: string = '';
   value: any = null;
 
-  static fromYAML(params_data: any): Param {
+  static fromYAML(param_name: string, param_data: any): Param {
     let p = new Param();
-    p.name = this.name;
+    p.name = param_name;
+    p.type_idx = param_data[0];
+    p.value = param_data[1];
     return p;
   }
-  /*
+}
+
+// useful helper in a few of our YAML parsing spots
+const ParamArrayFromYAML = (params_data: any | null) => {
   if (!params_data)
     return [];
-  const p = [];
+  let params = [];
   for (const param_name in params_data) {
-    const param_data = params_data[param_name];
-    const param: Param = {
-      name: param_name,
-      type_idx: param_data[0],
-      value: param_data[1],
-    };
-    p.push(param);
+    const param = Param.fromYAML(param_name, params_data[param_name]);
+    params.push(param);
   }
-  return p;
-  */
+  return params;
 }
 
 export class Lane {
   start_idx: number = -1;
   end_idx: number = -1;
   params: Param[] = [];
+
+  static fromYAML(lane_data: any): Lane {
+    let lane = new Lane();
+    lane.start_idx = lane_data[0];
+    lane.end_idx = lane_data[1];
+    lane.params = ParamArrayFromYAML(lane_data[2]);
+    return lane;
+  }
 }
 
 export class Wall {
   start_idx: number = -1;
   end_idx: number = -1;
   params: Param[] = [];
+
+  static fromYAML(wall_data: any): Wall {
+    let wall = new Wall();
+    wall.start_idx = wall_data[0];
+    wall.end_idx = wall_data[1];
+    wall.params = ParamArrayFromYAML(wall_data[2]);
+    return wall;
+  }
 }
 
 export class Vertex {
@@ -45,6 +59,15 @@ export class Vertex {
   y: number = 0;
   name: string = '';
   params: Param[] = [];
+
+  static fromYAML(vertex_data: any): Vertex {
+    let vertex = new Vertex();
+    vertex.x = vertex_data[0];
+    vertex.y = -vertex_data[1];
+    vertex.name = vertex_data[3];
+    vertex.params = ParamArrayFromYAML(vertex_data[4]);
+    return vertex;
+  }
 }
 
 export class Level {
@@ -53,10 +76,27 @@ export class Level {
   vertices: Vertex[] = [];
   walls: Wall[] = [];
   lanes: Lane[] = [];
+
+  static fromYAML(level_name: string, level_data: any): Level {
+    let level = new Level();
+    level.name = level_name;
+    level.elevation = level_data['elevation'];
+    for (const vertex_data of level_data['vertices']) {
+      level.vertices.push(Vertex.fromYAML(vertex_data));
+    }
+    for (const wall_data of level_data['walls']) {
+      level.walls.push(Wall.fromYAML(wall_data));
+    }
+    for (const lane_data of level_data['lanes']) {
+      level.lanes.push(Lane.fromYAML(lane_data));
+    }
+    return level;
+  }
 }
 
 export class Lift {
   name: string = '';
+  // todo
 }
 
 export class Building {
@@ -67,19 +107,6 @@ export class Building {
   lifts: Lift[] = [];
   crowd_sim: any = undefined;
 
-  constructor() {
-    this.clear();
-  }
-
-  clear() {
-    this.name = '';
-    this.filename = '';
-    this.yaml = '';
-    this.levels = [];
-    this.lifts = [];
-    this.crowd_sim = undefined;
-  }
-
   static fromYAML(yaml_text: string): Building {
     let building = new Building();
     building.yaml = yaml_text;
@@ -89,7 +116,7 @@ export class Building {
     building.levels = [];
     for (const level_name in y['levels']) {
       const level_data = y['levels'][level_name];
-      building.levels.push(LevelFromYAML(level_name, level_data));
+      building.levels.push(Level.fromYAML(level_name, level_data));
     }
     return building;
   }
@@ -105,72 +132,4 @@ export class Building {
       .then(response => response.text())
       .then(text => Building.fromYAML(text));
   }
-
-}
-
-///////////////////////////////////////////////////////////////////
-
-const ParamArrayFromYAML = (params_data: any | null) => {
-  if (!params_data)
-    return [];
-  const p = [];
-  for (const param_name in params_data) {
-    const param_data = params_data[param_name];
-    const param: Param = {
-      name: param_name,
-      type_idx: param_data[0],
-      value: param_data[1],
-    };
-    p.push(param);
-  }
-  return p;
-}
-
-const VertexFromYAML = (vertex_data: any): Vertex => {
-  const vertex: Vertex = {
-    x: vertex_data[0],
-    y: -vertex_data[1],
-    name: vertex_data[3],
-    params: ParamArrayFromYAML(vertex_data[4])
-  };
-  return vertex;
-}
-
-const WallFromYAML = (wall_data: any): Wall => {
-  const wall: Wall = {
-    start_idx: wall_data[0],
-    end_idx: wall_data[1],
-    params: ParamArrayFromYAML(wall_data[2]),
-  }
-  return wall;
-}
-
-const LaneFromYAML = (lane_data: any): Wall => {
-  const lane: Lane = {
-    start_idx: lane_data[0],
-    end_idx: lane_data[1],
-    params: ParamArrayFromYAML(lane_data[2]),
-  }
-  return lane;
-}
-
-const LevelFromYAML = (level_name: string, level_data: any): Level => {
-  const level: Level = {
-    name: level_name,
-    elevation: 0,
-    vertices: [],
-    walls: [],
-    lanes: []
-  };
-  level.elevation = level_data['elevation'];
-  for (const vertex_data of level_data['vertices']) {
-    level.vertices.push(VertexFromYAML(vertex_data));
-  }
-  for (const wall_data of level_data['walls']) {
-    level.walls.push(WallFromYAML(wall_data));
-  }
-  for (const lane_data of level_data['lanes']) {
-    level.lanes.push(LaneFromYAML(lane_data));
-  }
-  return level;
 }

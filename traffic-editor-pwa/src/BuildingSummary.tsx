@@ -8,7 +8,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 export default function BuildingSummary(): JSX.Element {
   const { building } = React.useContext(BuildingContext);
-  if (!building.filename)
+  if (!building.name)
     return (
       <p>No building loaded.</p>
     );
