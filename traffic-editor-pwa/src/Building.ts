@@ -100,7 +100,7 @@ export class Lift {
   // todo
 }
 
-export class Building {
+export class Building extends EditorObject {
   name: string = '';
   filename: string = '';
   yaml: string = '';
