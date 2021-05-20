@@ -99,6 +99,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
               getContentAnchorEl={null}
               anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
               transformOrigin={{vertical: 'top', horizontal: 'center'}}
+              transitionDuration={0.0}
             >
               <MenuItem
                 onClick={async () => {

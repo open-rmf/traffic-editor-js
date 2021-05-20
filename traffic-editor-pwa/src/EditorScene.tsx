@@ -5,6 +5,7 @@ import React from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
 import { Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
+import { SceneFloor } from './SceneFloor';
 
 /*
 function Box(props: JSX.IntrinsicElements['mesh']) {
@@ -84,28 +85,29 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
 
     return (
       <mesh
-        position={[cx, cy, 0.0 + elevation]}
+        position={[cx, cy, 0.2 + elevation]}
         rotation={new THREE.Euler(0, 0, xyrot)}
         scale={1.0}
       >
         <boxGeometry args={[len, 1.0, 0.1]} />
-        <meshStandardMaterial color={'#d08080'} />
+        <meshStandardMaterial color={'#c04040'} />
       </mesh>
     );
   }
-
   const renderLevel = (level: Level): JSX.Element[] => {
     const z = level.elevation / 2;
     const vertices = level.vertices.map((vertex) => renderVertex(vertex, z));
     const walls = level.walls.map((wall) => renderWall(wall, level.vertices, z));
     const lanes = level.lanes.map((lane) => renderLane(lane, level.vertices, z));
-    const floor = (
-      <gridHelper
-        args={[100, 100]}
-        rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
-        position={new THREE.Vector3(50, -50, z)}/>
-    );
-    return [...vertices, ...walls, ...lanes, floor];
+    const floors: JSX.Element[] = level.floors.map((floor) => (
+      <SceneFloor floor={floor} vertices={level.vertices} elevation={z} />
+    ));
+    return [
+      ...vertices,
+      ...walls,
+      ...lanes,
+      ...floors
+    ];
   }
 
   const Controls = (): JSX.Element => {
@@ -145,6 +147,7 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
   }
 
   const EditorCanvas = (canvasProps: any) => {
+    console.log('EditorCanvas');
     if (props.mode === '3d') {
       return (
         <Canvas

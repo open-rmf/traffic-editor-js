@@ -1,5 +1,6 @@
 import React from 'react';
-import { Level, Vertex, Wall } from './Building';
+import { Level, Vertex, Wall, Floor } from './Building';
+import { Param } from './Param';
 import { BuildingContext } from './BuildingContext';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -12,47 +13,61 @@ export default function BuildingSummary(): JSX.Element {
     return (
       <p>No building loaded.</p>
     );
-
-  let node_idx = 10;
-  
-  const renderVertex = (vertex: Vertex): JSX.Element => {
-    node_idx = node_idx + 1;
-    let label = "(" + vertex.x + ", " + vertex.y + ")";
-    if (vertex.name)
-      label += " name: " + vertex.name;
-    if (vertex.params.length) {
-      for (const param of vertex.params) {
-        label += ` ${param.name}=${param.value}`;
-      }
-    }
+ 
+  const renderParam = (param: Param): JSX.Element => {
     return (
       <TreeItem
-        key={node_idx}
-        nodeId={String(node_idx)}
-        label={label} />
+        nodeId={param.uuid}
+        label={`${param.name}=${param.value}`} />
+    );
+  }
+
+  const renderVertex = (vertex: Vertex): JSX.Element => {
+    let label = "(" + vertex.x + ", " + vertex.y + ")";
+    if (vertex.name)
+      label = vertex.name + ': ' + label;
+    return (
+      <TreeItem
+        nodeId={vertex.uuid}
+        label={label}>
+        {vertex.params.map((param) => renderParam(param))}
+      </TreeItem>
+    );
+  }
+
+  const renderFloor = (floor: Floor): JSX.Element => {
+    let label = 'floor (';
+    label += floor.vertex_indices.map((idx) => idx.toString()).join(', ') + ')';
+    return(
+      <TreeItem
+        nodeId={floor.uuid}
+        label={label}
+      >
+        {floor.params.map((param) => renderParam(param))}
+      </TreeItem>
     );
   }
 
   const renderWall = (wall: Wall): JSX.Element => {
-    node_idx = node_idx + 1;
     let label = `(${wall.start_idx} => ${wall.end_idx})`;
     return(
       <TreeItem
-        key={node_idx}
-        nodeId={String(node_idx)}
+        nodeId={wall.uuid}
         label={label} />
     );
   }
 
   const renderLevel = (level: Level): JSX.Element => {
-    node_idx = node_idx + 3;
     return (
-      <TreeItem key={node_idx-3} nodeId={String(node_idx-3)} label={level.name}>
-        <TreeItem key={node_idx-2} nodeId={String(node_idx-2)} label="vertices">
+      <TreeItem nodeId={level.uuid} label={level.name}>
+        <TreeItem nodeId={level.uuid + '_vertices'} label="vertices">
           {level.vertices.map((vertex) => renderVertex(vertex))}
         </TreeItem>
-        <TreeItem key={node_idx-1} nodeId={String(node_idx-1)} label="walls">
+        <TreeItem nodeId={level.uuid + '_walls'} label="walls">
           {level.walls.map((wall) => renderWall(wall))}
+        </TreeItem>
+        <TreeItem nodeId={level.uuid + '_floors'} label="floors">
+          {level.floors.map((floor) => renderFloor(floor))}
         </TreeItem>
       </TreeItem>
     );
@@ -64,9 +79,8 @@ export default function BuildingSummary(): JSX.Element {
       defaultExpandIcon={<ChevronRightIcon />}
       defaultExpanded={["2"]}
     >
-      <TreeItem nodeId="0" label={"name: " + building.name} />
-      <TreeItem nodeId="1" label={"filename: " + building.filename} />
-      <TreeItem nodeId="2" label="levels">
+      <TreeItem nodeId={building.uuid + '_name'} label={"name: " + building.name} />
+      <TreeItem nodeId={building.uuid + '_levels'} label="levels">
         {building.levels.map((level) => renderLevel(level))}
       </TreeItem>
     </TreeView>
