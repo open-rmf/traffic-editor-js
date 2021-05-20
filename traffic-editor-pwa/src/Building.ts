@@ -1,6 +1,7 @@
 import YAML from 'yaml'
+import { EditorObject } from './EditorObject';
 
-export class Param {
+export class Param extends EditorObject {
   type_idx: number = 0;
   name: string = '';
   value: any = null;
