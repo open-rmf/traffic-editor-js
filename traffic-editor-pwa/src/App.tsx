@@ -148,8 +148,13 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           onCancel={() => setIsOpenDialogOpen(false)}
         />
         <Grid container spacing={0}>
-          <Grid item xs={3}>
-            <BuildingSummary />
+          <Grid container xs={3} direction="column" spacing={0}>
+            <Grid item style={{height: '40vh'}}>
+              <BuildingSummary />
+            </Grid>
+            <Grid item style={{height: '40vh'}}>
+              <div style={{backgroundColor: 'red'}} >Property Editor</div>
+            </Grid>
           </Grid>
           <Grid item xs={9} className={classes.workingArea}>
             <EditorScene mode={editorMode} />

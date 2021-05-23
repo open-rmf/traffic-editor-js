@@ -11,7 +11,7 @@ export default function BuildingSummary(): JSX.Element {
   const { building } = React.useContext(BuildingContext);
   if (!building.name)
     return (
-      <p>No building loaded.</p>
+      <div>No building loaded.</div>
     );
  
   const renderParam = (param: Param): JSX.Element => {
