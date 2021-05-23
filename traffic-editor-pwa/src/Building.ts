@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import YAML from 'yaml'
 import { EditorObject } from './EditorObject';
 import { ParamArrayFromYAML } from './Param';
@@ -128,5 +129,24 @@ export class Building extends EditorObject {
     return fetch(process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`)
       .then(response => response.text())
       .then(text => Building.fromYAML(text));
+  }
+
+  computeBoundingBox(): THREE.Box3 {
+    let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
+    let vec_max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+    for (const level of this.levels) {
+      for (const vertex of level.vertices) {
+        if (vertex.x < vec_min.x)
+          vec_min.x = vertex.x;
+        if (vertex.x > vec_max.x)
+          vec_max.x = vertex.x;
+
+        if (vertex.y < vec_min.y)
+          vec_min.y = vertex.y;
+        if (vertex.y > vec_max.y)
+          vec_max.y = vertex.y;
+      }
+    }
+    return new THREE.Box3(vec_min, vec_max);
   }
 }

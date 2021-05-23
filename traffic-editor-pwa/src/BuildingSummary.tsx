@@ -77,7 +77,7 @@ export default function BuildingSummary(): JSX.Element {
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
-      defaultExpanded={["2"]}
+      defaultExpanded={[building.uuid + '_levels']}
     >
       <TreeItem nodeId={building.uuid + '_name'} label={"name: " + building.name} />
       <TreeItem nodeId={building.uuid + '_levels'} label="levels">

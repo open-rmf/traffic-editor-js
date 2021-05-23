@@ -112,12 +112,12 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
 
   const Controls = (): JSX.Element => {
     const camera = useThree(({ camera }) => camera);
+    camera.up = new THREE.Vector3(0, 0, 1);
+    THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
     if (props.mode === '3d') {
-      camera.up = new THREE.Vector3(0, 0, 1);
       camera.position.x = 20;
       camera.position.y = -20;
       camera.position.z = 5;
-      THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
       camera.updateProjectionMatrix();
 
       return (
@@ -129,14 +129,20 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
       );
     }
     else {
-      camera.zoom = 10;
+      camera.zoom = 20;
       camera.position.z = 5;
       camera.updateProjectionMatrix();
+
+      const bb: THREE.Box3 = building.computeBoundingBox();
+      const target = new THREE.Vector3(
+        (bb.min.x + bb.max.x) / 2.0 / 50,
+        (bb.min.y + bb.max.y) / 2.0 / 50,
+        0.0);
 
       return (
         <OrbitControls
           enableDamping={false}
-          target={[10, -10, 0]}
+          target={target}
           camera={camera}
           maxPolarAngle={0}
           minAzimuthAngle={0}

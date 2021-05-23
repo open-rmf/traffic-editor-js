@@ -16,6 +16,7 @@ import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
 import { Building } from './Building';
 import EditorScene from './EditorScene';
+import PropertyEditor from './PropertyEditor';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -34,6 +35,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: "black",
     height: `calc(100vh - 64px)`,
   },
+  mainGrid: {
+  },
+  gridLeftColumn: {
+    borderRight: '5px',
+    borderRightStyle: 'solid',
+    borderRightColor: theme.palette.primary.main,
+  },
+  propertyGridItem: {
+    borderTop: '5px',
+    borderTopStyle: 'solid',
+    borderTopColor: theme.palette.primary.main,
+  }
 }));
 
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
@@ -69,7 +82,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [building, updateBuilding] = React.useState<Building>(new Building());
-  const [editorMode, setEditorMode] = React.useState<string>('3d');
+  const [editorMode, setEditorMode] = React.useState<string>('2d');
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
@@ -147,13 +160,13 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           onOpen={() => setIsOpenDialogOpen(false)}
           onCancel={() => setIsOpenDialogOpen(false)}
         />
-        <Grid container spacing={0}>
-          <Grid container xs={3} direction="column" spacing={0}>
+        <Grid className={classes.mainGrid} container spacing={0}>
+          <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
             <Grid item style={{height: '40vh'}}>
               <BuildingSummary />
             </Grid>
-            <Grid item style={{height: '40vh'}}>
-              <div style={{backgroundColor: 'red'}} >Property Editor</div>
+            <Grid className={classes.propertyGridItem} item style={{height: '40vh'}}>
+              <PropertyEditor />
             </Grid>
           </Grid>
           <Grid item xs={9} className={classes.workingArea}>
