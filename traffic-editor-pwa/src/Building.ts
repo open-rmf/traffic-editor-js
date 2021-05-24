@@ -103,6 +103,19 @@ export class Building extends EditorObject {
   levels: Level[] = [];
   lifts: Lift[] = [];
   crowd_sim: any = undefined;
+  selection: EditorObject | null = null;
+
+  shallowCopy(): Building {
+    let b = new Building();
+    b.name = this.name;
+    b.filename = this.filename;
+    b.yaml = this.yaml;
+    b.levels = this.levels;
+    b.lifts = this.lifts;
+    b.crowd_sim = this.crowd_sim;
+    b.selection = this.selection;
+    return b;
+  }
 
   static fromYAML(yaml_text: string): Building {
     let building = new Building();
@@ -148,5 +161,9 @@ export class Building extends EditorObject {
       }
     }
     return new THREE.Box3(vec_min, vec_max);
+  }
+
+  valid(): boolean {
+    return (this.name ? true : false);
   }
 }

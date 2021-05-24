@@ -1,22 +1,13 @@
 import React from 'react';
-import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import ToolBar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import MenuIcon from '@material-ui/icons/Menu';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-import OpenDialog from './OpenDialog';
 import BuildingSummary from './BuildingSummary';
 import { BuildingContext } from './BuildingContext';
 import { Building } from './Building';
-import EditorScene from './EditorScene';
+import { SceneWrapper } from './EditorScene';
 import PropertyEditor from './PropertyEditor';
+import MainMenu from './MainMenu';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -49,117 +40,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
-  root: {
-    backgroundColor: theme.palette.primary.light,
-    padding: theme.spacing(0.5)
-  },
-  grouped: {
-    //marginRight: theme.spacing(0.5),
-    //marginLeft: theme.spacing(0.5),
-    //margin: theme.spacing(0.5),
-    color: theme.palette.primary.contrastText,
-    //background: theme.palette.primary.dark,
-    "&.Mui-selected:hover, &:hover": {
-      background: theme.palette.primary.dark,
-    },
-    "&.Mui-selected": {
-      background: theme.palette.primary.dark,
-      color: theme.palette.primary.contrastText
-    },
-    /*
-    '&:not(:first-child)': {
-      borderRadius: '5px',
-    },
-    '&:first-child': {
-      borderRadius: '5px',
-    },
-    */
-  }
-}))(ToggleButtonGroup);
-
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [building, updateBuilding] = React.useState<Building>(new Building());
-  const [editorMode, setEditorMode] = React.useState<string>('2d');
-
-  const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
-    if (newMode !== null)
-      setEditorMode(newMode);
-  };
-
   const classes = useStyles(props);
+
+  const editorMode = '2d'; // todo, re-connect this once the webGL context-loss is fixed
 
   return (
     <div className={classes.root}>
       <BuildingContext.Provider value={{ building, updateBuilding }}>
-        <AppBar position="fixed">
-          <ToolBar>
-            <IconButton
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="Menu"
-              onClick={(e: any) => { setMenuAnchorEl(e.currentTarget); }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              keepMounted
-              anchorEl={menuAnchorEl}
-              open={Boolean(menuAnchorEl)}
-              onClose={() => setMenuAnchorEl(null)}
-              getContentAnchorEl={null}
-              anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-              transformOrigin={{vertical: 'top', horizontal: 'center'}}
-              transitionDuration={0.0}
-            >
-              <MenuItem
-                onClick={async () => {
-                  updateBuilding(await Building.fromURL('http://localhost:8000/map_file'));
-                  setMenuAnchorEl(null);
-                }}
-              >
-                Open map from localhost:8000
-              </MenuItem>
-              <MenuItem
-                onClick={async () => {
-                  updateBuilding(await Building.fromDemo('office'));
-                  setMenuAnchorEl(null);
-                }}
-              >
-                Open demo map
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  setIsOpenDialogOpen(true);
-                  setMenuAnchorEl(null);
-                }}
-              >
-                Open map from local file...
-              </MenuItem>
-            </Menu>
-            <Typography variant="h6" color="inherit" className={classes.flex}>
-              Traffic Editor
-            </Typography>
-            <StyledToggleButtonGroup
-              value={editorMode}
-              size="small"
-              exclusive
-              onChange={onModeChange}
-              aria-label="editor mode"
-            >
-              <ToggleButton value="3d">3D</ToggleButton>
-              <ToggleButton value="2d">2D</ToggleButton>
-            </StyledToggleButtonGroup>
-          </ToolBar>
-        </AppBar>
+        <MainMenu />
         <div className={classes.toolbarMargin} />
-        <OpenDialog
-          open={isOpenDialogOpen}
-          onOpen={() => setIsOpenDialogOpen(false)}
-          onCancel={() => setIsOpenDialogOpen(false)}
-        />
         <Grid className={classes.mainGrid} container spacing={0}>
           <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
             <Grid item style={{height: '40vh'}}>
@@ -170,7 +61,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
             </Grid>
           </Grid>
           <Grid item xs={9} className={classes.workingArea}>
-            <EditorScene mode={editorMode} />
+            <SceneWrapper mode={editorMode} />
           </Grid>
         </Grid>
       </BuildingContext.Provider>

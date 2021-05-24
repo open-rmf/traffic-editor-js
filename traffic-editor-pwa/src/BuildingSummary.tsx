@@ -9,10 +9,19 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 export default function BuildingSummary(): JSX.Element {
   const { building } = React.useContext(BuildingContext);
-  if (!building.name)
+
+  if (!building.valid()) {
     return (
-      <div>No building loaded.</div>
+      <div style={{margin: '1em'}}>
+        <p>
+          No map loaded.
+        </p>
+        <p>
+          To load a map, click the menu icon in the upper-left.
+        </p>
+      </div>
     );
+  }
  
   const renderParam = (param: Param): JSX.Element => {
     return (

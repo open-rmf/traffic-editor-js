@@ -3,6 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 //import React, { useRef, useState } from 'react'
 import React from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
+
 import { Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
 import { SceneFloor } from './SceneFloor';
@@ -33,7 +34,7 @@ type EditorSceneProps = {
 };
 
 export default function EditorScene(props: EditorSceneProps): JSX.Element {
-  const { building } = React.useContext(BuildingContext);
+  const { building, updateBuilding } = React.useContext(BuildingContext);
 
   const renderVertex = (vertex: Vertex, elevation: number): JSX.Element => {
     const x = vertex.x / 50.0;
@@ -44,6 +45,11 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
         position={[x, y, 0.25 + elevation]}
         scale={1.0}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
+        onClick={(event) => {
+          console.log('onclick vertex');
+          building.selection = vertex;
+          updateBuilding(building.shallowCopy());
+        }}
       >
         <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
         <meshStandardMaterial color={'green'} />
@@ -152,6 +158,21 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
     }
   }
 
+  console.log('EditorScene()');
+  return (
+    <>
+      <Controls />
+      <axesHelper />
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      {building.levels.map((level) => renderLevel(level))}
+    </>
+  )
+}
+
+export function SceneWrapper(props: EditorSceneProps): JSX.Element {
+  const { building, updateBuilding } = React.useContext(BuildingContext);
+
   const EditorCanvas = (canvasProps: any) => {
     console.log('EditorCanvas');
     if (props.mode === '3d') {
@@ -177,11 +198,9 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
 
   return (
     <EditorCanvas>
-      <Controls />
-      <axesHelper />
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      {building.levels.map((level) => renderLevel(level))}
+      <BuildingContext.Provider value={{building, updateBuilding}}>
+        <EditorScene mode={props.mode} />
+      </BuildingContext.Provider>
     </EditorCanvas>
   )
 }
