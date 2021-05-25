@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Element {
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  const { building, updateBuilding } = React.useContext(BuildingContext);
+  const { updateBuilding } = React.useContext(BuildingContext);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [editorMode, setEditorMode] = React.useState<string>('2d');
 

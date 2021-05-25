@@ -3,31 +3,11 @@ import { Canvas, useThree } from '@react-three/fiber'
 //import React, { useRef, useState } from 'react'
 import React from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
+import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
 import { Lane, Level, Vertex, Wall } from './Building';
 import { BuildingContext } from './BuildingContext';
 import { SceneFloor } from './SceneFloor';
-
-/*
-function Box(props: JSX.IntrinsicElements['mesh']) {
-  const mesh = useRef<THREE.Mesh>(null!)
-  const [hovered, setHover] = useState(false)
-  const [active, setActive] = useState(false)
-  return (
-    <mesh
-      {...props}
-      ref={mesh}
-      scale={active ? 1.0 : 0.5}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
-*/
 
 type EditorSceneProps = {
   mode: string;
@@ -45,8 +25,8 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
         position={[x, y, 0.25 + elevation]}
         scale={1.0}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
+        key={vertex.uuid}
         onClick={(event) => {
-          console.log('onclick vertex');
           building.selection = vertex;
           updateBuilding(building.shallowCopy());
         }}
@@ -56,6 +36,8 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
       </mesh>
     );
   }
+  /*
+   */
 
   const renderWall = (wall: Wall, vertices: Vertex[], elevation: number): JSX.Element => {
     const v1 = vertices[wall.start_idx];
@@ -72,6 +54,7 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
         position={[cx, cy, 1.0 + elevation]}
         rotation={new THREE.Euler(0, 0, xyrot)}
         scale={1.0}
+        key={wall.uuid}
       >
         <boxGeometry args={[len, 0.1, 2]} />
         <meshStandardMaterial color={'#8080d0'} />
@@ -94,19 +77,21 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
         position={[cx, cy, 0.2 + elevation]}
         rotation={new THREE.Euler(0, 0, xyrot)}
         scale={1.0}
+        key={lane.uuid}
       >
         <boxGeometry args={[len, 1.0, 0.1]} />
         <meshStandardMaterial color={'#c04040'} />
       </mesh>
     );
   }
+
   const renderLevel = (level: Level): JSX.Element[] => {
     const z = level.elevation / 2;
     const vertices = level.vertices.map((vertex) => renderVertex(vertex, z));
     const walls = level.walls.map((wall) => renderWall(wall, level.vertices, z));
     const lanes = level.lanes.map((lane) => renderLane(lane, level.vertices, z));
     const floors: JSX.Element[] = level.floors.map((floor) => (
-      <SceneFloor floor={floor} vertices={level.vertices} elevation={z} />
+      <SceneFloor key={floor.uuid} floor={floor} vertices={level.vertices} elevation={z} />
     ));
     return [
       ...vertices,
@@ -140,10 +125,12 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
       camera.updateProjectionMatrix();
 
       const bb: THREE.Box3 = building.computeBoundingBox();
+      // todo: don't create this new every time
       const target = new THREE.Vector3(
         (bb.min.x + bb.max.x) / 2.0 / 50,
         (bb.min.y + bb.max.y) / 2.0 / 50,
         0.0);
+      console.log(`view target = [${target.x}, ${target.y}, 0]`);
 
       return (
         <OrbitControls
@@ -158,7 +145,7 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
     }
   }
 
-  console.log('EditorScene()');
+  console.log('EditorScene');
   return (
     <>
       <Controls />
@@ -170,9 +157,30 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
   )
 }
 
-export function SceneWrapper(props: EditorSceneProps): JSX.Element {
-  const { building, updateBuilding } = React.useContext(BuildingContext);
+/*
+function EditorCamera(props: any) {
+  const ref = React.useRef();
+  const set = useThree(state => state.set);
 
+  React.useEffect(() => {
+    if (ref.current) {
+      set({ camera: ref.current! });
+    }
+  }, [props, set]);
+
+  return <perspectiveCamera ref={ref} {...props} />
+  if (props.mode == '3d') {
+  }
+  else {
+    return <OrthographicCamera
+  }
+}
+*/
+
+export function SceneWrapper(props: EditorSceneProps): JSX.Element {
+  //const { building, updateBuilding } = React.useContext(BuildingContext);
+
+  /*
   const EditorCanvas = (canvasProps: any) => {
     console.log('EditorCanvas');
     if (props.mode === '3d') {
@@ -195,12 +203,20 @@ export function SceneWrapper(props: EditorSceneProps): JSX.Element {
       );
     }
   }
+   */
 
+  //<EditorCanvas>
+  console.log('SceneWrapper');
   return (
-    <EditorCanvas>
-      <BuildingContext.Provider value={{building, updateBuilding}}>
-        <EditorScene mode={props.mode} />
-      </BuildingContext.Provider>
-    </EditorCanvas>
+    <BuildingContext.Consumer>
+      {context => (
+        <Canvas frameloop="demand">
+          <BuildingContext.Provider value={context}>
+            <EditorScene mode={props.mode} />
+          </BuildingContext.Provider>
+        </Canvas>
+      )}
+    </BuildingContext.Consumer>
   )
+  //</EditorCanvas>
 }

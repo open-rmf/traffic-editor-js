@@ -3,7 +3,8 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
 import BuildingSummary from './BuildingSummary';
-import { BuildingContext } from './BuildingContext';
+//import { BuildingContext } from './BuildingContext';
+import { useStore } from './BuildingStore';
 import { Building } from './Building';
 import { SceneWrapper } from './EditorScene';
 import PropertyEditor from './PropertyEditor';
@@ -26,8 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: "black",
     height: `calc(100vh - 64px)`,
   },
-  mainGrid: {
-  },
   gridLeftColumn: {
     borderRight: '5px',
     borderRightStyle: 'solid',
@@ -41,30 +40,28 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
-  const [building, updateBuilding] = React.useState<Building>(new Building());
+  //const [building, updateBuilding] = React.useState<Building>(new Building());
   const classes = useStyles(props);
 
-  const editorMode = '2d'; // todo, re-connect this once the webGL context-loss is fixed
+  const editorMode = '3d'; // todo, re-connect this once the webGL context-loss is fixed
 
   return (
     <div className={classes.root}>
-      <BuildingContext.Provider value={{ building, updateBuilding }}>
-        <MainMenu />
-        <div className={classes.toolbarMargin} />
-        <Grid className={classes.mainGrid} container spacing={0}>
-          <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
-            <Grid item style={{height: '40vh'}}>
-              <BuildingSummary />
-            </Grid>
-            <Grid className={classes.propertyGridItem} item style={{height: '40vh'}}>
-              <PropertyEditor />
-            </Grid>
+      <MainMenu />
+      <div className={classes.toolbarMargin} />
+      <Grid container spacing={0}>
+        <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
+          <Grid item style={{height: '40vh'}}>
+            <BuildingSummary />
           </Grid>
-          <Grid item xs={9} className={classes.workingArea}>
-            <SceneWrapper mode={editorMode} />
+          <Grid item className={classes.propertyGridItem} style={{height: '40vh'}}>
+            <PropertyEditor />
           </Grid>
         </Grid>
-      </BuildingContext.Provider>
+        <Grid item xs={9} className={classes.workingArea}>
+          <SceneWrapper mode={editorMode} />
+        </Grid>
+      </Grid>
     </div>
   );
 }

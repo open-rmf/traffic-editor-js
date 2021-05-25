@@ -27,6 +27,7 @@ export default function BuildingSummary(): JSX.Element {
     return (
       <TreeItem
         nodeId={param.uuid}
+        key={param.uuid}
         label={`${param.name}=${param.value}`} />
     );
   }
@@ -38,6 +39,7 @@ export default function BuildingSummary(): JSX.Element {
     return (
       <TreeItem
         nodeId={vertex.uuid}
+        key={vertex.uuid}
         label={label}>
         {vertex.params.map((param) => renderParam(param))}
       </TreeItem>
@@ -50,6 +52,7 @@ export default function BuildingSummary(): JSX.Element {
     return(
       <TreeItem
         nodeId={floor.uuid}
+        key={floor.uuid}
         label={label}
       >
         {floor.params.map((param) => renderParam(param))}
@@ -62,13 +65,14 @@ export default function BuildingSummary(): JSX.Element {
     return(
       <TreeItem
         nodeId={wall.uuid}
+        key={wall.uuid}
         label={label} />
     );
   }
 
   const renderLevel = (level: Level): JSX.Element => {
     return (
-      <TreeItem nodeId={level.uuid} label={level.name}>
+      <TreeItem nodeId={level.uuid} key={level.uuid} label={level.name}>
         <TreeItem nodeId={level.uuid + '_vertices'} label="vertices">
           {level.vertices.map((vertex) => renderVertex(vertex))}
         </TreeItem>
@@ -82,11 +86,11 @@ export default function BuildingSummary(): JSX.Element {
     );
   }
 
+  // defaultExpanded={[building.uuid + '_levels']}
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
-      defaultExpanded={[building.uuid + '_levels']}
     >
       <TreeItem nodeId={building.uuid + '_name'} label={"name: " + building.name} />
       <TreeItem nodeId={building.uuid + '_levels'} label="levels">

@@ -28,7 +28,7 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
   }, [props.floor, props.vertices]);
 
   return (
-    <mesh>
+    <mesh key={props.floor.uuid}>
       <extrudeGeometry args={[shape, { 'depth': 0.1, 'bevelEnabled': false } ]} />
       <meshStandardMaterial color={'#ffffff'} />
     </mesh>
