@@ -1,17 +1,46 @@
 import React from 'react'
 import * as THREE from 'three'
-import { Vertex } from './Building';
-import { useStore } from './BuildingStore';
+import { EditorVertex } from './EditorStore';
 
-type SceneVertexProps = {
-  uuid: string;
+interface SceneVertexProps {
+  vertex: EditorVertex,
+  elevation: number,
 }
 
-/*
 export function SceneVertex(props: SceneVertexProps): JSX.Element {
-  console.log('SceneVertex uuid=' + props.uuid);
-  const vertex = useStore(state => state.building.levels.find((level) => (level.uuid === props.uuid)));
+  //console.log('SceneVertex uuid=' + props.vertex.uuid);
 
+  const x = props.vertex.x / 50.0;
+  const y = props.vertex.y / 50.0;
+  let color = "rgb(0, 128, 0)";
+  /*
+  if (building.selection && building.selection.uuid === vertex.uuid) {
+    color = "rgb(255, 100, 10)";
+  }
+  */
+
+  return (
+    <mesh
+      position={[x, y, 0.25 + props.elevation]}
+      scale={1.0}
+      rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
+      key={props.vertex.uuid}
+    >
+      <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+
+
+  //const vertex = useStore(state => state.building.levels.find((level) => (level.uuid === props.uuid)));
+
+  /*
+      onClick={(event) => {
+        event.stopPropagation();
+        console.log('vertex onClick');
+        building.selection = vertex;
+        replaceBuilding(building.shallowCopy());
+      }}
   const building = useStore(state => state.building);
   const replaceBuilding = useStore(state => state.replace);
   const shape = React.useMemo(() => {
@@ -47,6 +76,5 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
       <meshStandardMaterial color={'#ffffff'} />
     </mesh>
   );
-
+  */
 }
-*/

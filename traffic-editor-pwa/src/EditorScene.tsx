@@ -3,11 +3,11 @@ import { Canvas, useThree } from '@react-three/fiber'
 //import React, { useRef, useState } from 'react'
 import React from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
-import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
+//import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
-import { Lane, Level, Vertex, Wall } from './Building';
+//import { Lane, Level, Vertex, Wall } from './Building';
 //import { BuildingContext } from './BuildingContext';
-import { useStore } from './BuildingStore';
+import { useStore } from './EditorStore';
 import { SceneLevel } from './SceneLevel';
 
 type EditorSceneProps = {
@@ -16,16 +16,16 @@ type EditorSceneProps = {
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
   //const { building, updateBuilding } = React.useContext(BuildingContext);
-  const building = useStore(state => state.building);
-  const replaceBuilding = useStore(state => state.replace);
+  //const building = useStore(state => state.building);
+  //const replaceBuilding = useStore(state => state.replace);
+  const building = useStore(state => state.building)
+  //const selection = useStore(state => state.selection)
 
+  /*
   const renderVertex = (vertex: Vertex, elevation: number): JSX.Element => {
     const x = vertex.x / 50.0;
     const y = vertex.y / 50.0;
     // todo: consider troika-three-text for rendering the labels?
-    /*
-        .shallowCopy());
-     */
     let color = "rgb(0, 128, 0)";
     if (building.selection && building.selection.uuid === vertex.uuid) {
       color = "rgb(255, 100, 10)";
@@ -48,8 +48,6 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       </mesh>
     );
   }
-  /*
-   */
 
   const renderWall = (wall: Wall, vertices: Vertex[], elevation: number): JSX.Element => {
     const v1 = vertices[wall.start_idx];
@@ -96,6 +94,25 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       </mesh>
     );
   }
+  */
+  function computeBoundingBox(): THREE.Box3 {
+    let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
+    let vec_max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+    for (const level of building.levels) {
+      for (const vertex of level.vertices) {
+        if (vertex.x < vec_min.x)
+          vec_min.x = vertex.x;
+        if (vertex.x > vec_max.x)
+          vec_max.x = vertex.x;
+
+        if (vertex.y < vec_min.y)
+          vec_min.y = vertex.y;
+        if (vertex.y > vec_max.y)
+          vec_max.y = vertex.y;
+      }
+    }
+    return new THREE.Box3(vec_min, vec_max);
+  }
 
   const Controls = (): JSX.Element => {
     const camera = useThree(({ camera }) => camera);
@@ -120,7 +137,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       camera.position.z = 5;
       camera.updateProjectionMatrix();
 
-      const bb: THREE.Box3 = building.computeBoundingBox();
+      const bb: THREE.Box3 = computeBoundingBox();
       // todo: don't create this new every time
       const target = new THREE.Vector3(
         (bb.min.x + bb.max.x) / 2.0 / 50,
@@ -141,7 +158,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
     }
   }
 
-  //console.log('EditorScene');
+  console.log('EditorScene');
   return (
     <Canvas
       frameloop="demand"
@@ -153,7 +170,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <axesHelper />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      {building.levels.map((level) => <SceneLevel key={level.uuid} uuid={level.uuid} />)}
+      {building.levels.map((level) => <SceneLevel key={level.uuid} level={level} />)}
     </Canvas>
   )
 }

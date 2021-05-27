@@ -1,15 +1,16 @@
 import React from 'react'
-import * as THREE from 'three'
-import { Vertex, Floor } from './Building';
-import { useStore } from './BuildingStore';
+//import * as THREE from 'three'
+//import { Vertex, Floor } from './Building';
+//import { useStore } from './EditorStore';
 
 type SceneFloorProps = {
-  floor: Floor;
-  vertices: Vertex[];
+  //floor: EditorFloor;
+  //vertices: Vertex[];
   elevation: number;
 }
 
 export function SceneFloor(props: SceneFloorProps): JSX.Element {
+  /*
   console.log('SceneFloor uuid=' + props.floor.uuid);
 
   const building = useStore(state => state.building);
@@ -47,6 +48,8 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
       <meshStandardMaterial color={'#ffffff'} />
     </mesh>
   );
+  */
+  return <div>ahhh</div>;
 
   /*
   return (
