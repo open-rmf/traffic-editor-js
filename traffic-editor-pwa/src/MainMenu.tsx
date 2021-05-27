@@ -9,8 +9,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { BuildingContext } from './BuildingContext';
+//import { BuildingContext } from './BuildingContext';
 import { Building } from './Building';
+import { useStore } from './BuildingStore';
 import OpenDialog from './OpenDialog';
 
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
@@ -78,15 +79,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Element {
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  const { updateBuilding } = React.useContext(BuildingContext);
+  //const { updateBuilding } = React.useContext(BuildingContext);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [editorMode, setEditorMode] = React.useState<string>('2d');
+  const replaceBuilding = useStore(state => state.replace);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
       setEditorMode(newMode);
   };
-
 
   return (
     <AppBar position="fixed">
@@ -111,7 +112,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         >
           <MenuItem
             onClick={async () => {
-              updateBuilding(await Building.fromURL('http://localhost:8000/map_file'));
+              replaceBuilding(await Building.fromURL('http://localhost:8000/map_file'));
               setMenuAnchorEl(null);
             }}
           >
@@ -119,7 +120,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           </MenuItem>
           <MenuItem
             onClick={async () => {
-              updateBuilding(await Building.fromDemo('office'));
+              replaceBuilding(await Building.fromDemo('office'));
               setMenuAnchorEl(null);
             }}
           >

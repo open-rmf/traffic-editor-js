@@ -1,16 +1,16 @@
 import React from 'react'
 import * as THREE from 'three'
-import { Vertex, Floor } from './Building';
+import { Vertex } from './Building';
 import { useStore } from './BuildingStore';
 
-type SceneFloorProps = {
-  floor: Floor;
-  vertices: Vertex[];
-  elevation: number;
+type SceneVertexProps = {
+  uuid: string;
 }
 
-export function SceneFloor(props: SceneFloorProps): JSX.Element {
-  console.log('SceneFloor uuid=' + props.floor.uuid);
+/*
+export function SceneVertex(props: SceneVertexProps): JSX.Element {
+  console.log('SceneVertex uuid=' + props.uuid);
+  const vertex = useStore(state => state.building.levels.find((level) => (level.uuid === props.uuid)));
 
   const building = useStore(state => state.building);
   const replaceBuilding = useStore(state => state.replace);
@@ -48,12 +48,5 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
     </mesh>
   );
 
-  /*
-  return (
-    <gridHelper
-      args={[100, 100]}
-      rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
-      position={new THREE.Vector3(50, -50, elevation)}/>
-  );
-   */
 }
+*/

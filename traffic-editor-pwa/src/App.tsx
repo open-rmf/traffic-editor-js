@@ -4,9 +4,9 @@ import Grid from '@material-ui/core/Grid';
 
 import BuildingSummary from './BuildingSummary';
 //import { BuildingContext } from './BuildingContext';
-import { useStore } from './BuildingStore';
-import { Building } from './Building';
-import { SceneWrapper } from './EditorScene';
+//import { useStore } from './BuildingStore';
+//import { Building } from './Building';
+import { EditorScene } from './EditorScene';
 import PropertyEditor from './PropertyEditor';
 import MainMenu from './MainMenu';
 
@@ -59,7 +59,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           </Grid>
         </Grid>
         <Grid item xs={9} className={classes.workingArea}>
-          <SceneWrapper mode={editorMode} />
+          <EditorScene mode={editorMode} />
         </Grid>
       </Grid>
     </div>

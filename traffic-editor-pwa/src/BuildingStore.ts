@@ -1,7 +1,13 @@
 import create from 'zustand';
 import { Building } from './Building';
 
-export const useStore = create(set => ({
+
+interface BuildingStoreState {
+  building: Building,
+  replace: (nextBuilding: Building) => void
+}
+
+export const useStore = create<BuildingStoreState>(set => ({
   building: new Building(),
   replace: (nextBuilding: Building) => set(state => ({ building: nextBuilding })),
 }))

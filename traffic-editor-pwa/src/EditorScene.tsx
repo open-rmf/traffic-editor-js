@@ -6,20 +6,30 @@ import { MapControls, OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
 import { Lane, Level, Vertex, Wall } from './Building';
-import { BuildingContext } from './BuildingContext';
-import { SceneFloor } from './SceneFloor';
+//import { BuildingContext } from './BuildingContext';
+import { useStore } from './BuildingStore';
+import { SceneLevel } from './SceneLevel';
 
 type EditorSceneProps = {
   mode: string;
 };
 
-export default function EditorScene(props: EditorSceneProps): JSX.Element {
-  const { building, updateBuilding } = React.useContext(BuildingContext);
+export function EditorScene(props: EditorSceneProps): JSX.Element {
+  //const { building, updateBuilding } = React.useContext(BuildingContext);
+  const building = useStore(state => state.building);
+  const replaceBuilding = useStore(state => state.replace);
 
   const renderVertex = (vertex: Vertex, elevation: number): JSX.Element => {
     const x = vertex.x / 50.0;
     const y = vertex.y / 50.0;
     // todo: consider troika-three-text for rendering the labels?
+    /*
+        .shallowCopy());
+     */
+    let color = "rgb(0, 128, 0)";
+    if (building.selection && building.selection.uuid === vertex.uuid) {
+      color = "rgb(255, 100, 10)";
+    }
     return (
       <mesh
         position={[x, y, 0.25 + elevation]}
@@ -27,12 +37,14 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
         key={vertex.uuid}
         onClick={(event) => {
+          event.stopPropagation();
+          console.log('vertex onClick');
           building.selection = vertex;
-          updateBuilding(building.shallowCopy());
+          replaceBuilding(building.shallowCopy());
         }}
       >
         <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
-        <meshStandardMaterial color={'green'} />
+        <meshStandardMaterial color={color} />
       </mesh>
     );
   }
@@ -85,22 +97,6 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
     );
   }
 
-  const renderLevel = (level: Level): JSX.Element[] => {
-    const z = level.elevation / 2;
-    const vertices = level.vertices.map((vertex) => renderVertex(vertex, z));
-    const walls = level.walls.map((wall) => renderWall(wall, level.vertices, z));
-    const lanes = level.lanes.map((lane) => renderLane(lane, level.vertices, z));
-    const floors: JSX.Element[] = level.floors.map((floor) => (
-      <SceneFloor key={floor.uuid} floor={floor} vertices={level.vertices} elevation={z} />
-    ));
-    return [
-      ...vertices,
-      ...walls,
-      ...lanes,
-      ...floors
-    ];
-  }
-
   const Controls = (): JSX.Element => {
     const camera = useThree(({ camera }) => camera);
     camera.up = new THREE.Vector3(0, 0, 1);
@@ -145,15 +141,20 @@ export default function EditorScene(props: EditorSceneProps): JSX.Element {
     }
   }
 
-  console.log('EditorScene');
+  //console.log('EditorScene');
   return (
-    <>
+    <Canvas
+      frameloop="demand"
+      onPointerMissed={() => {
+        console.log("onPointerMissed");
+      }}
+    >
       <Controls />
       <axesHelper />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      {building.levels.map((level) => renderLevel(level))}
-    </>
+      {building.levels.map((level) => <SceneLevel key={level.uuid} uuid={level.uuid} />)}
+    </Canvas>
   )
 }
 
@@ -176,47 +177,3 @@ function EditorCamera(props: any) {
   }
 }
 */
-
-export function SceneWrapper(props: EditorSceneProps): JSX.Element {
-  //const { building, updateBuilding } = React.useContext(BuildingContext);
-
-  /*
-  const EditorCanvas = (canvasProps: any) => {
-    console.log('EditorCanvas');
-    if (props.mode === '3d') {
-      return (
-        <Canvas
-          frameloop = "demand"
-        >
-          {canvasProps ? canvasProps.children : <></>}
-        </Canvas>
-      );
-    }
-    else {
-      return (
-        <Canvas
-          frameloop = "demand"
-          orthographic
-        >
-          {canvasProps ? canvasProps.children : <></>}
-        </Canvas>
-      );
-    }
-  }
-   */
-
-  //<EditorCanvas>
-  console.log('SceneWrapper');
-  return (
-    <BuildingContext.Consumer>
-      {context => (
-        <Canvas frameloop="demand">
-          <BuildingContext.Provider value={context}>
-            <EditorScene mode={props.mode} />
-          </BuildingContext.Provider>
-        </Canvas>
-      )}
-    </BuildingContext.Consumer>
-  )
-  //</EditorCanvas>
-}
