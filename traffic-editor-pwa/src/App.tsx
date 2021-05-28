@@ -43,8 +43,6 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
   //const [building, updateBuilding] = React.useState<Building>(new Building());
   const classes = useStyles(props);
 
-  const editorMode = '3d'; // todo, re-connect this once the webGL context-loss is fixed
-
   return (
     <div className={classes.root}>
       <MainMenu />
@@ -59,7 +57,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           </Grid>
         </Grid>
         <Grid item xs={9} className={classes.workingArea}>
-          <EditorScene mode={editorMode} />
+          <EditorScene />
         </Grid>
       </Grid>
     </div>

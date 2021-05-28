@@ -1,55 +1,56 @@
 import React from 'react'
-//import * as THREE from 'three'
-//import { Vertex, Floor } from './Building';
-//import { useStore } from './EditorStore';
+import * as THREE from 'three'
+import { useStore, EditorVertex, EditorFloor } from './EditorStore';
 
 type SceneFloorProps = {
-  //floor: EditorFloor;
-  //vertices: Vertex[];
+  floor: EditorFloor;
+  vertices: EditorVertex[];
   elevation: number;
 }
 
 export function SceneFloor(props: SceneFloorProps): JSX.Element {
-  /*
-  console.log('SceneFloor uuid=' + props.floor.uuid);
+  const selection = useStore(state => state.selection)
+  const setSelection = useStore(state => state.setSelection)
 
-  const building = useStore(state => state.building);
-  const replaceBuilding = useStore(state => state.replace);
   const shape = React.useMemo(() => {
-    console.log('creating shape');
     const shape = new THREE.Shape();
     let started = false;
-    for (const vertex_idx of props.floor.vertex_indices) {
-      const v = props.vertices[vertex_idx];
+
+    for (const v of props.vertices) {
       if (!started)
       {
-        shape.moveTo(v.x / 50, v.y / 50);
-        started = true;
+        shape.moveTo(v.x / 50, v.y / 50)
+        started = true
       }
       else
-        shape.lineTo(v.x / 50, v.y / 50);
+        shape.lineTo(v.x / 50, v.y / 50)
     }
-    const v0 = props.vertices[props.floor.vertex_indices[0]];
-    shape.lineTo(v0.x / 50, v0.y / 50);
-    return shape;
-  }, [props.floor, props.vertices]);
+    const v0 = props.vertices[0]
+    shape.lineTo(v0.x / 50, v0.y / 50)
+    return shape
+  }, [props.vertices])
+
+  const color: THREE.Color = React.useMemo(() => {
+    let color = new THREE.Color(1, 1, 1)
+    if (selection && selection.uuid === props.floor.uuid) {
+      color.setRGB(1, 0.4, 0.1)
+    }
+    return color;
+  }, [selection, props.floor.uuid]);
 
   return (
     <mesh
       key={props.floor.uuid}
       onClick={(event) => {
-        event.stopPropagation();
-        console.log('floor onClick');
-        building.selection = props.floor;
-        replaceBuilding(building.shallowCopy());
+        event.stopPropagation()
+        console.log('floor onClick')
+        setSelection(props.floor)
       }}
     >
       <extrudeGeometry args={[shape, { 'depth': 0.1, 'bevelEnabled': false } ]} />
-      <meshStandardMaterial color={'#ffffff'} />
+      <meshStandardMaterial color={color} />
     </mesh>
   );
-  */
-  return <div>ahhh</div>;
 
   /*
   return (

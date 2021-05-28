@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+/*
 import YAML from 'yaml'
 import { EditorObject } from './EditorObject';
 import { ParamArrayFromYAML } from './Param';
@@ -167,3 +168,4 @@ export class Building extends EditorObject {
     return (this.name ? true : false);
   }
 }
+*/

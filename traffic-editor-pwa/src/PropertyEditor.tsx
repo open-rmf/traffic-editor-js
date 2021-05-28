@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { BuildingContext } from './BuildingContext';
+import { useStore } from './EditorStore';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,7 +8,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  noBuildingDiv: {
+  noSelectionDiv: {
   },
   table: {
     padding: '0px',
@@ -34,25 +34,13 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default function PropertyEditor(): JSX.Element {
   const classes = useStyles();
-  const { building } = React.useContext(BuildingContext);
+  const selection = useStore(state => state.selection);
 
-  console.log('PropertyEditor()');
-
-  if (!building.valid()) {
-    return (
-      <div className={classes.noBuildingDiv}>
-      </div>
-    );
+  if (!selection) {
+    return (<div className={classes.noSelectionDiv}></div>);
   }
 
-  if (!building.selection) {
-    return (
-      <div className={classes.noBuildingDiv}>
-      </div>
-    );
-  }
-
-  let rows = building.selection.params.map((param) => (
+  let rows = selection.params.map((param) => (
     <TableRow>
       <TableCell className={classes.tableCell}>{param.name}</TableCell>
       <TableCell className={classes.tableCell}>{param.value.toString()}</TableCell>

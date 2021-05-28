@@ -9,9 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-//import { BuildingContext } from './BuildingContext';
-//import { Building } from './Building';
-//import { useStore } from './BuildingStore';
+import { useStore } from './EditorStore';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
 
@@ -80,10 +78,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Element {
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  //const { updateBuilding } = React.useContext(BuildingContext);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
-  const [editorMode, setEditorMode] = React.useState<string>('2d');
-  //const replaceBuilding = useStore(state => state.replace);
+  const editorMode = useStore(state => state.editorMode);
+  const setEditorMode = useStore(state => state.setEditorMode);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null)
@@ -121,7 +118,6 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           </MenuItem>
           <MenuItem
             onClick={async () => {
-              //replaceBuilding(await Building.fromDemo('office'));
               await YAMLRetrieveDemo('office');
               setMenuAnchorEl(null);
             }}

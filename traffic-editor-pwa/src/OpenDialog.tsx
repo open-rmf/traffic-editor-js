@@ -12,8 +12,8 @@ import MapIcon from '@material-ui/icons/Map';
 
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { Building } from './Building';
-import { BuildingContext } from './BuildingContext';
+//import { Building } from './Building';
+//import { BuildingContext } from './BuildingContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   directoryButton: {
@@ -36,7 +36,7 @@ type OpenDialogProps = {
 
 export default function OpenDialog(props: OpenDialogProps): JSX.Element {
   const classes = useStyles(props);
-  const { updateBuilding } = React.useContext(BuildingContext);
+  //const { updateBuilding } = React.useContext(BuildingContext);
   const [buildingFileNames, setBuildingFileNames] = React.useState<string[]>([]);
   const [directoryHandle, setDirectoryHandle] = React.useState<FileSystemDirectoryHandle>();
 
@@ -55,7 +55,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
       const fileHandle = await directoryHandle.getFileHandle(filename);
       const file = await fileHandle.getFile();
       const text = await file.text();
-      updateBuilding(Building.fromYAML(text));
+      //updateBuilding(Building.fromYAML(text));
     }
     props.onOpen();
   }
