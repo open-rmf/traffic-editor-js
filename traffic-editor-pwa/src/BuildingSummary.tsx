@@ -1,16 +1,15 @@
 import React from 'react';
-//import { Level, Vertex, Wall, Floor } from './Building';
 //import { Param } from './Param';
 //import { BuildingContext } from './BuildingContext';
-import { useStore, EditorLevel, EditorVertex, EditorParam } from './EditorStore'
+import { useStore, EditorWall, EditorLane, EditorFloor, EditorLevel, EditorVertex, EditorParam } from './EditorStore'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 export default function BuildingSummary(): JSX.Element {
-  //const { building } = React.useContext(BuildingContext);
-  const building = useStore(state => state.building)
+  const building = useStore(state => state.building);
+  const setSelection = useStore(state => state.setSelection);
   
   //if (!building.valid()) {
   if (building.name === '') {
@@ -26,8 +25,7 @@ export default function BuildingSummary(): JSX.Element {
     );
   }
  
-  /*
-  const renderFloor = (floor: Floor): JSX.Element => {
+  const renderFloor = (floor: EditorFloor): JSX.Element => {
     let label = 'floor (';
     label += floor.vertex_indices.map((idx) => idx.toString()).join(', ') + ')';
     return(
@@ -35,23 +33,42 @@ export default function BuildingSummary(): JSX.Element {
         nodeId={floor.uuid}
         key={floor.uuid}
         label={label}
+        onClick={(event) => {
+          setSelection(floor);
+        }}
       >
         {floor.params.map((param) => renderParam(param))}
       </TreeItem>
     );
   }
 
-  const renderWall = (wall: Wall): JSX.Element => {
+  const renderWall = (wall: EditorWall): JSX.Element => {
     let label = `(${wall.start_idx} => ${wall.end_idx})`;
     return(
       <TreeItem
         nodeId={wall.uuid}
         key={wall.uuid}
+        onClick={(event) => {
+          setSelection(wall);
+        }}
         label={label} />
     );
   }
 
-  */
+  const renderLane = (lane: EditorLane): JSX.Element => {
+    let label = `(${lane.start_idx} => ${lane.end_idx})`;
+    return(
+      <TreeItem
+        nodeId={lane.uuid}
+        key={lane.uuid}
+        label={label}
+        onClick={(event) => {
+          setSelection(lane);
+        }}
+      />
+    );
+  }
+
   const renderParam = (param: EditorParam): JSX.Element => {
     return (
       <TreeItem
@@ -69,6 +86,9 @@ export default function BuildingSummary(): JSX.Element {
       <TreeItem
         nodeId={vertex.uuid}
         key={vertex.uuid}
+        onClick={(event) => {
+          setSelection(vertex);
+        }}
         label={label}>
         {vertex.params.map((param) => renderParam(param))}
       </TreeItem>
@@ -81,18 +101,18 @@ export default function BuildingSummary(): JSX.Element {
         <TreeItem nodeId={level.uuid + '_vertices'} label="vertices">
           {level.vertices.map((vertex) => renderVertex(vertex))}
         </TreeItem>
-      </TreeItem>
-    );
-  }
-  /*
+        <TreeItem nodeId={level.uuid + '_lanes'} label="lanes">
+          {level.lanes.map((lane) => renderLane(lane))}
+        </TreeItem>
         <TreeItem nodeId={level.uuid + '_walls'} label="walls">
           {level.walls.map((wall) => renderWall(wall))}
         </TreeItem>
         <TreeItem nodeId={level.uuid + '_floors'} label="floors">
           {level.floors.map((floor) => renderFloor(floor))}
         </TreeItem>
-  */
-
+      </TreeItem>
+    );
+  }
 
   // defaultExpanded={[building.uuid + '_levels']}
   return (

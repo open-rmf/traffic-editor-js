@@ -3,9 +3,6 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
 import BuildingSummary from './BuildingSummary';
-//import { BuildingContext } from './BuildingContext';
-//import { useStore } from './BuildingStore';
-//import { Building } from './Building';
 import { EditorScene } from './EditorScene';
 import PropertyEditor from './PropertyEditor';
 import MainMenu from './MainMenu';
@@ -40,7 +37,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
-  //const [building, updateBuilding] = React.useState<Building>(new Building());
   const classes = useStyles(props);
 
   return (
@@ -49,10 +45,10 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
       <div className={classes.toolbarMargin} />
       <Grid container spacing={0}>
         <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
-          <Grid item style={{height: '40vh'}}>
+          <Grid item style={{height: '40vh', overflow: 'auto'}}>
             <BuildingSummary />
           </Grid>
-          <Grid item className={classes.propertyGridItem} style={{height: '40vh'}}>
+          <Grid item className={classes.propertyGridItem} style={{height: '40vh', overflow: 'auto'}}>
             <PropertyEditor />
           </Grid>
         </Grid>
