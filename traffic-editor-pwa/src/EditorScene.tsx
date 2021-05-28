@@ -62,6 +62,10 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
                 MIDDLE: THREE.MOUSE.PAN,
                 RIGHT: THREE.MOUSE.ROTATE,
               }}
+              touches={{
+                ONE: THREE.TOUCH.PAN,
+                TWO: THREE.TOUCH.ROTATE
+              }}
             />
             : orthographic_camera && <OrbitControls
               enableDamping={false}
@@ -74,6 +78,10 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
                 LEFT: -1,
                 MIDDLE: THREE.MOUSE.PAN,
                 RIGHT: -1,
+              }}
+              touches={{
+                ONE: THREE.TOUCH.PAN,
+                TWO: THREE.TOUCH.ROTATE
               }}
             />
         }
