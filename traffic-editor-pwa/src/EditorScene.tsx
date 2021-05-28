@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import { Canvas, useThree } from '@react-three/fiber'
-import React, { useState, useRef } from 'react'
+import { Canvas } from '@react-three/fiber'
+import React, { useRef } from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
@@ -14,7 +14,6 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   const building = useStore(state => state.building);
   const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
-  const [editorCamera, setEditorCamera] = useState();
 
   function computeBoundingBox(): THREE.Box3 {
     let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
