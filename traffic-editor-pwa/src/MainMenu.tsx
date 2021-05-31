@@ -86,6 +86,24 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     }
   }
 
+  React.useEffect(() => {
+    const keyDown = (event: KeyboardEvent) => {
+      let key = event.key.toLowerCase();
+      if (key === 'm') {
+        setActiveTool(EditorToolID.MOVE);
+        clearSelection();
+      } else if (key === 'escape') {
+        setActiveTool(EditorToolID.SELECT);
+        clearSelection();
+      }
+    };
+
+    window.addEventListener('keydown', keyDown);
+    return () => {
+      window.removeEventListener('keydown', keyDown);
+    };
+  }, [setActiveTool, clearSelection]);
+
   return (
     <AppBar position="fixed">
       <ToolBar>
