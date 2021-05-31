@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { MapControls, OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
-import { useStore } from './EditorStore';
+import { useStore, clearSelection } from './EditorStore';
 import { SceneLevel } from './SceneLevel';
 
 type EditorSceneProps = {
@@ -12,7 +12,8 @@ type EditorSceneProps = {
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
   const building = useStore(state => state.building);
-  const clearSelection = useStore(state => state.clearSelection);
+  const setStore = useStore(state => state.set);
+  //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
 
   function computeBoundingBox(): THREE.Box3 {
@@ -93,12 +94,13 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
     );
   }
 
+  console.log('EditorScene()');
   return (
     <Canvas
       frameloop="demand"
       onPointerMissed={() => {
         console.log("onPointerMissed");
-        clearSelection();
+        clearSelection(setStore);
       }}
     >
       <Controls />

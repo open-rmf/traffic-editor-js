@@ -1,6 +1,6 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorLane } from './EditorStore';
+import { useStore, EditorVertex, EditorLane, setSelection } from './EditorStore';
 
 interface SceneLaneProps {
   vertex_start: EditorVertex,
@@ -11,7 +11,8 @@ interface SceneLaneProps {
 
 export function SceneLane(props: SceneLaneProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setSelection = useStore(state => state.setSelection)
+  const setStore = useStore(state => state.set);
+  //const setSelection = useStore(state => state.setSelection)
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -38,7 +39,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       key={props.lane.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(props.lane);
+        setSelection(setStore, props.lane);
       }}
     >
       <boxGeometry args={[len, 1.0, 0.1]} />

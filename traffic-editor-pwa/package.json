@@ -17,6 +17,7 @@
     "@types/react-dom": "^17.0.3",
     "@types/three": "^0.127.1",
     "@types/wicg-file-system-access": "^2020.9.1",
+    "immer": "^9.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",

@@ -1,6 +1,7 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import ToolBar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -9,7 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { useStore, EditorToolID } from './EditorStore';
+import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './EditorStore';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
@@ -66,23 +67,24 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
+  const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
-  const setEditorMode = useStore(state => state.setEditorMode);
   const activeTool = useStore(state => state.activeTool);
-  const setActiveTool = useStore(state => state.setActiveTool);
-  const clearSelection = useStore(state => state.clearSelection);
+  //const setEditorMode = useStore(state => state.setEditorMode);
+  //const setActiveTool = useStore(state => state.setActiveTool);
+  //const clearSelection = useStore(state => state.clearSelection);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null) {
-      setEditorMode(newMode);
-      clearSelection();
+      setEditorMode(setStore, newMode);
+      clearSelection(setStore);
     }
   };
 
   const onToolChange = (event: React.MouseEvent<HTMLElement>, newTool: EditorToolID | null) => {
     if (newTool !== null) {
-      setActiveTool(newTool);
-      clearSelection();
+      setActiveTool(setStore, newTool);
+      clearSelection(setStore);
     }
   }
 
@@ -90,11 +92,11 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     const keyDown = (event: KeyboardEvent) => {
       let key = event.key.toLowerCase();
       if (key === 'm') {
-        setActiveTool(EditorToolID.MOVE);
-        clearSelection();
+        setActiveTool(setStore, EditorToolID.MOVE);
+        clearSelection(setStore);
       } else if (key === 'escape') {
-        setActiveTool(EditorToolID.SELECT);
-        clearSelection();
+        setActiveTool(setStore, EditorToolID.SELECT);
+        clearSelection(setStore);
       }
     };
 
@@ -102,7 +104,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     return () => {
       window.removeEventListener('keydown', keyDown);
     };
-  }, [setActiveTool, clearSelection]);
+  }, [setStore]);
 
   return (
     <AppBar position="fixed">
@@ -161,8 +163,16 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           onChange={onToolChange}
           aria-label="tool"
         >
-          <ToggleButton value={EditorToolID.SELECT}><PanToolIcon /></ToggleButton>
-          <ToggleButton value={EditorToolID.MOVE}><OpenWithIcon /></ToggleButton>
+          <ToggleButton value={EditorToolID.SELECT}>
+            <Tooltip title="Select tool [Escape]">
+              <PanToolIcon />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton value={EditorToolID.MOVE}>
+            <Tooltip title="Move tool [m]">
+              <OpenWithIcon />
+            </Tooltip>
+          </ToggleButton>
         </StyledToggleButtonGroup>
         <StyledToggleButtonGroup
           value={editorMode}

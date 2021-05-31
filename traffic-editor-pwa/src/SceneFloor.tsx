@@ -1,6 +1,6 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorFloor } from './EditorStore';
+import { useStore, EditorVertex, EditorFloor, setSelection } from './EditorStore';
 
 type SceneFloorProps = {
   floor: EditorFloor;
@@ -10,7 +10,8 @@ type SceneFloorProps = {
 
 export function SceneFloor(props: SceneFloorProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setSelection = useStore(state => state.setSelection)
+  const setStore = useStore(state => state.set);
+  //const setSelection = useStore(state => state.setSelection)
 
   const shape = React.useMemo(() => {
     const shape = new THREE.Shape();
@@ -44,7 +45,7 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
       onClick={(event) => {
         event.stopPropagation()
         console.log('floor onClick')
-        setSelection(props.floor)
+        setSelection(setStore, props.floor)
       }}
     >
       <extrudeGeometry args={[shape, { 'depth': 0.1, 'bevelEnabled': false } ]} />

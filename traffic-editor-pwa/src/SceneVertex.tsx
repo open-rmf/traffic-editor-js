@@ -1,15 +1,19 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex } from './EditorStore';
+import { useStore, EditorVertex, EditorToolID, setSelection, updateVertexPoint } from './EditorStore';
 
 interface SceneVertexProps {
   vertex: EditorVertex,
   elevation: number,
+  level_uuid: string,
 }
 
 export function SceneVertex(props: SceneVertexProps): JSX.Element {
-  const selection = useStore(state => state.selection)
-  const setSelection = useStore(state => state.setSelection)
+  const selection = useStore(state => state.selection);
+  //const setSelection = useStore(state => state.setSelection);
+  const setStore = useStore(state => state.set);
+  const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
+  const [ dragActive, setDragActive ] = React.useState(false);
 
   const x = props.vertex.x / 50.0;
   const y = props.vertex.y / 50.0;
@@ -27,7 +31,34 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
       key={props.vertex.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(props.vertex);
+        setSelection(setStore, props.vertex);
+      }}
+      onPointerDown={(event) => {
+        if (!isMoveToolActive)
+          return;
+        event.stopPropagation();
+        setDragActive(true);
+        if (event.target) {
+          (event.target as HTMLElement).setPointerCapture(event.pointerId);
+        }
+      }}
+      onPointerUp={(event) => {
+        event.stopPropagation();
+        setDragActive(false);
+        if (event.target) {
+          (event.target as HTMLElement).releasePointerCapture(event.pointerId);
+        }
+      }}
+      onPointerMove={(event) => {
+        if (dragActive) {
+          event.stopPropagation();
+          //onDrag(event.unprojectedPoint);
+          const px = event.unprojectedPoint.x * 50;
+          const py = event.unprojectedPoint.y * 50;
+          //const pz = event.unprojectedPoint.z;
+          updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);
+          //console.log(`onPointerMove uuid=${props.vertex.uuid} point=[${px}, ${py}, ${pz}]`);
+        }
       }}
     >
       <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />

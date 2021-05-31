@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStore, EditorWall, EditorLane, EditorFloor, EditorLevel, EditorVertex, EditorParam } from './EditorStore'
+import { useStore, EditorWall, EditorLane, EditorFloor, EditorLevel, EditorVertex, EditorParam, setSelection } from './EditorStore'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -7,7 +7,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 export default function BuildingSummary(): JSX.Element {
   const building = useStore(state => state.building);
-  const setSelection = useStore(state => state.setSelection);
+  const setStore = useStore(state => state.set);
 
   if (building.name === '') {
     return (
@@ -31,7 +31,7 @@ export default function BuildingSummary(): JSX.Element {
         key={floor.uuid}
         label={label}
         onClick={(event) => {
-          setSelection(floor);
+          setSelection(setStore, floor);
         }}
       >
         {floor.params.map((param) => renderParam(param))}
@@ -46,7 +46,7 @@ export default function BuildingSummary(): JSX.Element {
         nodeId={wall.uuid}
         key={wall.uuid}
         onClick={(event) => {
-          setSelection(wall);
+          setSelection(setStore, wall);
         }}
         label={label} />
     );
@@ -60,7 +60,7 @@ export default function BuildingSummary(): JSX.Element {
         key={lane.uuid}
         label={label}
         onClick={(event) => {
-          setSelection(lane);
+          setSelection(setStore, lane);
         }}
       />
     );
@@ -84,7 +84,7 @@ export default function BuildingSummary(): JSX.Element {
         nodeId={vertex.uuid}
         key={vertex.uuid}
         onClick={(event) => {
-          setSelection(vertex);
+          setSelection(setStore, vertex);
         }}
         label={label}>
         {vertex.params.map((param) => renderParam(param))}

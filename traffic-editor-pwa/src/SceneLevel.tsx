@@ -19,6 +19,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
       <SceneVertex
         key={vertex.uuid}
         vertex={vertex}
+        level_uuid={props.level.uuid}
         elevation={z} />
     );
 

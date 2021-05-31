@@ -1,4 +1,5 @@
 import create from 'zustand';
+import produce from 'immer';
 
 export interface EditorParam {
   type_idx: number,
@@ -55,16 +56,23 @@ export interface EditorStoreState {
   building: EditorBuilding,
   selection: EditorObject | null,
   editorMode: string,
+  enableMotionControls: boolean,
+  activeTool: EditorToolID,
+  set: (fn: (draftState: EditorStoreState) => void) => void
+}
+/*
+
   setSelection: (newSelection: EditorObject) => void,
   clearSelection: () => void,
   setEditorMode: (newEditorMode: string) => void,
 
-  enableMotionControls: boolean,
   setEnableMotionControls: (newEnableMotionControls: boolean) => void,
 
-  activeTool: EditorToolID,
   setActiveTool: (newActiveTool: EditorToolID) => void,
+
+  //updateVertexPoint: (level_uuid: string, vertex_uuid: string, x: number, y:number) => void,
 }
+*/
 
 export const useStore = create<EditorStoreState>(set => ({
   building: {
@@ -74,15 +82,77 @@ export const useStore = create<EditorStoreState>(set => ({
     uuid: '',
   },
   selection: null,
+  editorMode: '2d',
+  enableMotionControls: true,
+  activeTool: EditorToolID.SELECT,
+  set: fn => set(produce(fn)),
+}));
+
+type StoreSetter = (fn: (draftState: EditorStoreState) => void) => void;
+
+export function setSelection(setStore: StoreSetter, newSelection: EditorObject) {
+  setStore(state => {
+    state.selection = newSelection;
+  });
+}
+
+export function clearSelection(setStore: StoreSetter) {
+  setStore(state => {
+    state.selection = null;
+  });
+}
+
+export function setEditorMode(setStore: StoreSetter, newMode: string) {
+  setStore(state => {
+    state.editorMode = newMode;
+  });
+}
+
+export function setActiveTool(setStore: StoreSetter, newTool: EditorToolID) {
+  setStore(state => {
+    state.activeTool = newTool;
+  });
+}
+
+export function updateVertexPoint(
+  setStore: StoreSetter,
+  level_uuid: string,
+  vertex_uuid: string,
+  x: number,
+  y: number) {
+  setStore(state => {
+    state.building.levels.map(level => {
+      if (level.uuid === level_uuid) {
+        level.vertices.map(vertex => {
+          if (vertex.uuid === vertex_uuid) {
+            vertex.x = x;
+            vertex.y = y;
+            return vertex;
+          }
+          return vertex;
+        })
+        return level;
+      }
+      return level;
+    })
+  });
+}
+
+/*
+  const setStoreState = useStore(state => state.set);
+  const setSelection = useStore(state => state.setSelection);
+*/
+
+/*
   setSelection: (newSelection: EditorObject) => set(state => ({ selection: newSelection })),
   clearSelection: () => set(state => ({ selection: null })),
 
-  editorMode: '2d',
   setEditorMode: (newEditorMode: string) => set(state => ({ editorMode: newEditorMode })),
 
-  enableMotionControls: true,
   setEnableMotionControls: (newEnableMotionControls: boolean) => set(state => ({ enableMotionControls: newEnableMotionControls })),
 
-  activeTool: EditorToolID.SELECT,
   setActiveTool: (newActiveTool: EditorToolID) => set(state => ({ activeTool: newActiveTool })),
+
+  //updateVertexPoint: (level_uuid: string, vertex_uuid: string, x: number, y:number) => set(state => {
 }))
+*/

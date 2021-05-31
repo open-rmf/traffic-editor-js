@@ -1,6 +1,6 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorWall } from './EditorStore';
+import { useStore, EditorVertex, EditorWall, setSelection } from './EditorStore';
 
 interface SceneWallProps {
   vertex_start: EditorVertex,
@@ -11,7 +11,8 @@ interface SceneWallProps {
 
 export function SceneWall(props: SceneWallProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setSelection = useStore(state => state.setSelection)
+  //const setSelection = useStore(state => state.setSelection)
+  const setStore = useStore(state => state.set);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -38,7 +39,7 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
       key={props.wall.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(props.wall);
+        setSelection(setStore, props.wall);
       }}
     >
       <boxGeometry args={[len, 0.1, 2]} />
