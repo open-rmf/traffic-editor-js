@@ -37,6 +37,8 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   const Controls = (): JSX.Element => {
     const perspective_camera = useRef<THREE.Camera>(null);
     const orthographic_camera = useRef<THREE.Camera>(null);
+    const enableMotionControls = useStore(state => state.enableMotionControls);
+
     THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
 
     // todo: don't create this new every time
@@ -66,6 +68,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
                 ONE: THREE.TOUCH.PAN,
                 TWO: THREE.TOUCH.ROTATE
               }}
+              enabled={enableMotionControls}
             />
             : orthographic_camera && <OrbitControls
               enableDamping={false}
@@ -83,6 +86,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
                 ONE: THREE.TOUCH.PAN,
                 TWO: THREE.TOUCH.ROTATE
               }}
+              enabled={enableMotionControls}
             />
         }
       </>

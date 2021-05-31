@@ -27,7 +27,6 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
       key={props.vertex.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        console.log('vertex onClick');
         setSelection(props.vertex);
       }}
     >

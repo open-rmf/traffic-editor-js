@@ -1,6 +1,4 @@
 import React from 'react';
-//import { Param } from './Param';
-//import { BuildingContext } from './BuildingContext';
 import { useStore, EditorWall, EditorLane, EditorFloor, EditorLevel, EditorVertex, EditorParam } from './EditorStore'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -10,8 +8,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 export default function BuildingSummary(): JSX.Element {
   const building = useStore(state => state.building);
   const setSelection = useStore(state => state.setSelection);
-  
-  //if (!building.valid()) {
+
   if (building.name === '') {
     return (
       <div style={{margin: '1em'}}>

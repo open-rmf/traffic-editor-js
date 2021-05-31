@@ -46,6 +46,11 @@ export interface EditorBuilding extends EditorObject {
   levels: EditorLevel[],
 }
 
+export enum EditorToolID {
+  SELECT,
+  MOVE,
+}
+
 export interface EditorStoreState {
   building: EditorBuilding,
   selection: EditorObject | null,
@@ -53,6 +58,12 @@ export interface EditorStoreState {
   setSelection: (newSelection: EditorObject) => void,
   clearSelection: () => void,
   setEditorMode: (newEditorMode: string) => void,
+
+  enableMotionControls: boolean,
+  setEnableMotionControls: (newEnableMotionControls: boolean) => void,
+
+  activeTool: EditorToolID,
+  setActiveTool: (newActiveTool: EditorToolID) => void,
 }
 
 export const useStore = create<EditorStoreState>(set => ({
@@ -66,6 +77,12 @@ export const useStore = create<EditorStoreState>(set => ({
   setSelection: (newSelection: EditorObject) => set(state => ({ selection: newSelection })),
   clearSelection: () => set(state => ({ selection: null })),
 
-  editorMode: '3d',
+  editorMode: '2d',
   setEditorMode: (newEditorMode: string) => set(state => ({ editorMode: newEditorMode })),
+
+  enableMotionControls: true,
+  setEnableMotionControls: (newEnableMotionControls: boolean) => set(state => ({ enableMotionControls: newEnableMotionControls })),
+
+  activeTool: EditorToolID.SELECT,
+  setActiveTool: (newActiveTool: EditorToolID) => set(state => ({ activeTool: newActiveTool })),
 }))

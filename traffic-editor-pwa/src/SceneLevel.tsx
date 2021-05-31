@@ -4,6 +4,7 @@ import { SceneVertex } from './SceneVertex';
 import { SceneWall } from './SceneWall';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
+import { useStore } from './EditorStore';
 
 type SceneLevelProps = {
   level: EditorLevel
@@ -11,6 +12,7 @@ type SceneLevelProps = {
 
 export function SceneLevel(props: SceneLevelProps): JSX.Element {
   const z = props.level.elevation / 2;
+  useStore(state => state.selection);  // needed to ensure repaints after de-selection
 
   const vertices =
     props.level.vertices.map((vertex) =>

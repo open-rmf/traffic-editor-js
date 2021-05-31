@@ -9,14 +9,17 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { useStore } from './EditorStore';
+import { useStore, EditorToolID } from './EditorStore';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
+import OpenWithIcon from '@material-ui/icons/OpenWith';
+import PanToolIcon from '@material-ui/icons/PanTool';
 
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
   root: {
     backgroundColor: theme.palette.primary.light,
-    padding: theme.spacing(0.5)
+    padding: theme.spacing(0.5),
+    marginRight: 5
   },
   grouped: {
     //marginRight: theme.spacing(0.5),
@@ -39,14 +42,10 @@ const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
       borderRadius: '5px',
     },
     */
-  }
+  },
 }))(ToggleButtonGroup);
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    minHeight: '100vh',
-  },
   flex: {
     flex: 1
   },
@@ -54,25 +53,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: -12,
     marginRight: 20
   },
-  toolbarMargin: theme.mixins.toolbar,
-  workingArea: {
-    backgroundColor: "black",
-    height: `calc(100vh - 64px)`,
+  appTitle: {
+    marginRight: 20
   },
-  mainGrid: {
-  },
-  gridLeftColumn: {
-    borderRight: '5px',
-    borderRightStyle: 'solid',
-    borderRightColor: theme.palette.primary.main,
-  },
-  propertyGridItem: {
-    borderTop: '5px',
-    borderTopStyle: 'solid',
-    borderTopColor: theme.palette.primary.main,
+  filler: {
+    flex: 1
   }
 }));
-
 
 
 export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Element {
@@ -81,11 +68,23 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const editorMode = useStore(state => state.editorMode);
   const setEditorMode = useStore(state => state.setEditorMode);
+  const activeTool = useStore(state => state.activeTool);
+  const setActiveTool = useStore(state => state.setActiveTool);
+  const clearSelection = useStore(state => state.clearSelection);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
-    if (newMode !== null)
+    if (newMode !== null) {
       setEditorMode(newMode);
+      clearSelection();
+    }
   };
+
+  const onToolChange = (event: React.MouseEvent<HTMLElement>, newTool: EditorToolID | null) => {
+    if (newTool !== null) {
+      setActiveTool(newTool);
+      clearSelection();
+    }
+  }
 
   return (
     <AppBar position="fixed">
@@ -133,9 +132,20 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
             Open map from local file...
           </MenuItem>
         </Menu>
-        <Typography variant="h6" color="inherit" className={classes.flex}>
+        <Typography variant="h6" color="inherit" className={classes.appTitle}>
           Traffic Editor
         </Typography>
+        <div className={classes.filler} />
+        <StyledToggleButtonGroup
+          value={activeTool}
+          size="small"
+          exclusive
+          onChange={onToolChange}
+          aria-label="tool"
+        >
+          <ToggleButton value={EditorToolID.SELECT}><PanToolIcon /></ToggleButton>
+          <ToggleButton value={EditorToolID.MOVE}><OpenWithIcon /></ToggleButton>
+        </StyledToggleButtonGroup>
         <StyledToggleButtonGroup
           value={editorMode}
           size="small"
