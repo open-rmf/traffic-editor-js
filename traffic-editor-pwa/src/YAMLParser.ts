@@ -6,9 +6,11 @@ import {
   EditorWall,
   EditorFloor,
   EditorLane,
-  EditorVertex } from './EditorStore'
+  EditorVertex,
+  CameraPose } from './EditorStore'
 import YAML from 'yaml'
 import { v4 as generate_uuid } from 'uuid'
+import * as THREE from 'three'
 
 function ParamArrayFactory(params_data: any): EditorParam[] {
   if (!params_data)
@@ -93,11 +95,50 @@ function BuildingFactory(yaml_text: string): EditorBuilding {
   return building
 }
 
+function computeBoundingBox(building: EditorBuilding): THREE.Box3 {
+  let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
+  let vec_max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+  for (const level of building.levels) {
+    for (const vertex of level.vertices) {
+      if (vertex.x < vec_min.x)
+        vec_min.x = vertex.x;
+      if (vertex.x > vec_max.x)
+        vec_max.x = vertex.x;
+
+      if (vertex.y < vec_min.y)
+        vec_min.y = vertex.y;
+      if (vertex.y > vec_max.y)
+        vec_max.y = vertex.y;
+    }
+  }
+  return new THREE.Box3(vec_min, vec_max);
+}
+
+export function computeInitialCameraPose(building: EditorBuilding): CameraPose {
+  const bb: THREE.Box3 = computeBoundingBox(building);
+  const target = new THREE.Vector3(
+    (bb.min.x + bb.max.x) / 2.0 / 50,
+    (bb.min.y + bb.max.y) / 2.0 / 50,
+    0.0);
+  const position = new THREE.Vector3(
+    target.x + 10,
+    target.y - 10,
+    target.z + 10);
+  return {
+    position: position,
+    target: target
+  };
+}
+
 export function YAMLParser(yaml_text: string): void {
+  const building = BuildingFactory(yaml_text);
+  const cameraInitialPose = computeInitialCameraPose(building);
+
   useStore.setState({
-    building: BuildingFactory(yaml_text),
-    selection: null
-  })
+    building: building,
+    selection: null,
+    cameraInitialPose: cameraInitialPose
+  });
 }
 
 export async function YAMLRetriever(uri: string): Promise<void> {

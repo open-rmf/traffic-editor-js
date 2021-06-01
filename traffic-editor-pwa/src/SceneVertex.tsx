@@ -10,8 +10,8 @@ interface SceneVertexProps {
 
 export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const selection = useStore(state => state.selection);
-  //const setSelection = useStore(state => state.setSelection);
   const setStore = useStore(state => state.set);
+  const editorMode = useStore(state => state.editorMode);
   const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
@@ -52,12 +52,16 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
       onPointerMove={(event) => {
         if (dragActive) {
           event.stopPropagation();
-          //onDrag(event.unprojectedPoint);
-          const px = event.unprojectedPoint.x * 50;
-          const py = event.unprojectedPoint.y * 50;
-          //const pz = event.unprojectedPoint.z;
-          updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);
-          //console.log(`onPointerMove uuid=${props.vertex.uuid} point=[${px}, ${py}, ${pz}]`);
+          if (editorMode === '2d') {
+            const px = event.unprojectedPoint.x * 50;
+            const py = event.unprojectedPoint.y * 50;
+            updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);
+          }
+          else {
+            let intersection_point = new THREE.Vector3();
+            event.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), props.elevation), intersection_point);
+            updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, intersection_point.x * 50, intersection_point.y * 50);
+          }
         }
       }}
     >

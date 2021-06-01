@@ -1,5 +1,6 @@
 import create from 'zustand';
 import produce from 'immer';
+import * as THREE from 'three';
 
 export interface EditorParam {
   type_idx: number,
@@ -52,12 +53,18 @@ export enum EditorToolID {
   MOVE,
 }
 
+export interface CameraPose {
+  position: THREE.Vector3,
+  target: THREE.Vector3
+}
+
 export interface EditorStoreState {
   building: EditorBuilding,
   selection: EditorObject | null,
   editorMode: string,
   enableMotionControls: boolean,
   activeTool: EditorToolID,
+  cameraInitialPose: CameraPose,
   set: (fn: (draftState: EditorStoreState) => void) => void
 }
 /*
@@ -85,6 +92,10 @@ export const useStore = create<EditorStoreState>(set => ({
   editorMode: '2d',
   enableMotionControls: true,
   activeTool: EditorToolID.SELECT,
+  cameraInitialPose: {
+    position: new THREE.Vector3(0, 0, 5),
+    target: new THREE.Vector3(0, 0, 0),
+  },
   set: fn => set(produce(fn)),
 }));
 
