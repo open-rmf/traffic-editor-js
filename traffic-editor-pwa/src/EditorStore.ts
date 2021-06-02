@@ -34,6 +34,14 @@ export interface EditorFloor extends EditorObject {
   vertex_indices: number[],
 }
 
+export interface EditorImage extends EditorObject {
+  filename: string,
+  offset: THREE.Vector3,
+  yaw: number,
+  scale: number,
+  isLegacyDefaultImage: boolean,
+}
+
 export interface EditorLevel extends EditorObject {
   name: string,
   elevation: number,
@@ -41,6 +49,7 @@ export interface EditorLevel extends EditorObject {
   walls: EditorWall[],
   floors: EditorFloor[],
   lanes: EditorLane[],
+  images: EditorImage[],
 }
 
 export interface EditorBuilding extends EditorObject {

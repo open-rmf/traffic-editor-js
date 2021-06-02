@@ -1,13 +1,15 @@
 import {
-  useStore,
+  CameraPose,
   EditorBuilding,
+  EditorFloor,
+  EditorImage,
+  EditorLane,
   EditorLevel,
   EditorParam,
-  EditorWall,
-  EditorFloor,
-  EditorLane,
   EditorVertex,
-  CameraPose } from './EditorStore'
+  EditorWall,
+  useStore,
+} from './EditorStore'
 import YAML from 'yaml'
 import { v4 as generate_uuid } from 'uuid'
 import * as THREE from 'three'
@@ -66,11 +68,26 @@ function LaneFactory(lane_data: any): EditorLane {
 }
 
 function LevelFactory(level_name: string, level_data: any): EditorLevel {
+  let images = new Array<EditorImage>();
+  if (level_data['drawing'] && level_data['drawing']['fileanme']) {
+    let image: EditorImage = {
+      filename: level_data['drawing']['filename'],
+      offset: new THREE.Vector3(0, 0, 0),
+      yaw: 0,
+      scale: 1,
+      isLegacyDefaultImage: true,
+      uuid: generate_uuid(),
+      params: Array<EditorParam>(),
+    }
+    images.push(image);
+  }
+
   return {
     uuid: generate_uuid(),
     name: level_name,
     elevation: level_data['elevation'],
     params: Array<EditorParam>(),
+    images: images,
     vertices: level_data['vertices'].map((vertex: any) => VertexFactory(vertex)),
     walls: level_data['walls'].map((wall: any) => WallFactory(wall)),
     floors: level_data['floors'].map((floor: any) => FloorFactory(floor)),
