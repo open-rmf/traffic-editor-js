@@ -1,5 +1,6 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
+import Divider from '@material-ui/core/Divider';
 import ToolBar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
@@ -8,6 +9,10 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './EditorStore';
@@ -15,6 +20,10 @@ import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
+
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import SaveIcon from '@material-ui/icons/Save';
+import CloseIcon from '@material-ui/icons/Close';
 
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
   root: {
@@ -67,6 +76,9 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
+  const [saveErrorOpen, setSaveErrorOpen] = React.useState(false);
+  const [mapType, setMapType] = React.useState('');
+  const [saveErrorMessage, setSaveErrorMessage] = React.useState('');
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
@@ -86,6 +98,27 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
       setActiveTool(setStore, newTool);
       clearSelection(setStore);
     }
+  }
+
+  const save = () => {
+    if (mapType === 'local_file') {
+      // do something
+      setSaveErrorMessage('Cannot save! Local file save not yet implemented.');
+      setSaveErrorOpen(true);
+    }
+    else if (mapType === 'local_rest') {
+      // do something else
+      setSaveErrorMessage('Cannot save! Local REST server save not yet implemented.');
+      setSaveErrorOpen(true);
+    }
+    else if (mapType === 'demo') {
+      setSaveErrorMessage('Cannot save! Demo maps are read-only.');
+      setSaveErrorOpen(true);
+    }
+  }
+
+  const saveErrorClose = () => {
+    setSaveErrorOpen(false);
   }
 
   React.useEffect(() => {
@@ -130,26 +163,58 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={async () => {
               await YAMLRetriever('http://localhost:8000/map_file');
+              setMapType('local_rest');
               setMenuAnchorEl(null);
             }}
           >
-            Open map from localhost:8000
+            <ListItemIcon>
+              <FolderOpenIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Open map from localhost:8000
+            </ListItemText>
           </MenuItem>
           <MenuItem
             onClick={async () => {
               await YAMLRetrieveDemo('office');
+              setMapType('demo');
               setMenuAnchorEl(null);
             }}
           >
-            Open demo map
+            <ListItemIcon>
+              <FolderOpenIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Open demo map
+            </ListItemText>
           </MenuItem>
           <MenuItem
             onClick={() => {
               setIsOpenDialogOpen(true);
+              setMapType('local_file');
               setMenuAnchorEl(null);
             }}
           >
-            Open map from local file...
+            <ListItemIcon>
+              <FolderOpenIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Open map from local file...
+            </ListItemText>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              save();
+              setMenuAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <SaveIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Save
+            </ListItemText>
           </MenuItem>
         </Menu>
         <Typography variant="h6" color="inherit" className={classes.appTitle}>
@@ -190,6 +255,29 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         onOpen={() => setIsOpenDialogOpen(false)}
         onCancel={() => setIsOpenDialogOpen(false)}
       />
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        open={saveErrorOpen}
+        onClose={saveErrorClose}
+        autoHideDuration={3000}
+        message={saveErrorMessage}
+        action={
+          <React.Fragment>
+            <IconButton onClick={saveErrorClose}>
+              <CloseIcon />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </AppBar>
   );
 }
+
+/*
+        <MuiAlert elevation={6} variant="filled" severity="error" onClose={saveErrorClose}>
+          Modifications to this map cannot be saved!
+        </MuiAlert>
+*/
