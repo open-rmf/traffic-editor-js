@@ -65,7 +65,6 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
     <Canvas
       frameloop="demand"
       onPointerMissed={() => {
-        console.log("onPointerMissed");
         clearSelection(setStore);
       }}
     >

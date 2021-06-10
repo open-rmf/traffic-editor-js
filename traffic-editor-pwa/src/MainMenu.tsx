@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Divider from '@material-ui/core/Divider';
 import ToolBar from '@material-ui/core/Toolbar';
@@ -100,22 +100,24 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     }
   }
 
-  const save = () => {
-    if (mapType === 'local_file') {
-      // do something
-      setSaveErrorMessage('Cannot save! Local file save not yet implemented.');
+  const save = useCallback(
+    () => {
+      if (mapType === 'local_file') {
+        setSaveErrorMessage('Cannot save. Local file save not yet implemented.');
+      }
+      else if (mapType === 'local_rest') {
+        setSaveErrorMessage('Cannot save. Local REST server save not yet implemented.');
+      }
+      else if (mapType === 'demo') {
+        setSaveErrorMessage('Cannot save. Demo maps are read-only.');
+      }
+      else {
+        setSaveErrorMessage('Cannot save. No map loaded.');
+      }
       setSaveErrorOpen(true);
-    }
-    else if (mapType === 'local_rest') {
-      // do something else
-      setSaveErrorMessage('Cannot save! Local REST server save not yet implemented.');
-      setSaveErrorOpen(true);
-    }
-    else if (mapType === 'demo') {
-      setSaveErrorMessage('Cannot save! Demo maps are read-only.');
-      setSaveErrorOpen(true);
-    }
-  }
+    },
+    [mapType]
+  );
 
   const saveErrorClose = () => {
     setSaveErrorOpen(false);
@@ -130,6 +132,10 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
       } else if (key === 'escape') {
         setActiveTool(setStore, EditorToolID.SELECT);
         clearSelection(setStore);
+      } else if (key === 's' && event.ctrlKey) {
+        event.preventDefault();
+        save();
+        return false;
       }
     };
 
@@ -137,7 +143,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     return () => {
       window.removeEventListener('keydown', keyDown);
     };
-  }, [setStore]);
+  }, [setStore, save]);
 
   return (
     <AppBar position="fixed">
@@ -262,8 +268,11 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         }}
         open={saveErrorOpen}
         onClose={saveErrorClose}
-        autoHideDuration={3000}
-        message={saveErrorMessage}
+        autoHideDuration={2000}
+        transitionDuration={0}
+        TransitionProps={{
+          appear: false,
+        }}
         action={
           <React.Fragment>
             <IconButton onClick={saveErrorClose}>
@@ -271,13 +280,14 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
             </IconButton>
           </React.Fragment>
         }
-      />
+      >
+        <MuiAlert elevation={6} variant="filled" severity="error" onClose={saveErrorClose}>
+          {saveErrorMessage}
+        </MuiAlert>
+      </Snackbar>
     </AppBar>
   );
 }
 
 /*
-        <MuiAlert elevation={6} variant="filled" severity="error" onClose={saveErrorClose}>
-          Modifications to this map cannot be saved!
-        </MuiAlert>
 */
