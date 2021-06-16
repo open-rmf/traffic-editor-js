@@ -29,6 +29,30 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('access-control-allow-origin', '*')
+        self.send_header('access-control-allow-credentials', 'true')
+        self.send_header('access-control-allow-methods', 'GET, POST, OPTIONS')
+        self.send_header('access-control-allow-headers', '*')
+        self.end_headers()
+
+    def do_POST(self):
+        if self.path == '/map_file':
+            # todo: retrieve content-length and read only that many bytes
+            body_len = int(self.headers['content-length'])
+            post_body = self.rfile.read(body_len).decode('utf-8')
+            print(f'received body: {post_body}')
+            self.send_response(200)
+            self.send_header('access-control-allow-origin', '*')
+            self.send_header('access-control-allow-credentials', 'true')
+            self.send_header('access-control-allow-methods', 'GET, POST, OPTIONS')
+            self.send_header('access-control-allow-headers', '*')
+            # self.send_header('content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+        else:
+            self.send_response(404)
+            self.end_headers()
 
 def main():
     parser = ArgumentParser(description='Map file server')

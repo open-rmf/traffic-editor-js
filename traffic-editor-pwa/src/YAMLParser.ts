@@ -158,8 +158,8 @@ export function YAMLParser(yaml_text: string): void {
   });
 }
 
-export async function YAMLRetriever(uri: string): Promise<void> {
-  await fetch(uri)
+export async function YAMLRetriever(url: string): Promise<void> {
+  await fetch(url)
     .then(response => response.text())
     .then(text => YAMLParser(text));
 }
@@ -167,4 +167,63 @@ export async function YAMLRetriever(uri: string): Promise<void> {
 export async function YAMLRetrieveDemo(name: string): Promise<void> {
   await YAMLRetriever(
     process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`);
+}
+
+function ParamArrayYAML(params: EditorParam[]): any {
+  let params_obj: any = {};
+  for (const param of params) {
+    params_obj[param.name] = [
+      param.type_idx,
+      param.value,
+    ];
+  }
+  return params_obj;
+}
+
+function VertexYAML(vertex: EditorVertex): any {
+  return [
+    vertex.x,
+    -vertex.y,
+    0,
+    vertex.name,
+    ParamArrayYAML(vertex.params),
+  ];
+}
+
+function LevelYAML(level: EditorLevel): any {
+  let level_obj: any = {
+    elevation: level.elevation,
+    vertices: level.vertices.map(vertex => VertexYAML(vertex)),
+  };
+  if (level.images.length > 0 && level.images[0].isLegacyDefaultImage) {
+    level_obj['drawing'] = { 'filename': level.images[0].filename };
+  }
+  return level_obj;
+}
+
+function BuildingYAML(building: EditorBuilding): string {
+  let levels_obj: any = {};
+  for (const level of building.levels) {
+    levels_obj[level.name] = LevelYAML(level);
+  }
+  return YAML.stringify({
+    'name': building.name,
+    'levels': levels_obj,
+  })
+}
+
+export async function YAMLSender(url: string): Promise<void> {
+  console.log('saving: ' + url);
+  const { building } = useStore.getState();
+  let yaml_text: string = BuildingYAML(building);
+  let yaml_size = new Blob([yaml_text]).size;  // utf-8 encoding length
+  console.log('  content-length: ' + yaml_size.toString());
+  await fetch(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-yaml',
+      'content-length': yaml_size.toString(),
+    },
+    body: yaml_text,
+  });
 }

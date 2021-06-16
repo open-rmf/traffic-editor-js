@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './EditorStore';
 import OpenDialog from './OpenDialog';
-import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
+import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
 
@@ -76,9 +76,9 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
-  const [saveErrorOpen, setSaveErrorOpen] = React.useState(false);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [snackMessage, setSnackMessage] = React.useState('');
   const [mapType, setMapType] = React.useState('');
-  const [saveErrorMessage, setSaveErrorMessage] = React.useState('');
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
@@ -101,26 +101,33 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   }
 
   const save = useCallback(
-    () => {
+    async () => {
       if (mapType === 'local_file') {
-        setSaveErrorMessage('Cannot save. Local file save not yet implemented.');
+        setSnackMessage('Cannot save. Local file save not yet implemented.');
+        setSnackOpen(true);
       }
       else if (mapType === 'local_rest') {
-        setSaveErrorMessage('Cannot save. Local REST server save not yet implemented.');
+        try {
+          await YAMLSender('http://localhost:8000/map_file');
+        } catch (error) {
+          setSnackMessage('Error while saving to local REST server');
+          setSnackOpen(true);
+        }
       }
       else if (mapType === 'demo') {
-        setSaveErrorMessage('Cannot save. Demo maps are read-only.');
+        setSnackMessage('Cannot save. Demo maps are read-only.');
+        setSnackOpen(true);
       }
       else {
-        setSaveErrorMessage('Cannot save. No map loaded.');
+        setSnackMessage('Cannot save. No map loaded.');
+        setSnackOpen(true);
       }
-      setSaveErrorOpen(true);
     },
     [mapType]
   );
 
-  const saveErrorClose = () => {
-    setSaveErrorOpen(false);
+  const snackClose = () => {
+    setSnackOpen(false);
   }
 
   React.useEffect(() => {
@@ -168,8 +175,13 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         >
           <MenuItem
             onClick={async () => {
-              await YAMLRetriever('http://localhost:8000/map_file');
-              setMapType('local_rest');
+              try {
+                await YAMLRetriever('http://localhost:8000/map_file');
+                setMapType('local_rest');
+              } catch (error) {
+                setSnackMessage('could not open file from localhost:8000');
+                setSnackOpen(true);
+              }
               setMenuAnchorEl(null);
             }}
           >
@@ -266,8 +278,8 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           vertical: 'top',
           horizontal: 'left',
         }}
-        open={saveErrorOpen}
-        onClose={saveErrorClose}
+        open={snackOpen}
+        onClose={snackClose}
         autoHideDuration={2000}
         transitionDuration={0}
         TransitionProps={{
@@ -275,14 +287,14 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         }}
         action={
           <React.Fragment>
-            <IconButton onClick={saveErrorClose}>
+            <IconButton onClick={snackClose}>
               <CloseIcon />
             </IconButton>
           </React.Fragment>
         }
       >
-        <MuiAlert elevation={6} variant="filled" severity="error" onClose={saveErrorClose}>
-          {saveErrorMessage}
+        <MuiAlert elevation={6} variant="filled" severity="error" onClose={snackClose}>
+          {snackMessage}
         </MuiAlert>
       </Snackbar>
     </AppBar>
