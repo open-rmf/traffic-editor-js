@@ -169,53 +169,61 @@ export async function YAMLRetrieveDemo(name: string): Promise<void> {
     process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`);
 }
 
-function ParamArrayYAML(params: EditorParam[]): any {
-  let params_obj: any = {};
+function ParamArrayYAML(params: EditorParam[]): YAML.Node {
+  let node = new YAML.YAMLMap();
   for (const param of params) {
-    params_obj[param.name] = [
-      param.type_idx,
-      param.value,
-    ];
+    let param_value_node = new YAML.YAMLSeq();
+    param_value_node.add(param.type_idx);
+    param_value_node.add(param.value);
+    param_value_node.flow = true;
+    node.add({ key: param.name, value: param_value_node });
   }
-  return params_obj;
+  node.flow = true;
+  return node;
 }
 
-function VertexYAML(vertex: EditorVertex): any {
-  return [
-    vertex.x,
-    -vertex.y,
-    0,
-    vertex.name,
-    ParamArrayYAML(vertex.params),
-  ];
+function VertexYAML(vertex: EditorVertex): YAML.Node {
+  let node = new YAML.YAMLSeq();
+  node.add(vertex.x);
+  node.add(-vertex.y);
+  node.add(0.0);
+  node.add(vertex.name);
+  node.add(ParamArrayYAML(vertex.params));
+  node.flow = true;
+  return node;
 }
 
-function LevelYAML(level: EditorLevel): any {
-  let level_obj: any = {
-    elevation: level.elevation,
-    vertices: level.vertices.map(vertex => VertexYAML(vertex)),
-  };
+function LevelYAML(level: EditorLevel): YAML.Node {
+  let node = new YAML.YAMLMap();
+  node.add({ key: 'elevation', value: level.elevation });
+  let vertices_node = new YAML.YAMLSeq();
+  for (const vertex of level.vertices) {
+    vertices_node.add(VertexYAML(vertex));
+  }
+  node.add({ key: 'vertices', value: vertices_node });
   if (level.images.length > 0 && level.images[0].isLegacyDefaultImage) {
-    level_obj['drawing'] = { 'filename': level.images[0].filename };
+    node.add({ key: 'drawing', value: { 'filename': level.images[0].filename } });
   }
-  return level_obj;
+  return node;
 }
 
-function BuildingYAML(building: EditorBuilding): string {
-  let levels_obj: any = {};
-  for (const level of building.levels) {
-    levels_obj[level.name] = LevelYAML(level);
-  }
-  return YAML.stringify({
+function BuildingYAMLString(building: EditorBuilding): string {
+  let yaml_doc = new YAML.Document({
     'name': building.name,
-    'levels': levels_obj,
-  })
+  });
+  let levels_node = new YAML.YAMLMap();
+  for (const level of building.levels) {
+    levels_node.add({ key: level.name, value: LevelYAML(level) });
+  }
+  yaml_doc.add({ key: 'levels', value: levels_node });
+  yaml_doc.add({ key: 'lifts', value: {} });
+  return yaml_doc.toString({lineWidth: 0, minContentWidth: 0});
 }
 
 export async function YAMLSender(url: string): Promise<void> {
   console.log('saving: ' + url);
   const { building } = useStore.getState();
-  let yaml_text: string = BuildingYAML(building);
+  let yaml_text: string = BuildingYAMLString(building);
   let yaml_size = new Blob([yaml_text]).size;  // utf-8 encoding length
   console.log('  content-length: ' + yaml_size.toString());
   await fetch(url, {
