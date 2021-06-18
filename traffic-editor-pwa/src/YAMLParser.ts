@@ -1,10 +1,13 @@
 import {
   CameraPose,
   EditorBuilding,
+  EditorConstraint,
+  EditorFeature,
   EditorFloor,
   EditorImage,
   EditorLane,
   EditorLevel,
+  EditorMeasurement,
   EditorParam,
   EditorVertex,
   EditorWall,
@@ -16,7 +19,7 @@ import * as THREE from 'three'
 
 function ParamArrayFactory(params_data: any): EditorParam[] {
   if (!params_data)
-    return []
+    return [];
   let params = Array<EditorParam>();
   for (const param_name in params_data) {
     const param_data = params_data[param_name];
@@ -25,12 +28,13 @@ function ParamArrayFactory(params_data: any): EditorParam[] {
       type_idx: param_data[0],
       value: param_data[1],
       uuid: generate_uuid(),
-    }
-    params.push(p)
+    };
+    params.push(p);
   }
-  return params
+  return params;
 }
 
+/*
 function VertexFactory(vertex_data: any): EditorVertex {
   return {
     x: vertex_data[0],
@@ -38,7 +42,7 @@ function VertexFactory(vertex_data: any): EditorVertex {
     name: vertex_data[3],
     uuid: generate_uuid(),
     params: ParamArrayFactory(vertex_data[4]),
-  }
+  };
 }
 
 function WallFactory(wall_data: any): EditorWall {
@@ -47,7 +51,7 @@ function WallFactory(wall_data: any): EditorWall {
     end_idx: wall_data[1],
     params: ParamArrayFactory(wall_data[2]),
     uuid: generate_uuid(),
-  }
+  };
 }
 
 function FloorFactory(floor_data: any): EditorFloor {
@@ -55,7 +59,7 @@ function FloorFactory(floor_data: any): EditorFloor {
     uuid: generate_uuid(),
     params: ParamArrayFactory(floor_data['parameters']),
     vertex_indices: floor_data['vertices'].map((vertex_idx: number) => vertex_idx),
-  }
+  };
 }
 
 function LaneFactory(lane_data: any): EditorLane {
@@ -64,12 +68,40 @@ function LaneFactory(lane_data: any): EditorLane {
     start_idx: lane_data[0],
     end_idx: lane_data[1],
     params: ParamArrayFactory(lane_data[2]),
-  }
+  };
+}
+
+function ConstraintFactory(data: any): EditorConstraint {
+  return {
+    uuid: generate_uuid(),
+    params: [],
+    ids: [ data['ids'][0], data['ids'][1] ],
+  };
+}
+
+function FeatureFactory(data: any): EditorFeature {
+  return {
+    uuid: data['id'],
+    params: [],
+    name: data['name'],
+    x: data['x'],
+    y: data['y'],
+  };
+}
+
+function MeasurementFactory(data: any): EditorMeasurement {
+  return {
+    uuid: generate_uuid(),
+    params: [],
+    start_idx: data[0],
+    end_idx: data[1],
+    distance: data[2]['distance'][1],
+  };
 }
 
 function LevelFactory(level_name: string, level_data: any): EditorLevel {
   let images = new Array<EditorImage>();
-  if (level_data['drawing'] && level_data['drawing']['fileanme']) {
+  if (level_data['drawing'] && level_data['drawing']['filename']) {
     let image: EditorImage = {
       filename: level_data['drawing']['filename'],
       offset: new THREE.Vector3(0, 0, 0),
@@ -78,7 +110,7 @@ function LevelFactory(level_name: string, level_data: any): EditorLevel {
       isLegacyDefaultImage: true,
       uuid: generate_uuid(),
       params: Array<EditorParam>(),
-    }
+    };
     images.push(image);
   }
 
@@ -88,29 +120,33 @@ function LevelFactory(level_name: string, level_data: any): EditorLevel {
     elevation: level_data['elevation'],
     params: Array<EditorParam>(),
     images: images,
+    constraints: level_data['constraints'].map((constraint: any) => ConstraintFactory(constraint)),
+    features: level_data['features'].map((feature: any) => FeatureFactory(feature)),
     vertices: level_data['vertices'].map((vertex: any) => VertexFactory(vertex)),
     walls: level_data['walls'].map((wall: any) => WallFactory(wall)),
+    measurements: level_data['measurements'].map((measurement: any) => MeasurementFactory(measurement)),
     floors: level_data['floors'].map((floor: any) => FloorFactory(floor)),
-    lanes: level_data['lanes'].map((lane: any) => LaneFactory(lane)),
-  }
+    lanes: level_data['lanes'].map((lane: any) => EditorLane.from_yaml(lane)),
+  };
 }
 
 function BuildingFactory(yaml_text: string): EditorBuilding {
-  const yaml = YAML.parse(yaml_text)
-  const name = yaml['name']  // todo: make up a name if it's not here
+  const yaml = YAML.parse(yaml_text);
+  const name = yaml['name'];  // todo: make up a name if it's not here
   let building = {
     name: name,
     levels: Array<EditorLevel>(), //[],
     params: [],
     uuid: generate_uuid()
-  }
+  };
   for (const level_name in yaml['levels']) {
-    const level_data = yaml['levels'][level_name]
+    const level_data = yaml['levels'][level_name];
     building.levels.push(LevelFactory(level_name, level_data));
   }
 
-  return building
+  return building;
 }
+*/
 
 function computeBoundingBox(building: EditorBuilding): THREE.Box3 {
   let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
@@ -148,7 +184,7 @@ export function computeInitialCameraPose(building: EditorBuilding): CameraPose {
 }
 
 export function YAMLParser(yaml_text: string): void {
-  const building = BuildingFactory(yaml_text);
+  const building = EditorBuilding.from_yaml(yaml_text); //BuildingFactory(yaml_text);
   const cameraInitialPose = computeInitialCameraPose(building);
 
   useStore.setState({
@@ -188,35 +224,72 @@ function VertexYAML(vertex: EditorVertex): YAML.Node {
   node.add(-vertex.y);
   node.add(0.0);
   node.add(vertex.name);
-  node.add(ParamArrayYAML(vertex.params));
+  if (vertex.params.length)
+    node.add(ParamArrayYAML(vertex.params));
+  node.flow = true;
+  return node;
+}
+
+function WallYAML(wall: EditorWall): YAML.Node {
+  let node = new YAML.YAMLSeq();
+  node.add(wall.start_idx);
+  node.add(wall.end_idx);
+  node.add(ParamArrayYAML(wall.params));
+  node.flow = true;
+  return node;
+}
+
+function FeatureYAML(feature: EditorFeature): YAML.Node {
+  let node = new YAML.YAMLMap();
+  node.add({ key: 'id', value: feature.uuid });
+  node.add({ key: 'name', value: feature.name });
+  node.add({ key: 'x', value: feature.x });
+  node.add({ key: 'y', value: feature.y });
+  node.flow = true;
+  return node;
+}
+
+function MeasurementYAML(measurement: EditorMeasurement): YAML.Node {
+  let node = new YAML.YAMLSeq();
+  node.add(measurement.start_idx);
+  node.add(measurement.end_idx);
+  const dummy_dist_param: EditorParam = {
+    name: 'distance',
+    uuid: 'dummy',
+    type_idx: 3,
+    value: measurement.distance,
+  };
+  node.add(ParamArrayYAML(measurement.params.concat(dummy_dist_param)));
   node.flow = true;
   return node;
 }
 
 function LevelYAML(level: EditorLevel): YAML.Node {
   let node = new YAML.YAMLMap();
-  node.add({ key: 'elevation', value: level.elevation });
   let vertices_node = new YAML.YAMLSeq();
   for (const vertex of level.vertices) {
     vertices_node.add(VertexYAML(vertex));
   }
-  node.add({ key: 'vertices', value: vertices_node });
   if (level.images.length > 0 && level.images[0].isLegacyDefaultImage) {
     node.add({ key: 'drawing', value: { 'filename': level.images[0].filename } });
   }
+  node.add({ key: 'elevation', value: level.elevation });
+  node.add({ key: 'features', value: level.features.map((feature) => FeatureYAML(feature)) });
+  node.add({ key: 'measurements', value: level.measurements.map((measurement) => MeasurementYAML(measurement)) });
+  node.add({ key: 'vertices', value: vertices_node });
+  node.add({ key: 'walls', value: level.walls.map((wall) => WallYAML(wall)) });
   return node;
 }
 
 function BuildingYAMLString(building: EditorBuilding): string {
-  let yaml_doc = new YAML.Document({
-    'name': building.name,
-  });
+  let yaml_doc = new YAML.Document(new YAML.YAMLMap());
   let levels_node = new YAML.YAMLMap();
   for (const level of building.levels) {
     levels_node.add({ key: level.name, value: LevelYAML(level) });
   }
   yaml_doc.add({ key: 'levels', value: levels_node });
   yaml_doc.add({ key: 'lifts', value: {} });
+  yaml_doc.add({ key: 'name', value: building.name });
   return yaml_doc.toString({lineWidth: 0, minContentWidth: 0});
 }
 

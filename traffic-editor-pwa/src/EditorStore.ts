@@ -1,6 +1,8 @@
 import create from 'zustand';
 import produce from 'immer';
 import * as THREE from 'three';
+import { v4 as generate_uuid } from 'uuid'
+import YAML from 'yaml'
 
 export interface EditorParam {
   type_idx: number,
@@ -9,9 +11,22 @@ export interface EditorParam {
   uuid: string
 }
 
-export interface EditorObject {
-  uuid: string,
-  params: EditorParam[],
+export class EditorObject {
+  uuid: string = '';
+  params: EditorParam[] = [];
+
+  params_from_yaml(params_yaml: any): void {
+    for (const param_name in params_yaml) {
+      const param_data = params_yaml[param_name];
+      let p: EditorParam = {
+        name: param_name,
+        type_idx: param_data[0],
+        value: param_data[1],
+        uuid: generate_uuid(),
+      };
+      this.params.push(p);
+    }
+  }
 }
 
 export interface EditorVertex extends EditorObject {
@@ -25,9 +40,25 @@ export interface EditorWall extends EditorObject {
   end_idx: number,
 }
 
-export interface EditorLane extends EditorObject {
+export interface EditorMeasurement extends EditorObject {
   start_idx: number,
   end_idx: number,
+  distance: number,
+}
+
+export class EditorLane extends EditorObject {
+  start_idx: number = -1;
+  end_idx: number = -1;
+
+  static from_yaml(lane_data: any): EditorLane {
+    let lane = new EditorLane();
+    lane.params_from_yaml(lane_data);
+    lane.uuid = generate_uuid();
+    lane.start_idx = lane_data[0];
+    lane.end_idx = lane_data[1];
+    lane.params = [];
+    return lane;
+  }
 }
 
 export interface EditorFloor extends EditorObject {
@@ -42,19 +73,49 @@ export interface EditorImage extends EditorObject {
   isLegacyDefaultImage: boolean,
 }
 
-export interface EditorLevel extends EditorObject {
-  name: string,
-  elevation: number,
-  vertices: EditorVertex[],
-  walls: EditorWall[],
-  floors: EditorFloor[],
-  lanes: EditorLane[],
-  images: EditorImage[],
+export class EditorConstraint extends EditorObject {
+  ids: string[] = [];
 }
 
-export interface EditorBuilding extends EditorObject {
+export interface EditorFeature extends EditorObject {
   name: string,
-  levels: EditorLevel[],
+  x: number,
+  y: number,
+}
+
+export class EditorLevel extends EditorObject {
+  name: string = '';
+  elevation: number = 0;
+  vertices: EditorVertex[] = [];
+  walls: EditorWall[] = [];
+  measurements: EditorMeasurement[] = [];
+  floors: EditorFloor[] = [];
+  lanes: EditorLane[] = [];
+  images: EditorImage[] = [];
+  features: EditorFeature[] = [];
+  constraints: EditorConstraint[] = [];
+
+  static from_yaml(_name: string, data: any): EditorLevel {
+    let level = new EditorLevel();
+    level.name = _name;
+    return level;
+  }
+}
+
+export class EditorBuilding extends EditorObject {
+  name: string = '';
+  levels: EditorLevel[] = [];
+
+  static from_yaml(yaml_text: string): EditorBuilding {
+    const yaml = YAML.parse(yaml_text);
+    let building = new EditorBuilding();
+    building.name = yaml['name'];
+    for (const level_name in yaml['levels']) {
+      const level_data = yaml['levels'][level_name];
+      building.levels.push(EditorLevel.from_yaml(level_name, level_data));
+    }
+    return building;
+  }
 }
 
 export enum EditorToolID {
@@ -91,12 +152,14 @@ export interface EditorStoreState {
 */
 
 export const useStore = create<EditorStoreState>(set => ({
-  building: {
+  building: new EditorBuilding(),
+  /*{
     name: '',
     levels: [],
     params: [],
     uuid: '',
   },
+  */
   selection: null,
   editorMode: '2d',
   enableMotionControls: true,

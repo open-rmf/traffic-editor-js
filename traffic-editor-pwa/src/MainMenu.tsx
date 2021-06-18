@@ -300,6 +300,3 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     </AppBar>
   );
 }
-
-/*
-*/
