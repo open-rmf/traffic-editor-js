@@ -29,15 +29,35 @@ export class EditorObject {
   }
 }
 
-export interface EditorVertex extends EditorObject {
-  x: number,
-  y: number,
-  name: string,
+export class EditorVertex extends EditorObject {
+  x: number = 0;
+  y: number = 0;
+  name: string = '';
+
+  static from_yaml(data: any): EditorVertex {
+    let vertex = new EditorVertex();
+    vertex.uuid = generate_uuid();
+    vertex.x = data[0];
+    vertex.y = -data[1];
+    vertex.name = data[3];
+    vertex.params_from_yaml(data[4]);
+
+    return vertex;
+  }
 }
 
-export interface EditorWall extends EditorObject {
-  start_idx: number,
-  end_idx: number,
+export class EditorWall extends EditorObject {
+  start_idx: number = -1;
+  end_idx: number = -1;
+
+  static from_yaml(data: any): EditorWall {
+    let wall = new EditorWall();
+    wall.uuid = generate_uuid();
+    wall.params_from_yaml(data[2]);
+    wall.start_idx = data[0];
+    wall.end_idx = data[1];
+    return wall;
+  }
 }
 
 export interface EditorMeasurement extends EditorObject {
@@ -50,19 +70,26 @@ export class EditorLane extends EditorObject {
   start_idx: number = -1;
   end_idx: number = -1;
 
-  static from_yaml(lane_data: any): EditorLane {
+  static from_yaml(data: any): EditorLane {
     let lane = new EditorLane();
-    lane.params_from_yaml(lane_data);
     lane.uuid = generate_uuid();
-    lane.start_idx = lane_data[0];
-    lane.end_idx = lane_data[1];
-    lane.params = [];
+    lane.params_from_yaml(data[2]);
+    lane.start_idx = data[0];
+    lane.end_idx = data[1];
     return lane;
   }
 }
 
-export interface EditorFloor extends EditorObject {
-  vertex_indices: number[],
+export class EditorFloor extends EditorObject {
+  vertex_indices: number[] = [];
+
+  static from_yaml(data: any): EditorFloor {
+    let floor = new EditorFloor();
+    floor.uuid = generate_uuid();
+    floor.params_from_yaml(data['parameters']);
+    floor.vertex_indices = data['vertices'].map((vertex_idx: number) => vertex_idx);
+    return floor;
+  }
 }
 
 export interface EditorImage extends EditorObject {
@@ -75,6 +102,13 @@ export interface EditorImage extends EditorObject {
 
 export class EditorConstraint extends EditorObject {
   ids: string[] = [];
+
+  static from_yaml(data: any): EditorConstraint {
+    let constraint = new EditorConstraint();
+    constraint.uuid = generate_uuid();
+    constraint.ids = [ data['ids'][0], data['ids'][1] ];
+    return constraint;
+  }
 }
 
 export interface EditorFeature extends EditorObject {
@@ -97,7 +131,14 @@ export class EditorLevel extends EditorObject {
 
   static from_yaml(_name: string, data: any): EditorLevel {
     let level = new EditorLevel();
+    level.uuid = generate_uuid();
     level.name = _name;
+    level.elevation = data['elevation'];
+    level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.from_yaml(constraint));
+    level.vertices = data['vertices'].map((vertex: any) => EditorVertex.from_yaml(vertex));
+    level.lanes = data['lanes'].map((lane: any) => EditorLane.from_yaml(lane));
+    level.floors = data['floors'].map((floor: any) => EditorFloor.from_yaml(floor));
+    level.walls = data['walls'].map((wall: any) => EditorWall.from_yaml(wall));
     return level;
   }
 }
@@ -109,6 +150,7 @@ export class EditorBuilding extends EditorObject {
   static from_yaml(yaml_text: string): EditorBuilding {
     const yaml = YAML.parse(yaml_text);
     let building = new EditorBuilding();
+    building.uuid = generate_uuid();
     building.name = yaml['name'];
     for (const level_name in yaml['levels']) {
       const level_data = yaml['levels'][level_name];
@@ -135,6 +177,7 @@ export interface EditorStoreState {
   enableMotionControls: boolean,
   activeTool: EditorToolID,
   cameraInitialPose: CameraPose,
+  repaintCount: number,
   set: (fn: (draftState: EditorStoreState) => void) => void
 }
 /*
@@ -164,6 +207,7 @@ export const useStore = create<EditorStoreState>(set => ({
   editorMode: '2d',
   enableMotionControls: true,
   activeTool: EditorToolID.SELECT,
+  repaintCount: 0,
   cameraInitialPose: {
     position: new THREE.Vector3(0, 0, 5),
     target: new THREE.Vector3(0, 0, 0),
@@ -217,7 +261,8 @@ export function updateVertexPoint(
         return level;
       }
       return level;
-    })
+    });
+    state.repaintCount = state.repaintCount + 1;
   });
 }
 
