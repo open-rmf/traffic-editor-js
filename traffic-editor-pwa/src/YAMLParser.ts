@@ -215,6 +215,7 @@ function BuildingYAMLString(building: EditorBuilding): string {
 }
 
 export async function YAMLSender(url: string): Promise<void> {
+  Object.getPrototypeOf(YAML.YAMLMap).maxFlowStringSingleLineLength = 10000;
   console.log('saving: ' + url);
   const { building } = useStore.getState();
   let yaml_text: string = BuildingYAMLString(building);
