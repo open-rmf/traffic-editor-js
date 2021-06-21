@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   EditorConstraint,
+  EditorDoor,
   EditorFeature,
   EditorFloor,
   EditorImage,
@@ -46,6 +47,20 @@ function ConstraintTreeItem(props: { constraint: EditorConstraint }): JSX.Elemen
     >
       {props.constraint.params.map((param) => <ParamTreeItem param={param} />)}
     </TreeItem>
+  );
+}
+
+function DoorTreeItem(props: { door: EditorDoor }): JSX.Element {
+  const setStore = useStore(state => state.set);
+  const label = `(${props.door.start_idx} => ${props.door.end_idx})`;
+  return(
+    <TreeItem
+      nodeId={props.door.uuid}
+      key={props.door.uuid}
+      onClick={(event) => {
+        setSelection(setStore, props.door);
+      }}
+      label={label} />
   );
 }
 
@@ -158,6 +173,9 @@ function LevelTreeItem(props: { level: EditorLevel }): JSX.Element {
     <TreeItem nodeId={props.level.uuid} key={props.level.uuid} label={props.level.name}>
       <TreeItem nodeId={props.level.uuid + '_constraints'} label="constraints">
         {props.level.constraints.map((constraint) => <ConstraintTreeItem constraint={constraint} /> )}
+      </TreeItem>
+      <TreeItem nodeId={props.level.uuid + '_doors'} label="doors">
+        {props.level.doors.map((door) => <DoorTreeItem door={door} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_features'} label="features">
         {props.level.features.map((feature) => <FeatureTreeItem feature={feature} /> )}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { EditorLevel } from './EditorStore';
 import { SceneVertex } from './SceneVertex';
+import { SceneDoor } from './SceneDoor';
 import { SceneWall } from './SceneWall';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
@@ -33,6 +34,16 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         elevation={z} />
     );
 
+  const doors =
+    props.level.doors.map((door) =>
+      <SceneDoor
+        key={door.uuid}
+        door={door}
+        vertex_start={props.level.vertices[door.start_idx]}
+        vertex_end={props.level.vertices[door.end_idx]}
+        elevation={z} />
+    );
+
   const floors =
     props.level.floors.map((floor) =>
       <SceneFloor
@@ -57,6 +68,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
       {[
         ...vertices,
         ...walls,
+        ...doors,
         ...floors,
         ...lanes,
       ]}

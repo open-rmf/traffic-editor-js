@@ -145,6 +145,29 @@ export class EditorLane extends EditorObject {
   }
 }
 
+export class EditorDoor extends EditorObject {
+  start_idx: number = -1;
+  end_idx: number = -1;
+
+  static fromYAML(data: any): EditorDoor {
+    let door = new EditorDoor();
+    door.uuid = generate_uuid();
+    door.paramsFromYAML(data[2]);
+    door.start_idx = data[0];
+    door.end_idx = data[1];
+    return door;
+  }
+
+  toYAML(): YAML.YAMLSeq {
+    let node = new YAML.YAMLSeq();
+    node.add(this.start_idx);
+    node.add(this.end_idx);
+    node.add(this.paramsToYAML());
+    node.flow = true;
+    return node;
+  }
+}
+
 export class EditorFloor extends EditorObject {
   vertex_indices: number[] = [];
 
@@ -211,6 +234,7 @@ export class EditorFeature extends EditorObject {
 export class EditorLevel extends EditorObject {
   name: string = '';
   elevation: number = 0;
+  doors: EditorDoor[] = [];
   vertices: EditorVertex[] = [];
   walls: EditorWall[] = [];
   measurements: EditorMeasurement[] = [];
@@ -226,6 +250,7 @@ export class EditorLevel extends EditorObject {
     level.name = _name;
     level.elevation = data['elevation'];
     level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.fromYAML(constraint));
+    level.doors = data['doors'].map((door: any) => EditorDoor.fromYAML(door));
     level.features = data['features'].map((feature: any) => EditorFeature.fromYAML(feature));
     level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
     level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
@@ -250,6 +275,7 @@ export class EditorLevel extends EditorObject {
       node.add({ key: 'drawing', value: { 'filename': this.images[0].filename } });
     }
     node.add({ key: 'constraints', value: this.constraints.map(constraint => constraint.toYAML()) });
+    node.add({ key: 'doors', value: this.doors.map(door => door.toYAML()) });
     node.add({ key: 'elevation', value: this.elevation });
     node.add({ key: 'features', value: this.features.map(feature => feature.toYAML()) });
     node.add({ key: 'flattened_x_offset', value: 0 });
