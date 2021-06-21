@@ -265,6 +265,7 @@ export class EditorLevel extends EditorObject {
 export class EditorBuilding extends EditorObject {
   name: string = '';
   levels: EditorLevel[] = [];
+  crowd_sim: YAML.YAMLMap = new YAML.YAMLMap();
 
   static fromYAML(yaml_text: string): EditorBuilding {
     const yaml = YAML.parse(yaml_text);
@@ -275,6 +276,8 @@ export class EditorBuilding extends EditorObject {
       const level_data = yaml['levels'][level_name];
       building.levels.push(EditorLevel.fromYAML(level_name, level_data));
     }
+    building.crowd_sim = yaml['crowd_sim'];
+    console.log(building.crowd_sim);
     return building;
   }
 
@@ -284,10 +287,56 @@ export class EditorBuilding extends EditorObject {
     for (const level of this.levels) {
       levels_node.add({ key: level.name, value: level.toYAML() });
     }
+    yaml_doc.add({ key: 'crowd_sim', value: this.crowdSimToYAML() });
     yaml_doc.add({ key: 'levels', value: levels_node });
     yaml_doc.add({ key: 'lifts', value: {} });
     yaml_doc.add({ key: 'name', value: this.name });
     return yaml_doc.toString({lineWidth: 0, minContentWidth: 0});
+  }
+
+  crowdSimToYAML(): YAML.YAMLMap {
+    /*
+    let groups: YAML.YAMLSeq[] = this.crowd_sim['agent_groups'] as YAML.YAMLSeq[];
+    for (const group of groups) {
+      group.flow = true;
+    }
+    */
+    return this.crowd_sim;
+  }
+  
+  computeBoundingBox(): THREE.Box3 {
+    let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
+    let vec_max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+    for (const level of this.levels) {
+      for (const vertex of level.vertices) {
+        if (vertex.x < vec_min.x)
+          vec_min.x = vertex.x;
+        if (vertex.x > vec_max.x)
+          vec_max.x = vertex.x;
+  
+        if (vertex.y < vec_min.y)
+          vec_min.y = vertex.y;
+        if (vertex.y > vec_max.y)
+          vec_max.y = vertex.y;
+      }
+    }
+    return new THREE.Box3(vec_min, vec_max);
+  }
+
+  computeInitialCameraPose(): CameraPose {
+    const bb: THREE.Box3 = this.computeBoundingBox();
+    const target = new THREE.Vector3(
+      (bb.min.x + bb.max.x) / 2.0 / 50,
+      (bb.min.y + bb.max.y) / 2.0 / 50,
+      0.0);
+    const position = new THREE.Vector3(
+      target.x + 10,
+      target.y - 10,
+      target.z + 10);
+    return {
+      position: position,
+      target: target
+    };
   }
 }
 
@@ -327,13 +376,6 @@ export interface EditorStoreState {
 
 export const useStore = create<EditorStoreState>(set => ({
   building: new EditorBuilding(),
-  /*{
-    name: '',
-    levels: [],
-    params: [],
-    uuid: '',
-  },
-  */
   selection: null,
   editorMode: '2d',
   enableMotionControls: true,
