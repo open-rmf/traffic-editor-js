@@ -231,6 +231,42 @@ export class EditorFeature extends EditorObject {
   }
 }
 
+export class EditorModel extends EditorObject {
+  model_name: string = '';
+  instance_name: string = '';
+  is_static: boolean = true;
+  x: number = 0;
+  y: number = 0;
+  z: number = 0;
+  yaw: number = 0;
+
+  static fromYAML(data: any): EditorModel {
+    let model = new EditorModel();
+    model.uuid = generate_uuid();
+    model.model_name = data['model_name'];
+    model.instance_name = data['name'];
+    model.is_static = data['static'];
+    model.x = data['x'];
+    model.y = -data['y'];
+    model.yaw = data['yaw'];
+    model.z = data['z'];
+    return model;
+  }
+
+  toYAML(): YAML.YAMLMap {
+    let node = new YAML.YAMLMap();
+    node.add({ key: 'model_name', value: this.model_name });
+    node.add({ key: 'name', value: this.instance_name });
+    node.add({ key: 'static', value: this.is_static });
+    node.add({ key: 'x', value: this.x });
+    node.add({ key: 'y', value: -this.y });
+    node.add({ key: 'z', value: this.z });
+    node.add({ key: 'yaw', value: this.yaw });
+    node.flow = true;
+    return node;
+  }
+}
+
 export class EditorLevel extends EditorObject {
   name: string = '';
   elevation: number = 0;
@@ -240,6 +276,7 @@ export class EditorLevel extends EditorObject {
   measurements: EditorMeasurement[] = [];
   floors: EditorFloor[] = [];
   lanes: EditorLane[] = [];
+  models: EditorModel[] = [];
   images: EditorImage[] = [];
   features: EditorFeature[] = [];
   constraints: EditorConstraint[] = [];
@@ -254,6 +291,7 @@ export class EditorLevel extends EditorObject {
     level.features = data['features'].map((feature: any) => EditorFeature.fromYAML(feature));
     level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
     level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
+    level.models = data['models'].map((model: any) => EditorModel.fromYAML(model));
     level.measurements = data['measurements'].map((measurement: any) => EditorMeasurement.fromYAML(measurement));
     level.vertices = data['vertices'].map((vertex: any) => EditorVertex.fromYAML(vertex));
     level.walls = data['walls'].map((wall: any) => EditorWall.fromYAML(wall));
@@ -282,6 +320,7 @@ export class EditorLevel extends EditorObject {
     node.add({ key: 'flattened_y_offset', value: 0 });
     node.add({ key: 'lanes', value: this.lanes.map(lane => lane.toYAML()) });
     node.add({ key: 'measurements', value: this.measurements.map(measurement => measurement.toYAML()) });
+    node.add({ key: 'models', value: this.models.map(model => model.toYAML()) });
     node.add({ key: 'vertices', value: this.vertices.map(vertex => vertex.toYAML()) });
     node.add({ key: 'walls', value: this.walls.map(wall => wall.toYAML()) });
     return node;
@@ -453,11 +492,9 @@ export function updateVertexPoint(
           if (vertex.uuid === vertex_uuid) {
             vertex.x = x;
             vertex.y = y;
-            return vertex;
           }
           return vertex;
         })
-        return level;
       }
       return level;
     });
@@ -465,6 +502,28 @@ export function updateVertexPoint(
   });
 }
 
+export function updateModelPoint(
+  setStore: StoreSetter,
+  level_uuid: string,
+  model_uuid: string,
+  x: number,
+  y: number) {
+  setStore(state => {
+    state.building.levels.map(level => {
+      if (level.uuid === level_uuid) {
+        level.models.map(model => {
+          if (model.uuid === model_uuid) {
+            model.x = x;
+            model.y = y;
+          }
+          return model;
+        })
+      }
+      return level;
+    });
+    state.repaintCount = state.repaintCount + 1;
+  });
+}
 /*
   const setStoreState = useStore(state => state.set);
   const setSelection = useStore(state => state.setSelection);

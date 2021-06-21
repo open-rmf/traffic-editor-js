@@ -8,6 +8,7 @@ import {
   EditorLane,
   EditorLevel,
   EditorMeasurement,
+  EditorModel,
   EditorParam,
   EditorVertex,
   EditorWall,
@@ -33,6 +34,22 @@ function FeatureTreeItem(props: { feature: EditorFeature }): JSX.Element {
     </TreeItem>
   );
 }
+
+function ModelTreeItem(props: { model: EditorModel }): JSX.Element {
+  const setStore = useStore(state => state.set);
+  return (
+    <TreeItem
+      nodeId={props.model.uuid}
+      key={props.model.uuid}
+      label={`${props.model.instance_name}`}
+      onClick={(event) => {
+        setSelection(setStore, props.model);
+      }}
+    >
+    </TreeItem>
+  );
+}
+
 
 function ConstraintTreeItem(props: { constraint: EditorConstraint }): JSX.Element {
   const setStore = useStore(state => state.set);
@@ -191,6 +208,9 @@ function LevelTreeItem(props: { level: EditorLevel }): JSX.Element {
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_measurements'} label="measurements">
         {props.level.measurements.map((measurement) => <MeasurementTreeItem measurement={measurement} /> )}
+      </TreeItem>
+      <TreeItem nodeId={props.level.uuid + '_models'} label="models">
+        {props.level.models.map((model) => <ModelTreeItem model={model} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_vertices'} label="vertices">
         {props.level.vertices.map((vertex) => <VertexTreeItem vertex={vertex} /> )}

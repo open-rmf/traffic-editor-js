@@ -1,10 +1,11 @@
 import React from 'react'
 import { EditorLevel } from './EditorStore';
-import { SceneVertex } from './SceneVertex';
 import { SceneDoor } from './SceneDoor';
-import { SceneWall } from './SceneWall';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
+import { SceneModel } from './SceneModel';
+import { SceneVertex } from './SceneVertex';
+import { SceneWall } from './SceneWall';
 import { useStore } from './EditorStore';
 
 type SceneLevelProps = {
@@ -20,6 +21,15 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
       <SceneVertex
         key={vertex.uuid}
         vertex={vertex}
+        level_uuid={props.level.uuid}
+        elevation={z} />
+    );
+
+  const models =
+    props.level.models.map(model =>
+      <SceneModel
+        key={model.uuid}
+        model={model}
         level_uuid={props.level.uuid}
         elevation={z} />
     );
@@ -67,6 +77,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
     <group>
       {[
         ...vertices,
+        ...models,
         ...walls,
         ...doors,
         ...floors,
