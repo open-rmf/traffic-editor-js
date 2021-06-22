@@ -103,6 +103,13 @@ function ImageTreeItem(props: { image: EditorImage }): JSX.Element {
       }}
     >
       {props.image.params.map((param) => <ParamTreeItem param={param} />)}
+      <TreeItem
+        nodeId={`${props.image.uuid}_features`}
+        key={`${props.image.uuid}_features`}
+        label="features"
+      >
+        {props.image.features.map((feature) => <FeatureTreeItem feature={feature} />)}
+      </TreeItem>
     </TreeItem>
   );
 }

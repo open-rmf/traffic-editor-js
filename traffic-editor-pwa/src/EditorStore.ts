@@ -181,11 +181,53 @@ export class EditorFloor extends EditorObject {
 }
 
 export class EditorImage extends EditorObject {
+  name: string = '';
   filename: string = '';
   offset: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
   yaw: number = 0;
   scale: number = 1;
   isLegacyDefaultImage: boolean = false;
+  color: number[] = [1, 1, 1, 1];
+  visible: boolean = true;
+  features: EditorFeature[] = [];
+
+  static fromLayerYAML(layer_name: string, data: any): EditorImage {
+    console.log(data);
+    let image = new EditorImage();
+    image.uuid = generate_uuid();
+    image.name = layer_name;
+    image.filename = data['filename'];
+    image.color = data['color'];
+    image.offset.x = data['transform']['translation_x'];
+    image.offset.y = data['transform']['translation_y'];
+    image.scale = data['transform']['scale'];
+    image.yaw = data['transform']['yaw'];
+    image.isLegacyDefaultImage = false;
+    image.visible = data['visible'];
+    image.features = data['features'].map((feature_yaml: any) => EditorFeature.fromYAML(feature_yaml));
+    return image;
+  }
+
+  toLayerYAML(): YAML.YAMLMap {
+    let node = new YAML.YAMLMap();
+    let color_node = new YAML.YAMLSeq();
+    color_node.add(this.color[0]);
+    color_node.add(this.color[1]);
+    color_node.add(this.color[2]);
+    color_node.add(this.color[3]);
+    color_node.flow = true;
+    node.add({ key: 'color', value: color_node });
+    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML()) });
+    node.add({ key: 'filename', value: this.filename });
+    let transform_node = new YAML.YAMLMap();
+    transform_node.add({ key: 'scale', value: this.scale });
+    transform_node.add({ key: 'translation_x', value: this.offset.x });
+    transform_node.add({ key: 'translation_y', value: this.offset.y });
+    transform_node.add({ key: 'yaw', value: this.yaw });
+    node.add({ key: 'transform', value: transform_node });
+    node.add({ key: 'visible', value: this.visible });
+    return node;
+  }
 }
 
 export class EditorConstraint extends EditorObject {
@@ -290,6 +332,9 @@ export class EditorLevel extends EditorObject {
     level.doors = data['doors'].map((door: any) => EditorDoor.fromYAML(door));
     level.features = data['features'].map((feature: any) => EditorFeature.fromYAML(feature));
     level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
+    for (const layer_name in data['layers']) {
+      level.images.push(EditorImage.fromLayerYAML(layer_name, data['layers'][layer_name]));
+    }
     level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
     level.models = data['models'].map((model: any) => EditorModel.fromYAML(model));
     level.measurements = data['measurements'].map((measurement: any) => EditorMeasurement.fromYAML(measurement));
@@ -319,6 +364,14 @@ export class EditorLevel extends EditorObject {
     node.add({ key: 'flattened_x_offset', value: 0 });
     node.add({ key: 'flattened_y_offset', value: 0 });
     node.add({ key: 'lanes', value: this.lanes.map(lane => lane.toYAML()) });
+
+    let layers_node = new YAML.YAMLMap();
+    for (const image of this.images) {
+      if (!image.isLegacyDefaultImage) {
+        layers_node.add({ key: image.name, value: image.toLayerYAML() });
+      }
+    }
+    node.add({ key: 'layers', value: layers_node });
     node.add({ key: 'measurements', value: this.measurements.map(measurement => measurement.toYAML()) });
     node.add({ key: 'models', value: this.models.map(model => model.toYAML()) });
     node.add({ key: 'vertices', value: this.vertices.map(vertex => vertex.toYAML()) });
@@ -360,13 +413,23 @@ export class EditorBuilding extends EditorObject {
   }
 
   crowdSimToYAML(): YAML.YAMLMap {
+    let node = new YAML.YAMLMap();
+    let agent_groups = new YAML.YAMLSeq();
+    for (const group of (this.crowd_sim['agent_groups'] as YAML.YAMLMap[])) {
+      let group_node = new YAML.YAMLMap(group);
+      group_node.flow = true;
+      agent_groups.add(group_node);
+    }
+    //yaml.flow = true;
+    //return yaml;
+
     /*
     let groups: YAML.YAMLSeq[] = this.crowd_sim['agent_groups'] as YAML.YAMLSeq[];
     for (const group of groups) {
       group.flow = true;
     }
     */
-    return this.crowd_sim;
+    return node; //this.crowd_sim;
   }
   
   computeBoundingBox(): THREE.Box3 {
