@@ -383,7 +383,8 @@ export class EditorLevel extends EditorObject {
 export class EditorBuilding extends EditorObject {
   name: string = '';
   levels: EditorLevel[] = [];
-  crowd_sim: YAML.YAMLMap = new YAML.YAMLMap();
+  yaml_doc: YAML.Document = new YAML.Document();;
+  //crowd_sim: YAML.YAMLMap = new YAML.YAMLMap();
 
   static fromYAML(yaml_text: string): EditorBuilding {
     const yaml = YAML.parse(yaml_text);
@@ -394,8 +395,9 @@ export class EditorBuilding extends EditorObject {
       const level_data = yaml['levels'][level_name];
       building.levels.push(EditorLevel.fromYAML(level_name, level_data));
     }
-    building.crowd_sim = yaml['crowd_sim'];
-    console.log(building.crowd_sim);
+    //building.crowd_sim = yaml['crowd_sim'];
+    building.yaml_doc = YAML.parseDocument(yaml_text);
+    //console.log(building.crowd_sim);
     return building;
   }
 
@@ -405,31 +407,39 @@ export class EditorBuilding extends EditorObject {
     for (const level of this.levels) {
       levels_node.add({ key: level.name, value: level.toYAML() });
     }
-    yaml_doc.add({ key: 'crowd_sim', value: this.crowdSimToYAML() });
+    yaml_doc.add({ key: 'crowd_sim', value: this.yaml_doc.get('crowd_sim') }); //crowdSimToYAML() });
     yaml_doc.add({ key: 'levels', value: levels_node });
     yaml_doc.add({ key: 'lifts', value: {} });
     yaml_doc.add({ key: 'name', value: this.name });
-    return yaml_doc.toString({lineWidth: 0, minContentWidth: 0});
+    return yaml_doc.toString({lineWidth: 0, minContentWidth: 2});
   }
 
-  crowdSimToYAML(): YAML.YAMLMap {
-    let node = new YAML.YAMLMap();
-    let agent_groups = new YAML.YAMLSeq();
+  crowdSimToYAML(): any {
+    //let node = new YAML.YAMLMap();
+    //let agent_groups = new YAML.YAMLSeq();
+    //let groups: any = this.crowd_sim['agent_groups'];
+    /*
+    let groups: YAML.YAMLMap[] = (this.crowd_sim['agent_groups'] as YAML.YAMLMap[]);
     for (const group of (this.crowd_sim['agent_groups'] as YAML.YAMLMap[])) {
       let group_node = new YAML.YAMLMap(group);
       group_node.flow = true;
       agent_groups.add(group_node);
     }
+    */
     //yaml.flow = true;
     //return yaml;
 
     /*
-    let groups: YAML.YAMLSeq[] = this.crowd_sim['agent_groups'] as YAML.YAMLSeq[];
     for (const group of groups) {
       group.flow = true;
     }
     */
-    return node; //this.crowd_sim;
+    //return node; //this.crowd_sim;
+    if (this.yaml_doc.has('crowd_sim')) {
+      const data = this.yaml_doc.get('crowd_sim');
+      return data;
+    }
+    return new YAML.YAMLMap();
   }
   
   computeBoundingBox(): THREE.Box3 {
