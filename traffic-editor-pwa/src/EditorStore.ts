@@ -413,9 +413,7 @@ export class EditorBuilding extends EditorObject {
       const level_data = yaml['levels'][level_name];
       building.levels.push(EditorLevel.fromYAML(level_name, level_data));
     }
-    //building.crowd_sim = yaml['crowd_sim'];
     building.yaml_doc = YAML.parseDocument(yaml_text);
-    //console.log(building.crowd_sim);
     return building;
   }
 
@@ -438,37 +436,6 @@ export class EditorBuilding extends EditorObject {
     return yaml_doc.toString({lineWidth: 0, minContentWidth: 2});
   }
 
-  crowdSimToYAML(): any {
-    //let node = new YAML.YAMLMap();
-    //let agent_groups = new YAML.YAMLSeq();
-    //let groups: any = this.crowd_sim['agent_groups'];
-    /*
-    let groups: YAML.YAMLMap[] = (this.crowd_sim['agent_groups'] as YAML.YAMLMap[]);
-    for (const group of (this.crowd_sim['agent_groups'] as YAML.YAMLMap[])) {
-      let group_node = new YAML.YAMLMap(group);
-      group_node.flow = true;
-      agent_groups.add(group_node);
-    }
-    */
-    //yaml.flow = true;
-    //return yaml;
-
-    /*
-    for (const group of groups) {
-      group.flow = true;
-    }
-    */
-    //return node; //this.crowd_sim;
-    if (this.yaml_doc.has('crowd_sim')) {
-      const data: any = this.crowdSimToYAML();
-      //data['goal_sets'].flow = false;
-      console.log('crowd_sim: ' + data);
-      console.log('goal sets: ' + data['goal_sets']);
-      return data;
-    }
-    return new YAML.YAMLMap();
-  }
-  
   computeBoundingBox(): THREE.Box3 {
     let vec_min = new THREE.Vector3(Infinity, Infinity, Infinity);
     let vec_max = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
