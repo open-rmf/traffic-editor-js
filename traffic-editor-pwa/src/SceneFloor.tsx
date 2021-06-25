@@ -32,9 +32,9 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
   }, [props.vertices])
 
   const color: THREE.Color = React.useMemo(() => {
-    let color = new THREE.Color(1, 1, 1)
+    let color = new THREE.Color(1, 1, 1);
     if (selection && selection.uuid === props.floor.uuid) {
-      color.setRGB(1, 0.4, 0.1)
+      color.setRGB(1, 0.4, 0.1);
     }
     return color;
   }, [selection, props.floor.uuid]);
@@ -54,6 +54,7 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
   );
 
   /*
+      <meshStandardMaterial color={color} transparent={true} opacity={0.5} />
   return (
     <gridHelper
       args={[100, 100]}

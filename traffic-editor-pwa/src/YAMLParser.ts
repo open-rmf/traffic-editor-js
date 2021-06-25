@@ -2,8 +2,9 @@ import { useStore, EditorBuilding } from './EditorStore'
 import YAML from 'yaml'
 
 
-export function YAMLParser(yaml_text: string): void {
+export function YAMLParser(yaml_text: string, url_base: string): EditorBuilding {
   const building = EditorBuilding.fromYAML(yaml_text);
+  building.url_base = url_base;
   const cameraInitialPose = building.computeInitialCameraPose();
 
   useStore.setState({
@@ -11,26 +12,27 @@ export function YAMLParser(yaml_text: string): void {
     selection: null,
     cameraInitialPose: cameraInitialPose
   });
+
+  return building;
 }
 
-export async function YAMLRetriever(url: string): Promise<void> {
-  await fetch(url)
+export async function YAMLRetriever(url_base: string, resource_name: string): Promise<void> {
+  await fetch(url_base + resource_name)
     .then(response => response.text())
-    .then(text => YAMLParser(text));
+    .then(text => YAMLParser(text, url_base))
 }
 
 export async function YAMLRetrieveDemo(name: string): Promise<void> {
   await YAMLRetriever(
-    process.env.PUBLIC_URL + `/demos/${name}/${name}.building.yaml`);
+    process.env.PUBLIC_URL + `/demos/${name}/`,
+    `${name}.building.yaml`);
 }
 
 export async function YAMLSender(url: string): Promise<void> {
   Object.getPrototypeOf(YAML.YAMLMap).maxFlowStringSingleLineLength = 10000;
-  console.log('saving: ' + url);
   const { building } = useStore.getState();
   let yaml_text: string = building.toYAMLString();
   let yaml_size = new Blob([yaml_text]).size;  // utf-8 encoding length
-  console.log('  content-length: ' + yaml_size.toString());
   await fetch(url, {
     method: 'POST',
     headers: {

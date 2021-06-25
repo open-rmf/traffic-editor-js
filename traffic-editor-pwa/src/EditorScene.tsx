@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
-import React, { useRef } from 'react'
+import React, { useRef, Suspense } from 'react'
 import { OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
@@ -72,7 +72,9 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <axesHelper />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      <SceneBuilding />
+      <Suspense fallback={null} >
+        <SceneBuilding />
+      </Suspense>
     </Canvas>
   )
 }

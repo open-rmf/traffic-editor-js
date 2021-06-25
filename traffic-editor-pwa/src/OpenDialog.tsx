@@ -53,7 +53,7 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
       const fileHandle = await directoryHandle.getFileHandle(filename);
       const file = await fileHandle.getFile();
       const text = await file.text();
-      YAMLParser(text);
+      YAMLParser(text, '');
     }
     props.onOpen();
   }

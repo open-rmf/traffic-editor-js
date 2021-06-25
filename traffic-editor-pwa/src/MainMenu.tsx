@@ -176,7 +176,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={async () => {
               try {
-                await YAMLRetriever('http://localhost:8000/map_file');
+                await YAMLRetriever('http://localhost:8000/', 'map_file');
                 setMapType('local_rest');
               } catch (error) {
                 setSnackMessage('could not open file from localhost:8000');

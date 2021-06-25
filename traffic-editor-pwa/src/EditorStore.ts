@@ -203,6 +203,7 @@ export class EditorImage extends EditorObject {
   color: number[] = [1, 1, 1, 1];
   visible: boolean = true;
   features: EditorFeature[] = [];
+  blob: Blob = new Blob([]);
 
   static fromLayerYAML(layer_name: string, data: any): EditorImage {
     //console.log(data);
@@ -240,6 +241,11 @@ export class EditorImage extends EditorObject {
     node.add({ key: 'transform', value: transform_node });
     node.add({ key: 'visible', value: this.visible });
     return node;
+  }
+
+  loadBlob(_blob: Blob): void {
+    this.blob = _blob;
+    console.log(`image ${this.filename} retrieved ${this.blob.size} bytes`);
   }
 }
 
@@ -396,13 +402,26 @@ export class EditorLevel extends EditorObject {
     node.add({ key: 'walls', value: this.walls.map(wall => wall.toYAML()) });
     return node;
   }
+
+  /*
+  async loadImages(url_base: string): Promise<boolean> {
+    console.log('loading images for level ' + this.name);
+    for (const image of this.images) {
+      console.log(`loading image ${image.filename} from url_base ${url_base}`);
+      await fetch(url_base + image.filename)
+        .then(response => response.blob())
+        .then(blob => image.loadBlob(blob));
+    }
+    return true;
+  }
+  */
 }
 
 export class EditorBuilding extends EditorObject {
   name: string = '';
+  url_base: string = '';
   levels: EditorLevel[] = [];
   yaml_doc: YAML.Document = new YAML.Document();;
-  //crowd_sim: YAML.YAMLMap = new YAML.YAMLMap();
 
   static fromYAML(yaml_text: string): EditorBuilding {
     const yaml = YAML.parse(yaml_text);
@@ -470,6 +489,15 @@ export class EditorBuilding extends EditorObject {
       target: target
     };
   }
+
+  /*
+  async loadImages(url_base: string): Promise<boolean> {
+    for (const level of this.levels) {
+      await level.loadImages(url_base);
+    }
+    return true;
+  }
+  */
 }
 
 export enum EditorToolID {

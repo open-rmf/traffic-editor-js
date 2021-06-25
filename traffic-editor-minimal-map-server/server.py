@@ -8,8 +8,9 @@ import sys
 
 
 class MapServerRequestHandler(BaseHTTPRequestHandler):
-    def __init__(self, map_filename):
-        self.map_filename = map_filename
+    def __init__(self, _map_dir, _map_filename):
+        self.map_dir = _map_dir
+        self.map_filename = _map_filename
        
     # magic so that our constructor works as intended
     def __call__(self, *args, **kwargs):
@@ -26,8 +27,25 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(f.read())
             f.close()
         else:
-            self.send_response(404)
-            self.end_headers()
+            image_filename = self.path.split('/')[-1]
+            print(f'image filename: {image_filename}')
+            if image_filename.endswith('.png'):
+                image_path = os.path.join(self.map_dir, image_filename)
+                if os.path.exists(image_path):
+                    self.send_response(200)
+                    self.send_header('content-type', 'text/plain; charset=utf-8')
+                    self.send_header('access-control-allow-origin', '*')
+                    self.send_header('access-control-allow-credentials', 'true')
+                    self.end_headers()
+                    f = open(image_path, 'rb')
+                    self.wfile.write(f.read())
+                    f.close()
+                else:
+                    self.send_response(404)
+                    self.end_headers()
+            else:
+                self.send_response(400)
+                self.end_headers()
 
     def do_OPTIONS(self):
         self.send_response(200)
@@ -70,7 +88,7 @@ def main():
 
     server = HTTPServer(
         ('127.0.0.1', 8000),
-        MapServerRequestHandler(map_filename))
+        MapServerRequestHandler(args.map_dir, map_filename))
     server.serve_forever()
 
 

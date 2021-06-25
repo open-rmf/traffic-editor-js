@@ -3,6 +3,7 @@ import { EditorLevel } from './EditorStore';
 import { SceneDoor } from './SceneDoor';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
+import { SceneImage } from './SceneImage';
 import { SceneModel } from './SceneModel';
 import { SceneVertex } from './SceneVertex';
 import { SceneWall } from './SceneWall';
@@ -73,6 +74,14 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         elevation={z} />
     );
 
+  const images =
+    props.level.images.filter(image => image.isLegacyDefaultImage).map((image) =>
+      <SceneImage
+        key={image.uuid}
+        image={image}
+        elevation={z} />
+    );
+
   return (
     <group>
       {[
@@ -82,6 +91,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         ...doors,
         ...floors,
         ...lanes,
+        ...images,
       ]}
     </group>
   );
