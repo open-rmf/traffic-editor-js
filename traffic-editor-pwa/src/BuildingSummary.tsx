@@ -9,12 +9,12 @@ import {
   EditorLevel,
   EditorMeasurement,
   EditorModel,
-  EditorParam,
   EditorVertex,
   EditorWall,
   setSelection,
   useStore,
 } from './EditorStore'
+import { EditorParam } from './EditorParam'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
