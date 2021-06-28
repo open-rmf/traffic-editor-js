@@ -6,15 +6,15 @@ import {
   EditorFloor,
   EditorImage,
   EditorLane,
-  EditorLevel,
   EditorMeasurement,
   EditorModel,
   EditorVertex,
   EditorWall,
   setSelection,
   useStore,
-} from './EditorStore'
-import { EditorParam } from './EditorParam'
+} from './EditorStore';
+import { EditorParam } from './EditorParam';
+import { Level } from './Level';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -192,7 +192,7 @@ function VertexTreeItem(props: { vertex: EditorVertex }): JSX.Element {
   );
 }
 
-function LevelTreeItem(props: { level: EditorLevel }): JSX.Element {
+function LevelTreeItem(props: { level: Level }): JSX.Element {
   return (
     <TreeItem nodeId={props.level.uuid} key={props.level.uuid} label={props.level.name}>
       <TreeItem nodeId={props.level.uuid + '_constraints'} label="constraints">
@@ -252,6 +252,7 @@ export default function BuildingSummary(): JSX.Element {
       defaultExpandIcon={<ChevronRightIcon />}
     >
       <TreeItem nodeId={building.uuid + '_name'} label={"name: " + building.name} />
+      <TreeItem nodeId={building.uuid + '_ref'} label={"reference level: " + building.reference_level_name } />
       <TreeItem nodeId={building.uuid + '_levels'} label="levels">
         {building.levels.map((level) => <LevelTreeItem level={level} /> )}
       </TreeItem>

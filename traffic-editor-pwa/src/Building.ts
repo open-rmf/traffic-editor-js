@@ -1,23 +1,33 @@
-import YAML from 'yaml'
+import YAML from 'yaml';
 import * as THREE from 'three';
-import { v4 as generate_uuid } from 'uuid'
-import { EditorObject } from './EditorObject'
-import { EditorLevel, CameraPose } from './EditorStore'
+import { v4 as generate_uuid } from 'uuid';
+import { EditorObject } from './EditorObject';
+import { CameraPose } from './EditorStore';
+import { Level } from './Level';
 
-export class EditorBuilding extends EditorObject {
+export class Building extends EditorObject {
   name: string = '';
   url_base: string = '';
-  levels: EditorLevel[] = [];
+  levels: Level[] = [];
+  reference_level_name: string = '';
   yaml_doc: YAML.Document = new YAML.Document();;
 
-  static fromYAML(yaml_text: string): EditorBuilding {
+  static fromYAML(yaml_text: string): Building {
     const yaml = YAML.parse(yaml_text);
-    let building = new EditorBuilding();
+    let building = new Building();
     building.uuid = generate_uuid();
     building.name = yaml['name'];
     for (const level_name in yaml['levels']) {
       const level_data = yaml['levels'][level_name];
-      building.levels.push(EditorLevel.fromYAML(level_name, level_data));
+      building.levels.push(Level.fromYAML(level_name, level_data));
+    }
+    if (yaml['reference_level_name']) {
+      building.reference_level_name = yaml['reference_level_name'];
+    }
+    else {
+      if (building.levels.length > 0) {
+        building.reference_level_name = building.levels[0].name;
+      }
     }
     building.yaml_doc = YAML.parseDocument(yaml_text);
     return building;
@@ -76,15 +86,4 @@ export class EditorBuilding extends EditorObject {
       target: target
     };
   }
-
-  /*
-  async loadImages(url_base: string): Promise<boolean> {
-    for (const level of this.levels) {
-      await level.loadImages(url_base);
-    }
-    return true;
-  }
-  */
 }
-
-

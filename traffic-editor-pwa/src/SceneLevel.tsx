@@ -1,5 +1,5 @@
 import React from 'react'
-import { EditorLevel } from './EditorStore';
+import { Level } from './Level';
 import { SceneDoor } from './SceneDoor';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
@@ -11,7 +11,7 @@ import { SceneWall } from './SceneWall';
 import { useStore } from './EditorStore';
 
 type SceneLevelProps = {
-  level: EditorLevel
+  level: Level
 }
 
 export function SceneLevel(props: SceneLevelProps): JSX.Element {

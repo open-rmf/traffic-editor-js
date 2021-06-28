@@ -1,10 +1,10 @@
 import { useStore } from './EditorStore'
-import { EditorBuilding } from './EditorBuilding'
+import { Building } from './Building'
 import YAML from 'yaml'
 
 
-export function YAMLParser(yaml_text: string, url_base: string): EditorBuilding {
-  const building = EditorBuilding.fromYAML(yaml_text);
+export function YAMLParser(yaml_text: string, url_base: string): Building {
+  const building = Building.fromYAML(yaml_text);
   building.url_base = url_base;
   const cameraInitialPose = building.computeInitialCameraPose();
 
