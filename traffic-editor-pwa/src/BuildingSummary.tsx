@@ -11,7 +11,7 @@ import {
   EditorWall,
   setSelection,
   useStore,
-} from './EditorStore';
+} from './Store';
 import { EditorParam } from './EditorParam';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
@@ -193,8 +193,16 @@ function VertexTreeItem(props: { vertex: Vertex }): JSX.Element {
 }
 
 function LevelTreeItem(props: { level: Level }): JSX.Element {
+  const setStore = useStore(state => state.set);
   return (
-    <TreeItem nodeId={props.level.uuid} key={props.level.uuid} label={props.level.name}>
+    <TreeItem
+      nodeId={props.level.uuid}
+      key={props.level.uuid}
+      label={props.level.name}
+      onClick={(event) => {
+        setSelection(setStore, props.level);
+      }}>
+
       <TreeItem nodeId={props.level.uuid + '_constraints'} label="constraints">
         {props.level.constraints.map((constraint) => <ConstraintTreeItem constraint={constraint} /> )}
       </TreeItem>

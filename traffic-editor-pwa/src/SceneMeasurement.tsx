@@ -1,12 +1,14 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Vertex } from './Vertex';
-import { useStore, EditorMeasurement, setSelection } from './EditorStore';
+import { Level } from './Level';
+import { useStore, EditorMeasurement, setSelection } from './Store';
 
 interface SceneMeasurementProps {
   vertex_start: Vertex,
   vertex_end: Vertex,
   measurement: EditorMeasurement,
+  level: Level,
   elevation: number,
 }
 
@@ -16,11 +18,10 @@ export function SceneMeasurement(props: SceneMeasurementProps): JSX.Element {
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
-  const cx = (v1.x + v2.x) / 2 / 50;
-  const cy = (v1.y + v2.y) / 2 / 50;
+  const [cx, cy] = props.level.transformPoint((v1.x + v2.x) / 2, (v1.y + v2.y) / 2);
   const dx = v2.x - v1.x;
   const dy = v2.y - v1.y;
-  const len = Math.sqrt(dx*dx + dy*dy) / 50;
+  const len = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
   const xyrot = Math.atan2(dy, dx);
 
   const color: THREE.Color = React.useMemo(() => {

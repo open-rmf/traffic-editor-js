@@ -1,7 +1,9 @@
 import YAML from 'yaml';
 import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
+import { EditorProp } from './EditorProp';
 import { Vertex } from './Vertex';
+//import { Point } from './Point';
 //import { EditorParam } from './EditorParam';
 import {
   EditorDoor,
@@ -12,7 +14,7 @@ import {
   EditorLane,
   EditorModel,
   EditorFeature,
-  EditorConstraint } from './EditorStore';
+  EditorConstraint } from './Store';
 
 export class Level extends EditorObject {
   name: string = '';
@@ -31,8 +33,12 @@ export class Level extends EditorObject {
 
   static fromYAML(_name: string, data: any): Level {
     let level = new Level();
+    level.object_type_name = 'Level';
     level.uuid = generate_uuid();
     level.name = _name;
+    level.props.push(new EditorProp('name', () => level.name));
+    level.props.push(new EditorProp('elevation', () => level.elevation));
+    level.props.push(new EditorProp('scale', () => level.scale));
 
     if (data['drawing'] && data['drawing']['filename']) {
       let image = new EditorImage();
@@ -109,5 +115,19 @@ export class Level extends EditorObject {
     else {
       this.scale = 0.05;  // just use something sane...
     }
+  }
+
+  transformPoint(x: number, y: number): [number, number] {
+    return [
+      x * this.scale,
+      y * this.scale,
+    ];
+  }
+
+  inverseTransformPoint(x: number, y: number): [number, number] {
+    return [
+      x / this.scale,
+      y / this.scale,
+    ];
   }
 }

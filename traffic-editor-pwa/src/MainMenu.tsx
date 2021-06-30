@@ -15,7 +15,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './EditorStore';
+import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './Store';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';

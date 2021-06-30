@@ -2,7 +2,7 @@ import YAML from 'yaml';
 import * as THREE from 'three';
 import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
-import { CameraPose } from './EditorStore';
+import { CameraPose } from './Store';
 import { Level } from './Level';
 
 export class Building extends EditorObject {
@@ -72,18 +72,26 @@ export class Building extends EditorObject {
   }
 
   computeInitialCameraPose(): CameraPose {
-    const bb: THREE.Box3 = this.computeBoundingBox();
-    const target = new THREE.Vector3(
-      (bb.min.x + bb.max.x) / 2.0 / 50,
-      (bb.min.y + bb.max.y) / 2.0 / 50,
-      0.0);
-    const position = new THREE.Vector3(
-      target.x + 10,
-      target.y - 10,
-      target.z + 10);
-    return {
-      position: position,
-      target: target
-    };
+    if (this.levels.length) {
+      const bb = this.computeBoundingBox();
+      const cx = (bb.min.x + bb.max.x) / 2;
+      const cy = (bb.min.y + bb.max.y) / 2;
+      const [t_cx, t_cy] = this.levels[0].transformPoint(cx, cy);
+      const target = new THREE.Vector3(t_cx, t_cy, 0);
+      const position = new THREE.Vector3(
+        target.x + 10,
+        target.y - 10,
+        target.z + 10);
+      return {
+        position: position,
+        target: target,
+      };
+    }
+    else {
+      return {
+        position: new THREE.Vector3(10, 10, 10),
+        target: new THREE.Vector3(0, 0, 0),
+      };
+    }
   }
 }

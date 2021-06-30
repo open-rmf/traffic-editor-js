@@ -4,7 +4,7 @@ import React, { useRef, Suspense } from 'react'
 import { OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
-import { useStore, clearSelection } from './EditorStore';
+import { useStore, clearSelection } from './Store';
 import { SceneBuilding } from './SceneBuilding';
 
 type EditorSceneProps = {

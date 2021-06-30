@@ -6,7 +6,6 @@ import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
 import { EditorObject } from './EditorObject';
 import { Building } from './Building';
-import { Vertex } from './Vertex';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -14,6 +13,7 @@ export class EditorWall extends EditorObject {
 
   static fromYAML(data: any): EditorWall {
     let wall = new EditorWall();
+    wall.object_type_name = 'Wall';
     wall.uuid = generate_uuid();
     wall.paramsFromYAML(data[2]);
     wall.start_idx = data[0];
@@ -38,6 +38,7 @@ export class EditorMeasurement extends EditorObject {
 
   static fromYAML(data: any): EditorMeasurement {
     let measurement = new EditorMeasurement();
+    measurement.object_type_name = 'Measurement'
     measurement.uuid = generate_uuid();
     measurement.start_idx = data[0];
     measurement.end_idx = data[1];
@@ -63,6 +64,7 @@ export class EditorLane extends EditorObject {
 
   static fromYAML(data: any): EditorLane {
     let lane = new EditorLane();
+    lane.object_type_name = 'Lane';
     lane.uuid = generate_uuid();
     lane.paramsFromYAML(data[2]);
     lane.start_idx = data[0];
@@ -86,6 +88,7 @@ export class EditorDoor extends EditorObject {
 
   static fromYAML(data: any): EditorDoor {
     let door = new EditorDoor();
+    door.object_type_name = 'Door';
     door.uuid = generate_uuid();
     door.paramsFromYAML(data[2]);
     door.start_idx = data[0];
@@ -143,6 +146,7 @@ export class EditorImage extends EditorObject {
   static fromLayerYAML(layer_name: string, data: any): EditorImage {
     //console.log(data);
     let image = new EditorImage();
+    image.object_type_name = 'Image';
     image.uuid = generate_uuid();
     image.name = layer_name;
     image.filename = data['filename'];
@@ -238,6 +242,7 @@ export class EditorModel extends EditorObject {
 
   static fromYAML(data: any): EditorModel {
     let model = new EditorModel();
+    model.object_type_name = 'Model';
     model.uuid = generate_uuid();
     model.model_name = data['model_name'];
     model.instance_name = data['name'];
@@ -273,15 +278,16 @@ export interface CameraPose {
   target: THREE.Vector3
 }
 
-export interface EditorStoreState {
+export interface StoreState {
   building: Building,
   selection: EditorObject | null,
   editorMode: string,
   enableMotionControls: boolean,
   activeTool: EditorToolID,
   cameraInitialPose: CameraPose,
+  propertyRepaintCount: number,
   repaintCount: number,
-  set: (fn: (draftState: EditorStoreState) => void) => void
+  set: (fn: (draftState: StoreState) => void) => void
 }
 /*
 
@@ -297,12 +303,13 @@ export interface EditorStoreState {
 }
 */
 
-export const useStore = create<EditorStoreState>(set => ({
+export const useStore = create<StoreState>(set => ({
   building: new Building(),
   selection: null,
   editorMode: '2d',
   enableMotionControls: true,
   activeTool: EditorToolID.SELECT,
+  propertyRepaintCount: 0,
   repaintCount: 0,
   cameraInitialPose: {
     position: new THREE.Vector3(0, 0, 5),
@@ -311,7 +318,7 @@ export const useStore = create<EditorStoreState>(set => ({
   set: fn => set(produce(fn)),
 }));
 
-type StoreSetter = (fn: (draftState: EditorStoreState) => void) => void;
+type StoreSetter = (fn: (draftState: StoreState) => void) => void;
 
 export function setSelection(setStore: StoreSetter, newSelection: EditorObject) {
   setStore(state => {
@@ -334,6 +341,12 @@ export function setEditorMode(setStore: StoreSetter, newMode: string) {
 export function setActiveTool(setStore: StoreSetter, newTool: EditorToolID) {
   setStore(state => {
     state.activeTool = newTool;
+  });
+}
+
+export function repaintPropertyEditor(setStore: StoreSetter) {
+  setStore(state => {
+    state.propertyRepaintCount += 1;
   });
 }
 

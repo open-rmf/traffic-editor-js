@@ -1,5 +1,5 @@
 import React from 'react'
-import { useStore } from './EditorStore';
+import { useStore } from './Store';
 import { SceneLevel } from './SceneLevel';
 
 type SceneBuildingProps = {

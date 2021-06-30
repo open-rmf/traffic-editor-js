@@ -8,7 +8,7 @@ import { SceneMeasurement } from './SceneMeasurement';
 import { SceneModel } from './SceneModel';
 import { SceneVertex } from './SceneVertex';
 import { SceneWall } from './SceneWall';
-import { useStore } from './EditorStore';
+import { useStore } from './Store';
 
 type SceneLevelProps = {
   level: Level
@@ -24,6 +24,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneModel
           key={model.uuid}
           model={model}
+          level={props.level}
           level_uuid={props.level.uuid}
           elevation={z} />)}
 
@@ -31,6 +32,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneVertex
           key={vertex.uuid}
           vertex={vertex}
+          level={props.level}
           level_uuid={props.level.uuid}
           elevation={z} />)}
 
@@ -38,6 +40,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneWall
           key={wall.uuid}
           wall={wall}
+          level={props.level}
           vertex_start={props.level.vertices[wall.start_idx]}
           vertex_end={props.level.vertices[wall.end_idx]}
           elevation={z} />)}
@@ -46,6 +49,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneDoor
           key={door.uuid}
           door={door}
+          level={props.level}
           vertex_start={props.level.vertices[door.start_idx]}
           vertex_end={props.level.vertices[door.end_idx]}
           elevation={z} />)}
@@ -54,6 +58,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneFloor
           key={floor.uuid}
           floor={floor}
+          level={props.level}
           vertices={floor.vertex_indices.map((idx) => props.level.vertices[idx])}
           elevation={z} />)}
 
@@ -61,6 +66,7 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneLane
           key={lane.uuid}
           lane={lane}
+          level={props.level}
           vertex_start={props.level.vertices[lane.start_idx]}
           vertex_end={props.level.vertices[lane.end_idx]}
           elevation={z} />)}
@@ -69,12 +75,14 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
         <SceneImage
           key={image.uuid}
           image={image}
+          level={props.level}
           elevation={z} />)}
 
       {props.level.measurements.map(meas =>
         <SceneMeasurement
           key={meas.uuid}
           measurement={meas}
+          level={props.level}
           vertex_start={props.level.vertices[meas.start_idx]}
           vertex_end={props.level.vertices[meas.end_idx]}
           elevation={z} />)}

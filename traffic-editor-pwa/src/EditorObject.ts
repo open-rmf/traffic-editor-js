@@ -1,9 +1,12 @@
 import YAML from 'yaml'
 import { EditorParam } from './EditorParam';
+import { EditorProp } from './EditorProp';
 
 export class EditorObject {
   uuid: string = '';
   params: EditorParam[] = [];
+  props: EditorProp[] = [];
+  object_type_name: string = '';
 
   paramsFromYAML(params_yaml: any): void {
     for (const param_name in params_yaml) {

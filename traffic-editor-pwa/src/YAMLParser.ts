@@ -1,4 +1,4 @@
-import { useStore } from './EditorStore'
+import { useStore } from './Store'
 import { Building } from './Building'
 import YAML from 'yaml'
 

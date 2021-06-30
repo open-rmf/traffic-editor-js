@@ -1,10 +1,12 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorModel, EditorToolID, setSelection, updateModelPoint } from './EditorStore';
+import { Level } from './Level';
+import { useStore, EditorModel, EditorToolID, setSelection, updateModelPoint } from './Store';
 
 interface SceneModelProps {
   model: EditorModel,
   elevation: number,
+  level: Level,
   level_uuid: string,
 }
 
@@ -15,8 +17,7 @@ export function SceneModel(props: SceneModelProps): JSX.Element {
   const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
-  const x = props.model.x / 50.0;
-  const y = props.model.y / 50.0;
+  const [x, y] = props.level.transformPoint(props.model.x, props.model.y);
 
   let color = "rgb(128, 128, 128)";
   if (selection && selection.uuid === props.model.uuid) {
@@ -53,14 +54,14 @@ export function SceneModel(props: SceneModelProps): JSX.Element {
         if (dragActive) {
           event.stopPropagation();
           if (editorMode === '2d') {
-            const px = event.unprojectedPoint.x * 50;
-            const py = event.unprojectedPoint.y * 50;
+            const [px, py] = props.level.inverseTransformPoint(event.unprojectedPoint.x, event.unprojectedPoint.y);
             updateModelPoint(setStore, props.level_uuid, props.model.uuid, px, py);
           }
           else {
             let intersection_point = new THREE.Vector3();
             event.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), props.elevation), intersection_point);
-            updateModelPoint(setStore, props.level_uuid, props.model.uuid, intersection_point.x * 50, intersection_point.y * 50);
+            const [px, py] = props.level.inverseTransformPoint(intersection_point.x, intersection_point.y);
+            updateModelPoint(setStore, props.level_uuid, props.model.uuid, px, py);
           }
         }
       }}

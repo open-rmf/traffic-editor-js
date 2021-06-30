@@ -1,10 +1,12 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Vertex } from './Vertex';
-import { useStore, EditorFloor, setSelection } from './EditorStore';
+import { Level } from './Level';
+import { useStore, EditorFloor, setSelection } from './Store';
 
 type SceneFloorProps = {
   floor: EditorFloor;
+  level: Level;
   vertices: Vertex[];
   elevation: number;
 }
@@ -12,25 +14,25 @@ type SceneFloorProps = {
 export function SceneFloor(props: SceneFloorProps): JSX.Element {
   const selection = useStore(state => state.selection)
   const setStore = useStore(state => state.set);
-  //const setSelection = useStore(state => state.setSelection)
 
   const shape = React.useMemo(() => {
     const shape = new THREE.Shape();
     let started = false;
 
     for (const v of props.vertices) {
+      const [t_x, t_y] = props.level.transformPoint(v.x, v.y);
       if (!started)
       {
-        shape.moveTo(v.x / 50, v.y / 50)
-        started = true
+        shape.moveTo(t_x, t_y);
+        started = true;
       }
       else
-        shape.lineTo(v.x / 50, v.y / 50)
+        shape.lineTo(t_x, t_y);
     }
-    const v0 = props.vertices[0]
-    shape.lineTo(v0.x / 50, v0.y / 50)
-    return shape
-  }, [props.vertices])
+    const [v0_x, v0_y] = props.level.transformPoint(props.vertices[0].x, props.vertices[0].y);
+    shape.lineTo(v0_x, v0_y);
+    return shape;
+  }, [props.vertices, props.level])
 
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(1, 1, 1);
