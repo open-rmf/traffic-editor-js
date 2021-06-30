@@ -1,10 +1,11 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorMeasurement, setSelection } from './EditorStore';
+import { Vertex } from './Vertex';
+import { useStore, EditorMeasurement, setSelection } from './EditorStore';
 
 interface SceneMeasurementProps {
-  vertex_start: EditorVertex,
-  vertex_end: EditorVertex,
+  vertex_start: Vertex,
+  vertex_end: Vertex,
   measurement: EditorMeasurement,
   elevation: number,
 }

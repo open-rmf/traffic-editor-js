@@ -8,13 +8,13 @@ import {
   EditorLane,
   EditorMeasurement,
   EditorModel,
-  EditorVertex,
   EditorWall,
   setSelection,
   useStore,
 } from './EditorStore';
 import { EditorParam } from './EditorParam';
 import { Level } from './Level';
+import { Vertex } from './Vertex';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -174,7 +174,7 @@ function LaneTreeItem(props: { lane: EditorLane }): JSX.Element {
   );
 }
 
-function VertexTreeItem(props: { vertex: EditorVertex }): JSX.Element {
+function VertexTreeItem(props: { vertex: Vertex }): JSX.Element {
   const setStore = useStore(state => state.set);
   let label = "(" + props.vertex.x + ", " + props.vertex.y + ")";
   if (props.vertex.name)

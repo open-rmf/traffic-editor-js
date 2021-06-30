@@ -1,10 +1,10 @@
 import YAML from 'yaml';
 import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
+import { Vertex } from './Vertex';
 //import { EditorParam } from './EditorParam';
 import {
   EditorDoor,
-  EditorVertex,
   EditorWall,
   EditorMeasurement,
   EditorFloor,
@@ -19,7 +19,7 @@ export class Level extends EditorObject {
   elevation: number = 0;
   scale: number = 1.234;
   doors: EditorDoor[] = [];
-  vertices: EditorVertex[] = [];
+  vertices: Vertex[] = [];
   walls: EditorWall[] = [];
   measurements: EditorMeasurement[] = [];
   floors: EditorFloor[] = [];
@@ -53,7 +53,7 @@ export class Level extends EditorObject {
     level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
     level.models = data['models'].map((model: any) => EditorModel.fromYAML(model));
     level.measurements = data['measurements'].map((measurement: any) => EditorMeasurement.fromYAML(measurement));
-    level.vertices = data['vertices'].map((vertex: any) => EditorVertex.fromYAML(vertex));
+    level.vertices = data['vertices'].map((vertex: any) => Vertex.fromYAML(vertex));
     level.walls = data['walls'].map((wall: any) => EditorWall.fromYAML(wall));
 
     level.calculateScale();

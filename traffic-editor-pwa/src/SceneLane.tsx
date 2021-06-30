@@ -1,10 +1,11 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorLane, setSelection } from './EditorStore';
+import { Vertex } from './Vertex';
+import { useStore, EditorLane, setSelection } from './EditorStore';
 
 interface SceneLaneProps {
-  vertex_start: EditorVertex,
-  vertex_end: EditorVertex,
+  vertex_start: Vertex,
+  vertex_end: Vertex,
   lane: EditorLane,
   elevation: number,
 }

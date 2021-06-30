@@ -1,10 +1,11 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorDoor, setSelection } from './EditorStore';
+import { Vertex } from './Vertex';
+import { useStore, EditorDoor, setSelection } from './EditorStore';
 
 interface SceneDoorProps {
-  vertex_start: EditorVertex,
-  vertex_end: EditorVertex,
+  vertex_start: Vertex,
+  vertex_end: Vertex,
   door: EditorDoor,
   elevation: number,
 }

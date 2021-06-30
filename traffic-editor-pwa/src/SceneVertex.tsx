@@ -1,10 +1,11 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Text } from '@react-three/drei'
-import { useStore, EditorVertex, EditorToolID, setSelection, updateVertexPoint } from './EditorStore';
+import { Vertex } from './Vertex';
+import { useStore, EditorToolID, setSelection, updateVertexPoint } from './EditorStore';
 
 interface SceneVertexProps {
-  vertex: EditorVertex,
+  vertex: Vertex,
   elevation: number,
   level_uuid: string,
 }

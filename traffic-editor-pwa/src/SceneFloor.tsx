@@ -1,10 +1,11 @@
 import React from 'react'
 import * as THREE from 'three'
-import { useStore, EditorVertex, EditorFloor, setSelection } from './EditorStore';
+import { Vertex } from './Vertex';
+import { useStore, EditorFloor, setSelection } from './EditorStore';
 
 type SceneFloorProps = {
   floor: EditorFloor;
-  vertices: EditorVertex[];
+  vertices: Vertex[];
   elevation: number;
 }
 
