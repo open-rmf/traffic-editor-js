@@ -2,7 +2,6 @@ import React from 'react';
 import {
   EditorConstraint,
   EditorDoor,
-  EditorFeature,
   EditorFloor,
   EditorImage,
   EditorLane,
@@ -15,12 +14,13 @@ import {
 import { EditorParam } from './EditorParam';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
+import { Feature } from './Feature';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-function FeatureTreeItem(props: { feature: EditorFeature }): JSX.Element {
+function FeatureTreeItem(props: { feature: Feature }): JSX.Element {
   const setStore = useStore(state => state.set);
   return (
     <TreeItem
@@ -204,34 +204,34 @@ function LevelTreeItem(props: { level: Level }): JSX.Element {
       }}>
 
       <TreeItem nodeId={props.level.uuid + '_constraints'} label="constraints">
-        {props.level.constraints.map((constraint) => <ConstraintTreeItem constraint={constraint} /> )}
+        {props.level.constraints.map(constraint => <ConstraintTreeItem constraint={constraint} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_doors'} label="doors">
-        {props.level.doors.map((door) => <DoorTreeItem door={door} /> )}
+        {props.level.doors.map(door => <DoorTreeItem door={door} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_features'} label="features">
-        {props.level.features.map((feature) => <FeatureTreeItem feature={feature} /> )}
+        {props.level.features.map(feature => <FeatureTreeItem feature={feature} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_floors'} label="floors">
-        {props.level.floors.map((floor) => <FloorTreeItem floor={floor} /> )}
+        {props.level.floors.map(floor => <FloorTreeItem floor={floor} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_images'} label="images">
-        {props.level.images.map((image) => <ImageTreeItem image={image} /> )}
+        {props.level.images.map(image => <ImageTreeItem image={image} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_lanes'} label="lanes">
-        {props.level.lanes.map((lane) => <LaneTreeItem lane={lane} /> )}
+        {props.level.lanes.map(lane => <LaneTreeItem lane={lane} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_measurements'} label="measurements">
-        {props.level.measurements.map((measurement) => <MeasurementTreeItem measurement={measurement} /> )}
+        {props.level.measurements.map(measurement => <MeasurementTreeItem measurement={measurement} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_models'} label="models">
-        {props.level.models.map((model) => <ModelTreeItem model={model} /> )}
+        {props.level.models.map(model => <ModelTreeItem model={model} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_vertices'} label="vertices">
-        {props.level.vertices.map((vertex) => <VertexTreeItem vertex={vertex} /> )}
+        {props.level.vertices.map(vertex => <VertexTreeItem vertex={vertex} /> )}
       </TreeItem>
       <TreeItem nodeId={props.level.uuid + '_walls'} label="walls">
-        {props.level.walls.map((wall) => <WallTreeItem wall={wall} /> )}
+        {props.level.walls.map(wall => <WallTreeItem wall={wall} /> )}
       </TreeItem>
     </TreeItem>
   );

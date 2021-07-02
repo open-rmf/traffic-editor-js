@@ -6,6 +6,8 @@ import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
 import { EditorObject } from './EditorObject';
 import { Building } from './Building';
+import { Feature } from './Feature';
+import { Level } from './Level';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -140,7 +142,7 @@ export class EditorImage extends EditorObject {
   isLegacyDefaultImage: boolean = false;
   color: number[] = [1, 1, 1, 1];
   visible: boolean = true;
-  features: EditorFeature[] = [];
+  features: Feature[] = [];
   blob: Blob = new Blob([]);
 
   static fromLayerYAML(layer_name: string, data: any): EditorImage {
@@ -157,7 +159,7 @@ export class EditorImage extends EditorObject {
     image.yaw = data['transform']['yaw'];
     image.isLegacyDefaultImage = false;
     image.visible = data['visible'];
-    image.features = data['features'].map((feature_yaml: any) => EditorFeature.fromYAML(feature_yaml));
+    image.features = data['features'].map((feature_yaml: any) => Feature.fromYAML(feature_yaml));
     return image;
   }
 
@@ -201,31 +203,6 @@ export class EditorConstraint extends EditorObject {
   toYAML(): YAML.YAMLMap {
     let node = new YAML.YAMLMap();
     node.add({ key: 'ids', value: this.ids });
-    node.flow = true;
-    return node;
-  }
-}
-
-export class EditorFeature extends EditorObject {
-  name: string = '';
-  x: number = 0;
-  y: number = 0;
-
-  static fromYAML(data: any): EditorFeature {
-    let feature = new EditorFeature();
-    feature.uuid = data['id'];
-    feature.name = data['name'];
-    feature.x = data['x'];
-    feature.y = data['y'];
-    return feature;
-  }
-
-  toYAML(): YAML.YAMLMap {
-    let node = new YAML.YAMLMap();
-    node.add({ key: 'id', value: this.uuid });
-    node.add({ key: 'name', value: this.name });
-    node.add({ key: 'x', value: this.x });
-    node.add({ key: 'y', value: this.y });
     node.flow = true;
     return node;
   }
@@ -395,21 +372,26 @@ export function updateModelPoint(
     state.repaintCount = state.repaintCount + 1;
   });
 }
-/*
-  const setStoreState = useStore(state => state.set);
-  const setSelection = useStore(state => state.setSelection);
-*/
 
-/*
-  setSelection: (newSelection: EditorObject) => set(state => ({ selection: newSelection })),
-  clearSelection: () => set(state => ({ selection: null })),
-
-  setEditorMode: (newEditorMode: string) => set(state => ({ editorMode: newEditorMode })),
-
-  setEnableMotionControls: (newEnableMotionControls: boolean) => set(state => ({ enableMotionControls: newEnableMotionControls })),
-
-  setActiveTool: (newActiveTool: EditorToolID) => set(state => ({ activeTool: newActiveTool })),
-
-  //updateVertexPoint: (level_uuid: string, vertex_uuid: string, x: number, y:number) => set(state => {
-}))
-*/
+export function updateFeaturePoint(
+  setStore: StoreSetter,
+  feature_level: Level,
+  feature_uuid: string,
+  x: number,
+  y: number) {
+  setStore(state => {
+    state.building.levels.map(level => {
+      if (level === feature_level) {
+        level.features.map(feature => {
+          if (feature.uuid === feature_uuid) {
+            feature.x = x;
+            feature.y = y;
+          }
+          return feature;
+        })
+      }
+      return level;
+    });
+    state.repaintCount = state.repaintCount + 1;
+  });
+}

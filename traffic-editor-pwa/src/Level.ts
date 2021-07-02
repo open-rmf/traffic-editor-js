@@ -3,7 +3,8 @@ import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
 import { EditorProp } from './EditorProp';
 import { Vertex } from './Vertex';
-//import { Point } from './Point';
+import { Feature } from './Feature';
+
 //import { EditorParam } from './EditorParam';
 import {
   EditorDoor,
@@ -13,7 +14,6 @@ import {
   EditorImage,
   EditorLane,
   EditorModel,
-  EditorFeature,
   EditorConstraint } from './Store';
 
 export class Level extends EditorObject {
@@ -28,7 +28,7 @@ export class Level extends EditorObject {
   lanes: EditorLane[] = [];
   models: EditorModel[] = [];
   images: EditorImage[] = [];
-  features: EditorFeature[] = [];
+  features: Feature[] = [];
   constraints: EditorConstraint[] = [];
 
   static fromYAML(_name: string, data: any): Level {
@@ -51,7 +51,7 @@ export class Level extends EditorObject {
     level.elevation = data['elevation'];
     level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.fromYAML(constraint));
     level.doors = data['doors'].map((door: any) => EditorDoor.fromYAML(door));
-    level.features = data['features'].map((feature: any) => EditorFeature.fromYAML(feature));
+    level.features = data['features'].map((feature: any) => Feature.fromYAML(feature));
     level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
     for (const layer_name in data['layers']) {
       level.images.push(EditorImage.fromLayerYAML(layer_name, data['layers'][layer_name]));

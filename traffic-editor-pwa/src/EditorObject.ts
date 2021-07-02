@@ -26,6 +26,8 @@ export class EditorObject {
     node.flow = true;
     return node;
   }
+
+  static roundNicely(value: number): number {
+    return Math.round(value * 1000) / 1000;
+  }
 }
-
-

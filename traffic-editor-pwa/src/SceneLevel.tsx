@@ -1,6 +1,7 @@
 import React from 'react'
 import { Level } from './Level';
 import { SceneDoor } from './SceneDoor';
+import { SceneFeature } from './SceneFeature';
 import { SceneFloor } from './SceneFloor';
 import { SceneLane } from './SceneLane';
 import { SceneImage } from './SceneImage';
@@ -34,6 +35,13 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
           vertex={vertex}
           level={props.level}
           level_uuid={props.level.uuid}
+          elevation={z} />)}
+
+      {props.level.features.map(feature =>
+        <SceneFeature
+          key={feature.uuid}
+          feature={feature}
+          level={props.level}
           elevation={z} />)}
 
       {props.level.walls.map((wall) =>

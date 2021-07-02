@@ -44,7 +44,8 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       }}
     >
       <boxGeometry args={[len, 1.0, 0.1]} />
-      <meshStandardMaterial color={color} transparent={true} opacity={0.7} />
+      <meshStandardMaterial color={color} />
     </mesh>
   );
 }
+//<meshStandardMaterial color={color} transparent={true} opacity={0.7} />

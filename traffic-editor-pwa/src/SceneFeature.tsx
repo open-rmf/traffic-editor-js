@@ -1,34 +1,33 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Text } from '@react-three/drei'
-import { Vertex } from './Vertex';
+import { Feature } from './Feature';
 import { Level } from './Level';
 import {
   useStore,
   EditorToolID,
   repaintPropertyEditor,
   setSelection,
-  updateVertexPoint,
+  updateFeaturePoint,
 } from './Store';
 
-interface SceneVertexProps {
-  vertex: Vertex,
+interface SceneFeatureProps {
+  feature: Feature,
   elevation: number,
   level: Level,
-  level_uuid: string,
 }
 
-export function SceneVertex(props: SceneVertexProps): JSX.Element {
+export function SceneFeature(props: SceneFeatureProps): JSX.Element {
   const selection = useStore(state => state.selection);
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
-  const [x, y] = props.level.transformPoint(props.vertex.x, props.vertex.y);
+  const [x, y] = props.level.transformPoint(props.feature.x, props.feature.y);
 
-  let color = "rgb(0, 128, 0)";
-  if (selection && selection.uuid === props.vertex.uuid) {
+  let color = "rgb(200, 200, 0)";
+  if (selection && selection.uuid === props.feature.uuid) {
     color = "rgb(255, 100, 10)";
   }
 
@@ -38,12 +37,12 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
         position={[x, y, 0.25 + props.elevation]}
         scale={1.0}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
-        key={props.vertex.uuid}
+        key={props.feature.uuid}
         onClick={(event) => {
           event.stopPropagation();
         }}
         onPointerDown={(event) => {
-          setSelection(setStore, props.vertex);
+          setSelection(setStore, props.feature);
           if (!isMoveToolActive)
             return;
           event.stopPropagation();
@@ -65,22 +64,22 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
             event.stopPropagation();
             if (editorMode === '2d') {
               const [px, py] = props.level.inverseTransformPoint(event.unprojectedPoint.x, event.unprojectedPoint.y);
-              updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);
+              updateFeaturePoint(setStore, props.level, props.feature.uuid, px, py);
             }
             else {
               let intersection_point = new THREE.Vector3();
               event.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), props.elevation), intersection_point);
               const [px, py] = props.level.inverseTransformPoint(intersection_point.x, intersection_point.y);
-              updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);
+              updateFeaturePoint(setStore, props.level, props.feature.uuid, px, py);
             }
           }
         }}
       >
-        <cylinderGeometry args={[0.1, 0.1, 0.2, 16]} />
+        <cylinderGeometry args={[0.05, 0.15, 0.4, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
       <Text color="blue" position={[x, y, 0.36 + props.elevation]}>
-        {props.vertex.name}
+        {props.feature.name}
       </Text>
     </group>
   );
