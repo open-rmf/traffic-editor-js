@@ -12,6 +12,7 @@ import {
   useStore,
 } from './Store';
 import { EditorParam } from './EditorParam';
+import { Building } from './Building';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
@@ -237,10 +238,28 @@ function LevelTreeItem(props: { level: Level }): JSX.Element {
   );
 }
 
-export default function BuildingSummary(): JSX.Element {
-  const building = useStore(state => state.building);
+function BuildingTreeItem(props: { building: Building }): JSX.Element {
+  return (
+    <TreeItem
+      nodeId={props.building.uuid}
+      key={props.building.uuid}
+      label={props.building.name}
+    >
+      <TreeItem
+        nodeId={props.building.uuid + '_ref'}
+        label={"reference level: " + props.building.reference_level_name }
+      />
+      <TreeItem nodeId={props.building.uuid + '_levels'} label="levels">
+        {props.building.levels.map(level => <LevelTreeItem level={level} /> )}
+      </TreeItem>
+    </TreeItem>
+  );
+}
 
-  if (building.name === '') {
+export function ComplexTree(): JSX.Element {
+  const complex = useStore(state => state.complex);
+
+  if (complex.name === '') {
     return (
       <div style={{margin: '1em'}}>
         <p>
@@ -259,10 +278,9 @@ export default function BuildingSummary(): JSX.Element {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
     >
-      <TreeItem nodeId={building.uuid + '_name'} label={"name: " + building.name} />
-      <TreeItem nodeId={building.uuid + '_ref'} label={"reference level: " + building.reference_level_name } />
-      <TreeItem nodeId={building.uuid + '_levels'} label="levels">
-        {building.levels.map((level) => <LevelTreeItem level={level} /> )}
+      <TreeItem nodeId={complex.uuid + '_name'} label={"name: " + complex.name} />
+      <TreeItem nodeId={complex.uuid + '_buildings'} label="buildings">
+        {complex.buildings.map(building => <BuildingTreeItem building={building} /> )}
       </TreeItem>
     </TreeView>
   );

@@ -1,6 +1,8 @@
-import { useStore } from './Store'
-import { Building } from './Building'
-import YAML from 'yaml'
+import { useStore } from './Store';
+import { Building } from './Building';
+import { Complex } from './Complex';
+import YAML from 'yaml';
+import { v4 as generate_uuid } from 'uuid';
 
 
 export function YAMLParser(yaml_text: string, url_base: string): Building {
@@ -8,8 +10,14 @@ export function YAMLParser(yaml_text: string, url_base: string): Building {
   building.url_base = url_base;
   const cameraInitialPose = building.computeInitialCameraPose();
 
+  const complex = new Complex();
+  complex.buildings = [building];
+  complex.uuid = generate_uuid();
+  complex.url_base = url_base;
+  complex.name = building.name;
+
   useStore.setState({
-    building: building,
+    complex: complex,
     selection: null,
     cameraInitialPose: cameraInitialPose
   });
@@ -31,8 +39,8 @@ export async function YAMLRetrieveDemo(name: string): Promise<void> {
 
 export async function YAMLSender(url: string): Promise<void> {
   Object.getPrototypeOf(YAML.YAMLMap).maxFlowStringSingleLineLength = 10000;
-  const { building } = useStore.getState();
-  let yaml_text: string = building.toYAMLString();
+  const { complex } = useStore.getState();
+  let yaml_text: string = complex.toYAMLString();
   let yaml_size = new Blob([yaml_text]).size;  // utf-8 encoding length
   await fetch(url, {
     method: 'POST',

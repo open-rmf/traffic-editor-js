@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-import BuildingSummary from './BuildingSummary';
+import { ComplexTree } from './ComplexTree';
 import { EditorScene } from './EditorScene';
 import PropertyEditor from './PropertyEditor';
 import MainMenu from './MainMenu';
@@ -46,7 +46,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
       <Grid container spacing={0}>
         <Grid className={classes.gridLeftColumn} container xs={3} direction="column" spacing={0}>
           <Grid item style={{height: '40vh', overflow: 'auto'}}>
-            <BuildingSummary />
+            <ComplexTree />
           </Grid>
           <Grid item className={classes.propertyGridItem} style={{height: '40vh', overflow: 'auto'}}>
             <PropertyEditor />

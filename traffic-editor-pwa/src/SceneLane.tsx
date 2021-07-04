@@ -43,7 +43,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
         setSelection(setStore, props.lane);
       }}
     >
-      <boxGeometry args={[len, 1.0, 0.1]} />
+      <boxGeometry args={[len, 0.5, 0.1]} />
       <meshStandardMaterial color={color} />
     </mesh>
   );

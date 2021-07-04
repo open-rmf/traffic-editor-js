@@ -13,7 +13,7 @@ type SceneImageProps = {
 
 export function SceneImage(props: SceneImageProps): JSX.Element {
   //const selection = useStore(state => state.selection)
-  const url_base = useStore(state => state.building.url_base);
+  const url_base = useStore(state => state.complex.url_base);
   //const setStore = useStore(state => state.set);
   const [ texture ] = useLoader(TextureLoader, [url_base + props.image.filename]);
 

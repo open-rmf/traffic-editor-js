@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
 import { useStore, clearSelection } from './Store';
-import { SceneBuilding } from './SceneBuilding';
+import { SceneComplex } from './SceneComplex';
 
 type EditorSceneProps = {
 };
@@ -73,7 +73,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       <Suspense fallback={null} >
-        <SceneBuilding />
+        <SceneComplex />
       </Suspense>
     </Canvas>
   )
