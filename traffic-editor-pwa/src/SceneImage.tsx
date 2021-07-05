@@ -30,6 +30,7 @@ export function SceneImage(props: SceneImageProps): JSX.Element {
     height_pixels = texture.image.height;
     width_meters = width_pixels * props.level.scale;
     height_meters = height_pixels * props.level.scale;
+    console.log(`texture size: ${width_meters}, ${height_meters}`);
   }
 
   const x = props.image.offset.x;

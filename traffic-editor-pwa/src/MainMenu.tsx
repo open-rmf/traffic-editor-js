@@ -16,11 +16,13 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './Store';
+import { Complex } from './Complex';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
 
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
@@ -173,6 +175,27 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           transformOrigin={{vertical: 'top', horizontal: 'center'}}
           transitionDuration={0.0}
         >
+          <MenuItem
+            onClick={() => {
+              console.log('create new complex');
+              const complex = Complex.fromNewCommand();
+              const cameraInitialPose = complex.computeInitialCameraPose();
+              useStore.setState({
+                complex: complex,
+                selection: null,
+                cameraInitialPose: cameraInitialPose,
+              });
+              setMenuAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <InsertDriveFileIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Create new geo-located complex
+            </ListItemText>
+          </MenuItem>
+          <Divider />
           <MenuItem
             onClick={async () => {
               try {

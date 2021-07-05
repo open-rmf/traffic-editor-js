@@ -278,7 +278,7 @@ export function ComplexTree(): JSX.Element {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
     >
-      <TreeItem nodeId={complex.uuid + '_name'} label={"name: " + complex.name} />
+      <TreeItem nodeId={complex.uuid + '_name'} label={"complex name: " + complex.name} />
       <TreeItem nodeId={complex.uuid + '_buildings'} label="buildings">
         {complex.buildings.map(building => <BuildingTreeItem building={building} /> )}
       </TreeItem>

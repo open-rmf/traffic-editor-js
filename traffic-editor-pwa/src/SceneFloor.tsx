@@ -1,5 +1,5 @@
-import React from 'react'
-import * as THREE from 'three'
+import React from 'react';
+import * as THREE from 'three';
 import { Vertex } from './Vertex';
 import { Level } from './Level';
 import { useStore, EditorFloor, setSelection } from './Store';

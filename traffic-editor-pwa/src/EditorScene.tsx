@@ -6,6 +6,7 @@ import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 
 import { useStore, clearSelection } from './Store';
 import { SceneComplex } from './SceneComplex';
+import { SceneMap } from './SceneMap';
 
 type EditorSceneProps = {
 };
@@ -55,6 +56,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
             TWO: THREE.TOUCH.ROTATE
           }}
           enabled={enableMotionControls}
+          regress={true}
         />}
       </>
     );
@@ -74,6 +76,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <pointLight position={[10, 10, 10]} />
       <Suspense fallback={null} >
         <SceneComplex />
+        <SceneMap />
       </Suspense>
     </Canvas>
   )
