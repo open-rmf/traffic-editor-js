@@ -2,17 +2,16 @@ import * as THREE from 'three'
 import React from 'react';
 //import { useStore } from './Store';
 import { useThree } from '@react-three/fiber';
-//import { CoordinateSystem } from './Complex';
 import { SceneMapTile } from './SceneMapTile';
 
 type SceneMapProps = {
 }
 
-/*
 function r(value: number): string {
   return (value >= 0 ? '+' : '') + (Math.round(value * 10000) / 10000).toFixed(4);
 }
 
+/*
 function printMatrix(name: string, m: THREE.Matrix4) {
   console.log(name);
   const e = m.elements;
@@ -43,13 +42,13 @@ type TileDescription = {
 }
 
 export function SceneMap(props: SceneMapProps): JSX.Element {
-  //const showMap = useStore(state => (state.complex.coordinate_system === CoordinateSystem.WGS84));
   const [tileCache, setTileCache] = React.useState(new Map<TileDescription, JSX.Element>());
   const [tiles, setTiles] = React.useState<TileDescription[]>([]);
   const viewport = useThree(state => state.viewport);
   const camera = useThree(state => state.camera);
   const canvasSize = useThree(state => state.size);
   const currentPerformance = useThree(state => state.performance.current);
+
   React.useEffect(() => {
     // recalculate visible tiles after camera-control motion is completed
     // in the future, could also have a useFrame() handler checking if 
@@ -70,25 +69,38 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
         printMatrix('matrixWorld', camera.matrixWorld);
         printMatrix('matrixWorldInverse', camera.matrixWorldInverse);
          */
-        // find world-coordinate bounds of the viewport, in degrees lat/lon
+        // find world-coordinate bounds of the viewport: web mercator (0, 0) => (256, -256)
+        const scale = 1000;
+
         const center_x = camera.matrixWorld.elements[12];
         const center_y = camera.matrixWorld.elements[13];
         const right_x = (center_x + c.right / c.zoom);
         const left_x = (center_x + c.left / c.zoom);
-        const top_y = (center_y + c.top / c.zoom);
-        const bottom_y = (center_y + c.bottom / c.zoom);
-        //console.log(`(${left}, ${top}) - (${right}, ${bottom})`);
+        const top_y = -(center_y + c.top / c.zoom);
+        const bottom_y = -(center_y + c.bottom / c.zoom);
+        console.log(`extents: (${r(left_x)}, ${r(top_y)}) - (${r(right_x)}, ${r(bottom_y)})`);
 
-        // calculate web mercator
-        const calc_zoom = Math.ceil(1 + Math.log(360 / (right_x - left_x)) / Math.log(2));
-        console.log(`calc_zoom = ${calc_zoom}`);
-        const zoom_level = calc_zoom; //4;  // todo: calculate from map extents
-        let left_x_grid_idx = Math.floor(1 / 360 * Math.pow(2, zoom_level) * (left_x + 180));
-        let right_x_grid_idx = Math.floor(1 / 360 * Math.pow(2, zoom_level) * (right_x + 180));
+        // calculate web mercator zoom level do put a few tiles on the screen
+        // todo: incorporate the number of pixels in the canvas; small resolutions don't need as many.
+        let zoom_level = Math.ceil(1 + Math.log(scale * 256 / (right_x - left_x)) / Math.log(2));
+        const MAX_ZOOM = 18;
+        if (zoom_level < 0)
+          zoom_level = 0;
+        else if (zoom_level > MAX_ZOOM)
+          zoom_level = MAX_ZOOM;
+        console.log(`  zoom: ${zoom_level}`);
 
-        const PHI_MAX = 85.05112877980659;  // web mercator... 2*atan(e^pi) - pi/2
-        let top_y_grid_idx = Math.pow(2, zoom_level) - 1 - Math.floor(1 / (2 * PHI_MAX) * Math.pow(2, zoom_level) * (top_y + PHI_MAX));
-        let bottom_y_grid_idx = Math.pow(2, zoom_level) - 1 - Math.ceil(1 / (2 * PHI_MAX) * Math.pow(2, zoom_level) * (bottom_y + PHI_MAX));
+        let left_x_grid_idx = Math.floor(left_x / (256 * scale) * Math.pow(2, zoom_level));
+        let right_x_grid_idx = Math.floor(right_x / (256 * scale) * Math.pow(2, zoom_level));
+        // invert Y since we're operating in 4th quadrant to keep +z = "up"
+        let top_y_grid_idx = Math.floor(top_y / (256 * scale) * Math.pow(2, zoom_level));
+        let bottom_y_grid_idx = Math.floor(bottom_y / (256 * scale) * Math.pow(2, zoom_level));
+        console.log(`  grid: (${left_x_grid_idx}, ${top_y_grid_idx}) - (${right_x_grid_idx}, ${bottom_y_grid_idx})`);
+
+
+        //const PHI_MAX = 85.05112877980659;  // web mercator... 2*atan(e^pi) - pi/2
+        //let top_y_grid_idx = Math.pow(2, zoom_level) - 1 - Math.floor(1 / (2 * PHI_MAX) * Math.pow(2, zoom_level) * (top_y + PHI_MAX));
+        //let bottom_y_grid_idx = Math.pow(2, zoom_level) - 1 - Math.ceil(1 / (2 * PHI_MAX) * Math.pow(2, zoom_level) * (bottom_y + PHI_MAX));
         //const bottom_y_grid_idx = Math.floor(1 / 360 * Math.pow(2, zoom_level) * (right_x + 180));
 
         const max_cell = Math.pow(2, zoom_level) - 1;
@@ -97,8 +109,10 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
         top_y_grid_idx = clamp(top_y_grid_idx, 0, max_cell);
         bottom_y_grid_idx = clamp(bottom_y_grid_idx, 0, max_cell);
 
+        /*
         console.log(`horizontal ${left_x},${right_x} => ${left_x_grid_idx},${right_x_grid_idx}`);
         console.log(`vertical ${bottom_y},${top_y} => ${bottom_y_grid_idx},${top_y_grid_idx}`);
+         */
 
         let next_tiles = Array<TileDescription>();
         for (let y_idx = top_y_grid_idx; y_idx <= bottom_y_grid_idx; y_idx++) {
@@ -110,7 +124,6 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
           }
         }
         setTiles(next_tiles);
-
 
         /*
         const upper_left = new THREE.Vector4(c.left, c.top, 0, 1);
@@ -128,6 +141,8 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
   }, [currentPerformance, camera, viewport, canvasSize]);
 
   React.useMemo(() => {
+    // spin through the requested tiles and add them to the tile cache if they're not already there.
+    // todo: might as well put this block in the useEffect() block above
     tiles.map(tile_desc => {
       if (!(tileCache.has(tile_desc))) {
         setTileCache(prevCache => new Map<TileDescription, JSX.Element>(prevCache).set(tile_desc, <SceneMapTile x={tile_desc.x} y={tile_desc.y} zoom={tile_desc.zoom} />));

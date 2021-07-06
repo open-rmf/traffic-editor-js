@@ -85,12 +85,14 @@ export class Building extends EditorObject {
       return {
         position: position,
         target: target,
+        zoom: 20,
       };
     }
     else {
       return {
         position: new THREE.Vector3(10, 10, 10),
         target: new THREE.Vector3(0, 0, 0),
+        zoom: 20,
       };
     }
   }

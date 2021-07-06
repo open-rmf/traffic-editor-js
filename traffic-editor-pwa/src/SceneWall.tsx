@@ -25,7 +25,7 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
   const xyrot = Math.atan2(dy, dx);
 
   const color: THREE.Color = React.useMemo(() => {
-    let color = new THREE.Color(0.1, 0.1, 0.7);
+    let color = new THREE.Color(0.1, 0.1, 0.9);
     if (selection && selection.uuid === props.wall.uuid) {
       color.setRGB(1, 0.4, 0.1);
     }

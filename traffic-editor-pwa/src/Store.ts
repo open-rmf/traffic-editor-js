@@ -252,7 +252,8 @@ export enum EditorToolID {
 
 export interface CameraPose {
   position: THREE.Vector3,
-  target: THREE.Vector3
+  target: THREE.Vector3,
+  zoom: number,
 }
 
 export interface StoreState {
@@ -289,8 +290,9 @@ export const useStore = create<StoreState>(set => ({
   propertyRepaintCount: 0,
   repaintCount: 0,
   cameraInitialPose: {
-    position: new THREE.Vector3(0, 0, 5),
+    position: new THREE.Vector3(0, 0, 100),
     target: new THREE.Vector3(0, 0, 0),
+    zoom: 20,
   },
   set: fn => set(produce(fn)),
 }));

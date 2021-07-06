@@ -25,7 +25,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const xyrot = Math.atan2(dy, dx);
 
   const color: THREE.Color = React.useMemo(() => {
-    let color = new THREE.Color(0.4, 0.05, 0.05);
+    let color = new THREE.Color(0.6, 0.05, 0.05);
     if (selection && selection.uuid === props.lane.uuid) {
       color.setRGB(0.8, 0.3, 0.01);
     }

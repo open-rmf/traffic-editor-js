@@ -41,10 +41,21 @@ export class Complex extends EditorObject {
     }
     else {
       // todo: branch on coordinate system
-      return {
-        position: new THREE.Vector3(10, 10, 10),
-        target: new THREE.Vector3(0, 0, 0),
-      };
+      if (this.coordinate_system === CoordinateSystem.Legacy) {
+        return {
+          position: new THREE.Vector3(10, 10, 10),
+          target: new THREE.Vector3(0, 0, 0),
+          zoom: 20,
+        };
+      }
+      else {
+        // center on singapore
+        return {
+          position: new THREE.Vector3(201830, -127030, 10),
+          target: new THREE.Vector3(201830, -127030, 0),
+          zoom: 5,
+        };
+      }
     }
   }
 }

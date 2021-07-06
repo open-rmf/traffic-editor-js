@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import React, { useRef, Suspense } from 'react'
 import { OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
+import { CoordinateSystem } from './Complex';
 
 import { useStore, clearSelection } from './Store';
 import { SceneComplex } from './SceneComplex';
@@ -12,6 +13,7 @@ type EditorSceneProps = {
 };
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
+  const showMap = useStore(state => (state.complex.coordinate_system === CoordinateSystem.WGS84));
   const setStore = useStore(state => state.set);
   //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
@@ -34,8 +36,8 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
         />
         <OrthographicCamera
           ref={orthographic_camera}
-          position={[cameraInitialPose.target.x, cameraInitialPose.target.y, cameraInitialPose.target.z + 5]}
-          zoom={20}
+          position={[cameraInitialPose.target.x, cameraInitialPose.target.y, cameraInitialPose.target.z + 100]}
+          zoom={cameraInitialPose.zoom}
           makeDefault={editorMode === '2d'}
         />
         {perspective_camera && orthographic_camera && <OrbitControls
@@ -66,18 +68,21 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   return (
     <Canvas
       frameloop="demand"
+      linear={true}
       onPointerMissed={() => {
         clearSelection(setStore);
       }}
     >
       <Controls />
       <axesHelper />
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
+      <ambientLight intensity={1.0}/>
       <Suspense fallback={null} >
         <SceneComplex />
-        <SceneMap />
+        {showMap && <SceneMap />}
       </Suspense>
     </Canvas>
   )
 }
+/*
+      <pointLight position={[10, 10, 10]} />
+*/
