@@ -82,7 +82,7 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
 
         // calculate web mercator zoom level do put a few tiles on the screen
         // todo: incorporate the number of pixels in the canvas; small resolutions don't need as many.
-        let zoom_level = Math.ceil(1 + Math.log(scale * 256 / (right_x - left_x)) / Math.log(2));
+        let zoom_level = Math.ceil(1.5 + Math.log(scale * 256 / (right_x - left_x)) / Math.log(2));
         const MAX_ZOOM = 18;
         if (zoom_level < 0)
           zoom_level = 0;

@@ -30,7 +30,8 @@ export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
   const wx = props.x * 256 * scale / Math.pow(2, props.zoom) + side_len / 2;
   const wy = -1 * (props.y * 256 * scale / Math.pow(2, props.zoom) + side_len / 2);
 
-  const url = `http://localhost:8800/tiles/${props.zoom}/${props.x}/${props.y}.png`;
+  //const url = `http://localhost:8800/tiles/${props.zoom}/${props.x}/${props.y}.png`;
+  const url = `https://tiles.demo.open-rmf.org/tiles/${props.zoom}/${props.x}/${props.y}.png`;
   const [ texture ] = useLoader(TextureLoader, [url]);
   if (texture) {
     //texture.magFilter = THREE.NearestFilter;
