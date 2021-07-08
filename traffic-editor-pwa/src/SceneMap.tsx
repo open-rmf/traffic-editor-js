@@ -56,7 +56,7 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
     // motion is in-flight
     if (currentPerformance === 1) {
       //console.log('recalculate tiles');
-      if (camera.constructor.name === 'OrthographicCamera') {
+      if (camera instanceof THREE.OrthographicCamera) {
         const c: THREE.OrthographicCamera = camera as THREE.OrthographicCamera;
         /*
         console.log(`orthographic camera: ${c.left} ${c.right}, ${c.top}, ${c.bottom}, ${c.zoom}`);
@@ -133,10 +133,6 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
         printVector('upper_left', upper_left);
          */
       }
-      else {
-        console.log('todo: calculate tiles for perspective camera');
-      }
-      
     }
   }, [currentPerformance, camera, viewport, canvasSize]);
 
