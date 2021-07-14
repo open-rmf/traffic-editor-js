@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
-import React, { useRef, Suspense } from 'react'
+import React, { useRef } from 'react'
 import { OrbitControls } from '@react-three/drei'
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 import { CoordinateSystem } from './Complex';
@@ -49,8 +49,8 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
           minAzimuthAngle={editorMode === '3d' ? -Infinity : 0}
           maxAzimuthAngle={editorMode === '3d' ? Infinity : 0}
           mouseButtons={{
-            LEFT: -1,
-            MIDDLE: THREE.MOUSE.PAN,
+            LEFT: THREE.MOUSE.PAN,
+            MIDDLE: -1,
             RIGHT: THREE.MOUSE.ROTATE,
           }}
           touches={{
@@ -76,13 +76,14 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <Controls />
       <axesHelper />
       <ambientLight intensity={1.0}/>
-      <Suspense fallback={null} >
-        <SceneComplex />
-        {showMap && <SceneMap />}
-      </Suspense>
+      <SceneComplex />
+      {showMap && <SceneMap />}
+
     </Canvas>
   )
 }
 /*
+      <Suspense fallback={null} >
       <pointLight position={[10, 10, 10]} />
+      </Suspense>
 */

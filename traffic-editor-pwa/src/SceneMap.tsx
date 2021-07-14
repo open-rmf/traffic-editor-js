@@ -7,11 +7,11 @@ import { SceneMapTile } from './SceneMapTile';
 type SceneMapProps = {
 }
 
+/*
 function r(value: number): string {
   return (value >= 0 ? '+' : '') + (Math.round(value * 10000) / 10000).toFixed(4);
 }
 
-/*
 function printMatrix(name: string, m: THREE.Matrix4) {
   console.log(name);
   const e = m.elements;
@@ -42,7 +42,6 @@ type TileDescription = {
 }
 
 export function SceneMap(props: SceneMapProps): JSX.Element {
-  const [tileCache, setTileCache] = React.useState(new Map<TileDescription, JSX.Element>());
   const [tiles, setTiles] = React.useState<TileDescription[]>([]);
   const viewport = useThree(state => state.viewport);
   const camera = useThree(state => state.camera);
@@ -78,7 +77,7 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
         const left_x = (center_x + c.left / c.zoom);
         const top_y = -(center_y + c.top / c.zoom);
         const bottom_y = -(center_y + c.bottom / c.zoom);
-        console.log(`extents: (${r(left_x)}, ${r(top_y)}) - (${r(right_x)}, ${r(bottom_y)})`);
+        //console.log(`extents: (${r(left_x)}, ${r(top_y)}) - (${r(right_x)}, ${r(bottom_y)})`);
 
         // calculate web mercator zoom level do put a few tiles on the screen
         // todo: incorporate the number of pixels in the canvas; small resolutions don't need as many.
@@ -88,14 +87,14 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
           zoom_level = 0;
         else if (zoom_level > MAX_ZOOM)
           zoom_level = MAX_ZOOM;
-        console.log(`  zoom: ${zoom_level}`);
+        //console.log(`  zoom: ${zoom_level}`);
 
         let left_x_grid_idx = Math.floor(left_x / (256 * scale) * Math.pow(2, zoom_level));
         let right_x_grid_idx = Math.floor(right_x / (256 * scale) * Math.pow(2, zoom_level));
         // invert Y since we're operating in 4th quadrant to keep +z = "up"
         let top_y_grid_idx = Math.floor(top_y / (256 * scale) * Math.pow(2, zoom_level));
         let bottom_y_grid_idx = Math.floor(bottom_y / (256 * scale) * Math.pow(2, zoom_level));
-        console.log(`  grid: (${left_x_grid_idx}, ${top_y_grid_idx}) - (${right_x_grid_idx}, ${bottom_y_grid_idx})`);
+        //console.log(`  grid: (${left_x_grid_idx}, ${top_y_grid_idx}) - (${right_x_grid_idx}, ${bottom_y_grid_idx})`);
 
 
         //const PHI_MAX = 85.05112877980659;  // web mercator... 2*atan(e^pi) - pi/2
@@ -119,11 +118,12 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
           for (let x_idx = left_x_grid_idx; x_idx <= right_x_grid_idx; x_idx++) {
             //console.log(`looking for tile (${x_idx}, ${y_idx}, ${zoom_level})`);
             //const tile_str = `${x_idx}_${y_idx}_${zoom_level}`;
-            const tile_desc = { x: x_idx, y: y_idx, zoom: zoom_level };
+            const tile_desc = { x: x_idx, y: y_idx, zoom: zoom_level, visible: true };
             next_tiles.push(tile_desc);
           }
         }
         setTiles(next_tiles);
+        console.log('setTiles()');
 
         /*
         const upper_left = new THREE.Vector4(c.left, c.top, 0, 1);
@@ -136,34 +136,25 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
     }
   }, [currentPerformance, camera, viewport, canvasSize]);
 
-  React.useMemo(() => {
-    // spin through the requested tiles and add them to the tile cache if they're not already there.
-    // todo: might as well put this block in the useEffect() block above
-    tiles.map(tile_desc => {
-      if (!(tileCache.has(tile_desc))) {
-        setTileCache(prevCache => new Map<TileDescription, JSX.Element>(prevCache).set(tile_desc, <SceneMapTile x={tile_desc.x} y={tile_desc.y} zoom={tile_desc.zoom} />));
-      }
-      return 42;  // todo: not this...
-    });
-  }, [tiles, tileCache]);
-
   /*
   useFrame(state => {
     //console.log(`viewport: ${state.viewport.width}, ${state.viewport.height}, ${state.viewport.factor}`);
     //console.log(`camera: ${state.camera.projectionMatrix.elements}  ${state.camera.matrixWorld.elements}`);
     //console.log(`viewport: ${state.viewport.width}, ${state.viewport.height}, ${state.viewport.factor}`);
     //console.log(`camera class: ${typeof state.camera.constructor.name}`);
-
   });
   */
 
-  //console.log(`viewport: ${viewport.width}, ${viewport.height}, ${viewport.factor}`);
-  // compute which tiles are in the viewport
-  //
-
   return (
     <group>
-      {tiles.map(tile_desc => tileCache.get(tile_desc))}
+      {tiles.map(tile_desc =>
+        <SceneMapTile
+          x={tile_desc.x}
+          y={tile_desc.y}
+          zoom={tile_desc.zoom}
+          key={`${tile_desc.zoom}_${tile_desc.x}_${tile_desc.y}`}
+        />
+      )}
     </group>
   );
 }

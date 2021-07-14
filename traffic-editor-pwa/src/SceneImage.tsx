@@ -16,6 +16,7 @@ export function SceneImage(props: SceneImageProps): JSX.Element {
   const url_base = useStore(state => state.complex.url_base);
   //const setStore = useStore(state => state.set);
   const [ texture ] = useLoader(TextureLoader, [url_base + props.image.filename]);
+  //useLoader.preload(TextureLoader, [url_base + props.image.filename]);
 
   let width_pixels = 128;
   let height_pixels = 128;

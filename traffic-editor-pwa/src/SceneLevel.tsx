@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Level } from './Level';
 import { SceneDoor } from './SceneDoor';
 import { SceneFeature } from './SceneFeature';
@@ -79,12 +79,14 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
           vertex_end={props.level.vertices[lane.end_idx]}
           elevation={z} />)}
 
-      {props.level.images.filter(image => image.isLegacyDefaultImage).map(image =>
-        <SceneImage
-          key={image.uuid}
-          image={image}
-          level={props.level}
-          elevation={z} />)}
+      <Suspense fallback={null}>
+        {props.level.images.filter(image => image.isLegacyDefaultImage).map(image =>
+          <SceneImage
+            key={image.uuid}
+            image={image}
+            level={props.level}
+            elevation={z} />)}
+      </Suspense>
 
       {props.level.measurements.map(meas =>
         <SceneMeasurement

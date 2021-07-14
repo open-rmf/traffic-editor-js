@@ -154,6 +154,12 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     };
   }, [setStore, save]);
 
+  React.useEffect(() => {
+    setStore(state => {
+      state.enableMotionControls = (activeTool === EditorToolID.SELECT);
+    });
+  }, [activeTool, setStore]);
+
   return (
     <AppBar position="fixed">
       <ToolBar>
