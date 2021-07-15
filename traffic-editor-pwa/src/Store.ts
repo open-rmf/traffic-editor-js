@@ -263,6 +263,7 @@ export interface StoreState {
   enableMotionControls: boolean,
   activeTool: EditorToolID,
   cameraInitialPose: CameraPose,
+  cameraPose: CameraPose,
   propertyRepaintCount: number,
   repaintCount: number,
   set: (fn: (draftState: StoreState) => void) => void
@@ -290,6 +291,11 @@ export const useStore = create<StoreState>(set => ({
   propertyRepaintCount: 0,
   repaintCount: 0,
   cameraInitialPose: {
+    position: new THREE.Vector3(0, 0, 100),
+    target: new THREE.Vector3(0, 0, 0),
+    zoom: 20,
+  },
+  cameraPose: {
     position: new THREE.Vector3(0, 0, 100),
     target: new THREE.Vector3(0, 0, 0),
     zoom: 20,

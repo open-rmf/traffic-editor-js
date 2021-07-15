@@ -27,6 +27,8 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 
+import * as THREE from 'three';
+
 const StyledToggleButtonGroup = withStyles((theme: Theme) => ({
   root: {
     backgroundColor: theme.palette.primary.light,
@@ -73,7 +75,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-
 export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Element {
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
@@ -90,6 +91,20 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null) {
+      if (editorMode === '2d') {
+        /*
+        const x = store.cameraPose.position.x;
+        const y = store.cameraPose.position.y;
+        console.log(`previous 2d center point: ${x}, ${y}`);
+         */
+        setStore(state => {
+          state.cameraInitialPose = {
+            position: new THREE.Vector3(state.cameraPose.position.x + 2, state.cameraPose.position.y - 2, 10),
+            target: new THREE.Vector3(state.cameraPose.position.x, state.cameraPose.position.y, 0),
+            zoom: 20,
+          };
+        });
+      }
       setEditorMode(setStore, newMode);
       clearSelection(setStore);
     }

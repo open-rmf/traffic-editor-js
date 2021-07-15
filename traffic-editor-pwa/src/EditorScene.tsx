@@ -1,8 +1,8 @@
-import * as THREE from 'three'
-import { Canvas } from '@react-three/fiber'
-import React, { useRef } from 'react'
-import { OrbitControls } from '@react-three/drei'
-import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
+import * as THREE from 'three';
+import { Canvas } from '@react-three/fiber';
+import React, { useRef } from 'react';
+import { OrbitControls } from '@react-three/drei';
+import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei';
 import { CoordinateSystem } from './Complex';
 
 import { useStore, clearSelection } from './Store';
@@ -68,6 +68,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   return (
     <Canvas
       frameloop="demand"
+      mode="concurrent"
       linear={true}
       onPointerMissed={() => {
         clearSelection(setStore);
