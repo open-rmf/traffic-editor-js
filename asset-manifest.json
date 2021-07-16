@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/traffic-editor-js/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/traffic-editor-js/static/js/main.947ed906.chunk.js",
-    "main.js.map": "/traffic-editor-js/static/js/main.947ed906.chunk.js.map",
+    "main.js": "/traffic-editor-js/static/js/main.54ef6edf.chunk.js",
+    "main.js.map": "/traffic-editor-js/static/js/main.54ef6edf.chunk.js.map",
     "runtime-main.js": "/traffic-editor-js/static/js/runtime-main.dbabff02.js",
     "runtime-main.js.map": "/traffic-editor-js/static/js/runtime-main.dbabff02.js.map",
     "static/js/2.019aa015.chunk.js": "/traffic-editor-js/static/js/2.019aa015.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.dbabff02.js",
     "static/js/2.019aa015.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.947ed906.chunk.js"
+    "static/js/main.54ef6edf.chunk.js"
   ]
 }
