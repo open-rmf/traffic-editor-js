@@ -13,13 +13,10 @@ type SceneImageProps = {
 
 export function SceneImage(props: SceneImageProps): JSX.Element {
   //const selection = useStore(state => state.selection)
-  const url_base = useStore(state => state.complex.url_base);
+  const url_base = useStore(state => state.site.url_base);
   //const setStore = useStore(state => state.set);
   const [ texture ] = useLoader(TextureLoader, [url_base + props.image.filename]);
   //useLoader.preload(TextureLoader, [url_base + props.image.filename]);
-
-  let width_pixels = 128;
-  let height_pixels = 128;
 
   let width_meters = 50.0;
   let height_meters = 50.0;
@@ -27,10 +24,8 @@ export function SceneImage(props: SceneImageProps): JSX.Element {
   if (texture) {
     texture.magFilter = THREE.NearestFilter;
     texture.minFilter = THREE.NearestFilter;
-    width_pixels = texture.image.width;
-    height_pixels = texture.image.height;
-    width_meters = width_pixels * props.level.scale;
-    height_meters = height_pixels * props.level.scale;
+    width_meters = texture.image.width * props.level.scale;
+    height_meters = texture.image.height * props.level.scale;
     // console.log(`texture size: ${width_meters}, ${height_meters}`);
   }
 

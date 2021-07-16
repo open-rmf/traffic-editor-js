@@ -5,11 +5,11 @@ import { Vertex } from './Vertex';
 import { Level } from './Level';
 import {
   useStore,
-  EditorToolID,
   repaintPropertyEditor,
   setSelection,
   updateVertexPoint,
 } from './Store';
+import { ToolID } from './ToolID';
 
 interface SceneVertexProps {
   vertex: Vertex,
@@ -22,7 +22,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const selection = useStore(state => state.selection);
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
-  const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
+  const isMoveToolActive = useStore(state => state.activeTool === ToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
   const [x, y] = props.level.transformPoint(props.vertex.x, props.vertex.y);

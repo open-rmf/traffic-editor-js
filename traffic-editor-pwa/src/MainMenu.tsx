@@ -15,8 +15,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { useStore, EditorToolID, setEditorMode, clearSelection, setActiveTool } from './Store';
-import { Complex } from './Complex';
+import { useStore, setEditorMode, clearSelection, setActiveTool } from './Store';
+import { ToolID } from './ToolID';
+import { Site } from './Site';
 import OpenDialog from './OpenDialog';
 import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
@@ -26,6 +27,7 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 import * as THREE from 'three';
 
@@ -86,7 +88,6 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
   //const setEditorMode = useStore(state => state.setEditorMode);
-  //const setActiveTool = useStore(state => state.setActiveTool);
   //const clearSelection = useStore(state => state.clearSelection);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
@@ -110,7 +111,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     }
   };
 
-  const onToolChange = (event: React.MouseEvent<HTMLElement>, newTool: EditorToolID | null) => {
+  const onToolChange = (event: React.MouseEvent<HTMLElement>, newTool: ToolID | null) => {
     if (newTool !== null) {
       setActiveTool(setStore, newTool);
       clearSelection(setStore);
@@ -151,10 +152,13 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     const keyDown = (event: KeyboardEvent) => {
       let key = event.key.toLowerCase();
       if (key === 'm') {
-        setActiveTool(setStore, EditorToolID.MOVE);
+        setActiveTool(setStore, ToolID.MOVE);
         clearSelection(setStore);
       } else if (key === 'escape') {
-        setActiveTool(setStore, EditorToolID.SELECT);
+        setActiveTool(setStore, ToolID.SELECT);
+        clearSelection(setStore);
+      } else if (key === 'v') {
+        setActiveTool(setStore, ToolID.ADD_VERTEX);
         clearSelection(setStore);
       } else if (key === 's' && event.ctrlKey) {
         event.preventDefault();
@@ -171,7 +175,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
 
   React.useEffect(() => {
     setStore(state => {
-      state.enableMotionControls = (activeTool === EditorToolID.SELECT);
+      state.enableMotionControls = (activeTool === ToolID.SELECT);
     });
   }, [activeTool, setStore]);
 
@@ -198,11 +202,10 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         >
           <MenuItem
             onClick={() => {
-              console.log('create new complex');
-              const complex = Complex.fromNewCommand();
-              const cameraInitialPose = complex.computeInitialCameraPose();
+              const site = Site.fromNewCommand();
+              const cameraInitialPose = site.computeInitialCameraPose();
               useStore.setState({
-                complex: complex,
+                site: site,
                 selection: null,
                 cameraInitialPose: cameraInitialPose,
               });
@@ -213,7 +216,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
               <InsertDriveFileIcon />
             </ListItemIcon>
             <ListItemText>
-              Create new geo-located complex
+              Create new geo-located site
             </ListItemText>
           </MenuItem>
           <Divider />
@@ -290,14 +293,19 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           onChange={onToolChange}
           aria-label="tool"
         >
-          <ToggleButton value={EditorToolID.SELECT}>
+          <ToggleButton value={ToolID.SELECT}>
             <Tooltip title="Select tool [Escape]">
               <PanToolIcon />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={EditorToolID.MOVE}>
+          <ToggleButton value={ToolID.MOVE}>
             <Tooltip title="Move tool [m]">
               <OpenWithIcon />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton value={ToolID.ADD_VERTEX}>
+            <Tooltip title="Add vertex [v]">
+              <AddCircleIcon />
             </Tooltip>
           </ToggleButton>
         </StyledToggleButtonGroup>
@@ -308,8 +316,12 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           onChange={onModeChange}
           aria-label="editor mode"
         >
-          <ToggleButton value="3d">3D</ToggleButton>
-          <ToggleButton value="2d">2D</ToggleButton>
+          <ToggleButton value="3d">
+            3D
+          </ToggleButton>
+          <ToggleButton value="2d">
+            2D
+          </ToggleButton>
         </StyledToggleButtonGroup>
       </ToolBar>
       <OpenDialog

@@ -5,9 +5,10 @@ import { v4 as generate_uuid } from 'uuid';
 import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
 import { EditorObject } from './EditorObject';
-import { Complex } from './Complex';
+import { Site } from './Site';
 import { Feature } from './Feature';
 import { Level } from './Level';
+import { ToolID } from './ToolID';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -245,11 +246,6 @@ export class EditorModel extends EditorObject {
   }
 }
 
-export enum EditorToolID {
-  SELECT,
-  MOVE,
-}
-
 export interface CameraPose {
   position: THREE.Vector3,
   target: THREE.Vector3,
@@ -257,11 +253,11 @@ export interface CameraPose {
 }
 
 export interface StoreState {
-  complex: Complex,
+  site: Site,
   selection: EditorObject | null,
   editorMode: string,
   enableMotionControls: boolean,
-  activeTool: EditorToolID,
+  activeTool: ToolID,
   cameraInitialPose: CameraPose,
   cameraPose: CameraPose,
   propertyRepaintCount: number,
@@ -269,25 +265,21 @@ export interface StoreState {
   set: (fn: (draftState: StoreState) => void) => void
 }
 /*
-
   setSelection: (newSelection: EditorObject) => void,
   clearSelection: () => void,
   setEditorMode: (newEditorMode: string) => void,
-
   setEnableMotionControls: (newEnableMotionControls: boolean) => void,
-
-  setActiveTool: (newActiveTool: EditorToolID) => void,
-
+  setActiveTool: (newActiveTool: ToolID) => void,
   //updateVertexPoint: (level_uuid: string, vertex_uuid: string, x: number, y:number) => void,
 }
 */
 
 export const useStore = create<StoreState>(set => ({
-  complex: new Complex(),
+  site: new Site(),
   selection: null,
   editorMode: '2d',
   enableMotionControls: true,
-  activeTool: EditorToolID.SELECT,
+  activeTool: ToolID.SELECT,
   propertyRepaintCount: 0,
   repaintCount: 0,
   cameraInitialPose: {
@@ -323,7 +315,7 @@ export function setEditorMode(setStore: StoreSetter, newMode: string) {
   });
 }
 
-export function setActiveTool(setStore: StoreSetter, newTool: EditorToolID) {
+export function setActiveTool(setStore: StoreSetter, newTool: ToolID) {
   setStore(state => {
     state.activeTool = newTool;
   });
@@ -342,7 +334,7 @@ export function updateVertexPoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.complex.buildings.map(building => {
+    state.site.buildings.map(building => {
       building.levels.map(level => {
         if (level.uuid === level_uuid) {
           level.vertices.map(vertex => {
@@ -368,7 +360,7 @@ export function updateModelPoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.complex.buildings.map(building => {
+    state.site.buildings.map(building => {
       building.levels.map(level => {
         if (level.uuid === level_uuid) {
           level.models.map(model => {
@@ -394,7 +386,7 @@ export function updateFeaturePoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.complex.buildings.map(building => {
+    state.site.buildings.map(building => {
       building.levels.map(level => {
         if (level === feature_level) {
           level.features.map(feature => {

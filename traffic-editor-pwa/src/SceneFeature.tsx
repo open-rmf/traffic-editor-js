@@ -5,11 +5,11 @@ import { Feature } from './Feature';
 import { Level } from './Level';
 import {
   useStore,
-  EditorToolID,
   repaintPropertyEditor,
   setSelection,
   updateFeaturePoint,
 } from './Store';
+import { ToolID } from './ToolID';
 
 interface SceneFeatureProps {
   feature: Feature,
@@ -21,7 +21,7 @@ export function SceneFeature(props: SceneFeatureProps): JSX.Element {
   const selection = useStore(state => state.selection);
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
-  const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
+  const isMoveToolActive = useStore(state => state.activeTool === ToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
   const [x, y] = props.level.transformPoint(props.feature.x, props.feature.y);

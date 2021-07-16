@@ -2,14 +2,14 @@ import * as THREE from 'three'
 import React from 'react'
 import { useStore } from './Store';
 import { SceneBuilding } from './SceneBuilding';
-import { CoordinateSystem } from './Complex';
+import { CoordinateSystem } from './Site';
 import { useFrame } from '@react-three/fiber';
 
-type SceneComplexProps = {
+type SceneSiteProps = {
 }
 
-export function SceneComplex(props: SceneComplexProps): JSX.Element {
-  const complex = useStore(state => state.complex);
+export function SceneSite(props: SceneSiteProps): JSX.Element {
+  const site = useStore(state => state.site);
   useStore(state => state.selection);  // needed to ensure repaints after de-selection
   useStore(state => state.repaintCount);  // needed to ensure repaints after tweaks
   const setStore = useStore(state => state.set);
@@ -33,8 +33,8 @@ export function SceneComplex(props: SceneComplexProps): JSX.Element {
 
   return (
     <group>
-      {(complex.coordinate_system === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
-      {complex.buildings.map(building => <SceneBuilding building={building} />)}
+      {(site.coordinate_system === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
+      {site.buildings.map(building => <SceneBuilding building={building} />)}
     </group>
   );
 }

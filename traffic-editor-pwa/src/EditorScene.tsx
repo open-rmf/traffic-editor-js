@@ -3,17 +3,17 @@ import { Canvas } from '@react-three/fiber';
 import React, { useRef } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei';
-import { CoordinateSystem } from './Complex';
+import { CoordinateSystem } from './Site';
 
 import { useStore, clearSelection } from './Store';
-import { SceneComplex } from './SceneComplex';
+import { SceneSite } from './SceneSite';
 import { SceneMap } from './SceneMap';
 
 type EditorSceneProps = {
 };
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
-  const showMap = useStore(state => (state.complex.coordinate_system === CoordinateSystem.WGS84));
+  const showMap = useStore(state => (state.site.coordinate_system !== CoordinateSystem.Legacy));
   const setStore = useStore(state => state.set);
   //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
@@ -77,7 +77,7 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
       <Controls />
       <axesHelper />
       <ambientLight intensity={1.0}/>
-      <SceneComplex />
+      <SceneSite />
       {showMap && <SceneMap />}
 
     </Canvas>

@@ -256,10 +256,10 @@ function BuildingTreeItem(props: { building: Building }): JSX.Element {
   );
 }
 
-export function ComplexTree(): JSX.Element {
-  const complex = useStore(state => state.complex);
+export function SiteTreeView(): JSX.Element {
+  const site = useStore(state => state.site);
 
-  if (complex.name === '') {
+  if (site.name === '') {
     return (
       <div style={{margin: '1em'}}>
         <p>
@@ -278,9 +278,9 @@ export function ComplexTree(): JSX.Element {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
     >
-      <TreeItem nodeId={complex.uuid + '_name'} label={"complex name: " + complex.name} />
-      <TreeItem nodeId={complex.uuid + '_buildings'} label="buildings">
-        {complex.buildings.map(building => <BuildingTreeItem building={building} /> )}
+      <TreeItem nodeId={site.uuid + '_name'} label={"site name: " + site.name} />
+      <TreeItem nodeId={site.uuid + '_buildings'} label="buildings">
+        {site.buildings.map(building => <BuildingTreeItem building={building} /> )}
       </TreeItem>
     </TreeView>
   );

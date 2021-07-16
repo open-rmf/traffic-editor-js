@@ -7,25 +7,26 @@ import { Building } from './Building';
 
 export enum CoordinateSystem {
   Legacy,
-  WGS84
+  WGS84,
+  WebMercator
 }
 
-export class Complex extends EditorObject {
+export class Site extends EditorObject {
   name: string = '';
   url_base: string = '';
   buildings: Building[] = [];
   uuid: string = '';
   params = [];
   props = [];
-  object_type_name = 'Complex';
+  object_type_name = 'Site';
   coordinate_system: CoordinateSystem = CoordinateSystem.Legacy;
 
-  static fromNewCommand(): Complex {
-    let complex = new Complex();
-    complex.uuid = generate_uuid();
-    complex.name = 'Unnamed Complex';
-    complex.coordinate_system = CoordinateSystem.WGS84;
-    return complex;
+  static fromNewCommand(): Site {
+    let site = new Site();
+    site.uuid = generate_uuid();
+    site.name = 'Unnamed Site';
+    site.coordinate_system = CoordinateSystem.WebMercator;
+    return site;
   }
 
   toYAMLString(): string {

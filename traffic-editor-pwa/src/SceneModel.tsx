@@ -1,7 +1,8 @@
 import React from 'react'
 import * as THREE from 'three'
 import { Level } from './Level';
-import { useStore, EditorModel, EditorToolID, setSelection, updateModelPoint } from './Store';
+import { useStore, EditorModel, setSelection, updateModelPoint } from './Store';
+import { ToolID } from './ToolID';
 
 interface SceneModelProps {
   model: EditorModel,
@@ -14,7 +15,7 @@ export function SceneModel(props: SceneModelProps): JSX.Element {
   const selection = useStore(state => state.selection);
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
-  const isMoveToolActive = useStore(state => state.activeTool === EditorToolID.MOVE);
+  const isMoveToolActive = useStore(state => state.activeTool === ToolID.MOVE);
   const [ dragActive, setDragActive ] = React.useState(false);
 
   const [x, y] = props.level.transformPoint(props.model.x, props.model.y);
