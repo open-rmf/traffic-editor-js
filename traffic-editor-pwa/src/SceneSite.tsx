@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import React from 'react'
 import { useStore } from './Store';
-import { SceneBuilding } from './SceneBuilding';
+import { SceneLevel } from './SceneLevel';
 import { CoordinateSystem } from './Site';
 import { useFrame } from '@react-three/fiber';
 
@@ -34,7 +34,7 @@ export function SceneSite(props: SceneSiteProps): JSX.Element {
   return (
     <group>
       {(site.coordinate_system === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
-      {site.buildings.map(building => <SceneBuilding building={building} />)}
+      {site.levels.map((level) => <SceneLevel key={level.uuid} level={level} />)}
     </group>
   );
 }

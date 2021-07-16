@@ -1,20 +1,12 @@
 import { useStore } from './Store';
-import { Building } from './Building';
 import { Site } from './Site';
 import YAML from 'yaml';
-import { v4 as generate_uuid } from 'uuid';
 
 
-export function YAMLParser(yaml_text: string, url_base: string): Building {
-  const building = Building.fromYAML(yaml_text);
-  building.url_base = url_base;
-  const cameraInitialPose = building.computeInitialCameraPose();
-
-  const site = new Site();
-  site.buildings = [building];
-  site.uuid = generate_uuid();
+export function YAMLParser(yaml_text: string, url_base: string): Site {
+  const site = Site.fromYAML(yaml_text);
   site.url_base = url_base;
-  site.name = building.name;
+  const cameraInitialPose = site.computeInitialCameraPose();
 
   useStore.setState({
     site: site,
@@ -22,7 +14,7 @@ export function YAMLParser(yaml_text: string, url_base: string): Building {
     cameraInitialPose: cameraInitialPose
   });
 
-  return building;
+  return site;
 }
 
 export async function YAMLRetriever(url_base: string, resource_name: string): Promise<void> {

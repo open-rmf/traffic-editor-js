@@ -334,20 +334,17 @@ export function updateVertexPoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.site.buildings.map(building => {
-      building.levels.map(level => {
-        if (level.uuid === level_uuid) {
-          level.vertices.map(vertex => {
-            if (vertex.uuid === vertex_uuid) {
-              vertex.x = x;
-              vertex.y = y;
-            }
-            return vertex;
-          })
-        }
-        return level;
-      });
-      return building;
+    state.site.levels.map(level => {
+      if (level.uuid === level_uuid) {
+        level.vertices.map(vertex => {
+          if (vertex.uuid === vertex_uuid) {
+            vertex.x = x;
+            vertex.y = y;
+          }
+          return vertex;
+        })
+      }
+      return level;
     });
     state.repaintCount = state.repaintCount + 1;
   });
@@ -360,20 +357,17 @@ export function updateModelPoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.site.buildings.map(building => {
-      building.levels.map(level => {
-        if (level.uuid === level_uuid) {
-          level.models.map(model => {
-            if (model.uuid === model_uuid) {
-              model.x = x;
-              model.y = y;
-            }
-            return model;
-          })
-        }
-        return level;
-      });
-      return building;
+    state.site.levels.map(level => {
+      if (level.uuid === level_uuid) {
+        level.models.map(model => {
+          if (model.uuid === model_uuid) {
+            model.x = x;
+            model.y = y;
+          }
+          return model;
+        })
+      }
+      return level;
     });
     state.repaintCount = state.repaintCount + 1;
   });
@@ -386,20 +380,17 @@ export function updateFeaturePoint(
   x: number,
   y: number) {
   setStore(state => {
-    state.site.buildings.map(building => {
-      building.levels.map(level => {
-        if (level === feature_level) {
-          level.features.map(feature => {
-            if (feature.uuid === feature_uuid) {
-              feature.x = x;
-              feature.y = y;
-            }
-            return feature;
-          })
-        }
-        return level;
-      });
-      return building;
+    state.site.levels.map(level => {
+      if (level === feature_level) {
+        level.features.map(feature => {
+          if (feature.uuid === feature_uuid) {
+            feature.x = x;
+            feature.y = y;
+          }
+          return feature;
+        })
+      }
+      return level;
     });
     state.repaintCount = state.repaintCount + 1;
   });

@@ -12,7 +12,6 @@ import {
   useStore,
 } from './Store';
 import { EditorParam } from './EditorParam';
-import { Building } from './Building';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
@@ -238,24 +237,6 @@ function LevelTreeItem(props: { level: Level }): JSX.Element {
   );
 }
 
-function BuildingTreeItem(props: { building: Building }): JSX.Element {
-  return (
-    <TreeItem
-      nodeId={props.building.uuid}
-      key={props.building.uuid}
-      label={props.building.name}
-    >
-      <TreeItem
-        nodeId={props.building.uuid + '_ref'}
-        label={"reference level: " + props.building.reference_level_name }
-      />
-      <TreeItem nodeId={props.building.uuid + '_levels'} label="levels">
-        {props.building.levels.map(level => <LevelTreeItem level={level} /> )}
-      </TreeItem>
-    </TreeItem>
-  );
-}
-
 export function SiteTreeView(): JSX.Element {
   const site = useStore(state => state.site);
 
@@ -279,8 +260,12 @@ export function SiteTreeView(): JSX.Element {
       defaultExpandIcon={<ChevronRightIcon />}
     >
       <TreeItem nodeId={site.uuid + '_name'} label={"site name: " + site.name} />
-      <TreeItem nodeId={site.uuid + '_buildings'} label="buildings">
-        {site.buildings.map(building => <BuildingTreeItem building={building} /> )}
+      <TreeItem
+        nodeId={site.uuid + '_ref'}
+        label={"reference level: " + site.reference_level_name }
+      />
+      <TreeItem nodeId={site.uuid + '_levels'} label="levels">
+        {site.levels.map(level => <LevelTreeItem level={level} /> )}
       </TreeItem>
     </TreeView>
   );
