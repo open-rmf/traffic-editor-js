@@ -19,6 +19,7 @@ interface SceneVertexProps {
 }
 
 export function SceneVertex(props: SceneVertexProps): JSX.Element {
+  console.log('SceneVertex()');
   const selection = useStore(state => state.selection);
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);

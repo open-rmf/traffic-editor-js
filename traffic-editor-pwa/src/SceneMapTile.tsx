@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
-import { useStore } from './Store';
+import { useStore, addVertex } from './Store';
 import { ToolID } from './ToolID';
 
 type SceneMapTileProps = {
@@ -14,6 +14,8 @@ type SceneMapTileProps = {
 export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
   const activeTool = useStore(state => state.activeTool);
   const editorMode = useStore(state => state.editorMode);
+  //const site = useStore(state => state.site);
+  //const setStore = useStore(state => state.set);
 
   const key = `${props.zoom}_${props.x}_${props.y}`;
 
@@ -46,9 +48,8 @@ export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
           event.stopPropagation();
           if (activeTool === ToolID.ADD_VERTEX) {
             if (editorMode === '2d') {
-              const webm_x = event.unprojectedPoint.x / 1000.0;
-              const webm_y = -event.unprojectedPoint.y / 1000.0;
-              console.log(`SceneMapTile add vertex at WebM: (${webm_x}, ${webm_y})`);
+              addVertex(event.unprojectedPoint.x, event.unprojectedPoint.y);
+              
               /*
               const [px, py] = props.level.inverseTransformPoint(event.unprojectedPoint.x, event.unprojectedPoint.y);
               updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);

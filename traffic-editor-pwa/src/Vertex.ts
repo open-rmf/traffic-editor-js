@@ -8,6 +8,13 @@ export class Vertex extends EditorObject {
   y: number = 0;
   name: string = '';
 
+  constructor() {
+    super();
+    this.props.push(new EditorProp('name', () => this.name));
+    this.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(this.x)} ));
+    this.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(this.y)} ));
+  }
+
   static fromYAML(data: any): Vertex {
     let vertex = new Vertex();
     vertex.object_type_name = 'Vertex';
@@ -16,10 +23,6 @@ export class Vertex extends EditorObject {
     vertex.y = -data[1];
     vertex.name = data[3];
     vertex.paramsFromYAML(data[4]);
-
-    vertex.props.push(new EditorProp('name', () => vertex.name));
-    vertex.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(vertex.x)} ));
-    vertex.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(vertex.y)} ));
 
     return vertex;
   }

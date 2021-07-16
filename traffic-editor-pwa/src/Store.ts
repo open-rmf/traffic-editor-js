@@ -5,10 +5,12 @@ import { v4 as generate_uuid } from 'uuid';
 import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
 import { EditorObject } from './EditorObject';
-import { Site } from './Site';
+import { Site, CoordinateSystem } from './Site';
 import { Feature } from './Feature';
 import { Level } from './Level';
+import { Vertex } from './Vertex';
 import { ToolID } from './ToolID';
+//import { unstable_batchedUpdates } from 'react-dom';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -264,15 +266,6 @@ export interface StoreState {
   repaintCount: number,
   set: (fn: (draftState: StoreState) => void) => void
 }
-/*
-  setSelection: (newSelection: EditorObject) => void,
-  clearSelection: () => void,
-  setEditorMode: (newEditorMode: string) => void,
-  setEnableMotionControls: (newEnableMotionControls: boolean) => void,
-  setActiveTool: (newActiveTool: ToolID) => void,
-  //updateVertexPoint: (level_uuid: string, vertex_uuid: string, x: number, y:number) => void,
-}
-*/
 
 export const useStore = create<StoreState>(set => ({
   site: new Site(),
@@ -295,7 +288,7 @@ export const useStore = create<StoreState>(set => ({
   set: fn => set(produce(fn)),
 }));
 
-type StoreSetter = (fn: (draftState: StoreState) => void) => void;
+export type StoreSetter = (fn: (draftState: StoreState) => void) => void;
 
 export function setSelection(setStore: StoreSetter, newSelection: EditorObject) {
   setStore(state => {
@@ -325,6 +318,49 @@ export function repaintPropertyEditor(setStore: StoreSetter) {
   setStore(state => {
     state.propertyRepaintCount += 1;
   });
+}
+
+export function addVertex(x: number, y: number) {
+  console.log(`addVertex(${x}, ${y})`);
+  //
+  //let site = useStore(state => state.site);
+  let vertex = new Vertex();
+  vertex.uuid = generate_uuid();
+  vertex.x = x;
+  vertex.y = y;
+
+  let site = useStore.getState().site;
+
+  if (site.levels.length === 0) {
+    // add a default level
+    let level = new Level();
+    level.uuid = generate_uuid();
+
+    level.name = 'default';
+    level.scale = site.coordinate_system === CoordinateSystem.Legacy ? 0.05 : 1;
+    vertex.x *= level.scale;
+    vertex.y *= level.scale;
+
+    level.vertices = [vertex];
+
+    site.levels = [level];
+  }
+  else {
+    // todo: some way of defining the active level
+    let level = site.levels[0];
+    vertex.x *= level.scale;
+    vertex.y *= level.scale;
+    level.vertices = [...level.vertices, vertex];
+  }
+
+  useStore.setState({
+    site: site,
+    repaintCount: useStore.getState().repaintCount + 1,
+  });
+
+  /*
+  }
+  */
 }
 
 export function updateVertexPoint(

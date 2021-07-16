@@ -14,7 +14,8 @@ import {
   EditorImage,
   EditorLane,
   EditorModel,
-  EditorConstraint } from './Store';
+  EditorConstraint
+} from './Store';
 
 export class Level extends EditorObject {
   name: string = '';
@@ -31,14 +32,18 @@ export class Level extends EditorObject {
   features: Feature[] = [];
   constraints: EditorConstraint[] = [];
 
+  constructor() {
+    super();
+    this.props.push(new EditorProp('name', () => this.name));
+    this.props.push(new EditorProp('elevation', () => this.elevation));
+    this.props.push(new EditorProp('scale', () => this.scale));
+  }
+
   static fromYAML(_name: string, data: any): Level {
     let level = new Level();
     level.object_type_name = 'Level';
     level.uuid = generate_uuid();
     level.name = _name;
-    level.props.push(new EditorProp('name', () => level.name));
-    level.props.push(new EditorProp('elevation', () => level.elevation));
-    level.props.push(new EditorProp('scale', () => level.scale));
 
     if (data['drawing'] && data['drawing']['filename']) {
       let image = new EditorImage();
