@@ -28,6 +28,7 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
 
 import * as THREE from 'three';
 
@@ -87,8 +88,6 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
-  //const setEditorMode = useStore(state => state.setEditorMode);
-  //const clearSelection = useStore(state => state.clearSelection);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null) {
@@ -159,6 +158,9 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         clearSelection(setStore);
       } else if (key === 'v') {
         setActiveTool(setStore, ToolID.ADD_VERTEX);
+        clearSelection(setStore);
+      } else if (key === 'l') {
+        setActiveTool(setStore, ToolID.ADD_LANE);
         clearSelection(setStore);
       } else if (key === 's' && event.ctrlKey) {
         event.preventDefault();
@@ -299,13 +301,18 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
             </Tooltip>
           </ToggleButton>
           <ToggleButton value={ToolID.MOVE}>
-            <Tooltip title="Move tool [m]">
+            <Tooltip title="Move tool [M]">
               <OpenWithIcon />
             </Tooltip>
           </ToggleButton>
           <ToggleButton value={ToolID.ADD_VERTEX}>
-            <Tooltip title="Add vertex [v]">
+            <Tooltip title="Add vertex [V]">
               <AddCircleIcon />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton value={ToolID.ADD_LANE}>
+            <Tooltip title="Add lane [L]">
+              <DirectionsCarIcon />
             </Tooltip>
           </ToggleButton>
         </StyledToggleButtonGroup>
