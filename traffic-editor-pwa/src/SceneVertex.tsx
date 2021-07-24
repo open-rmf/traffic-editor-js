@@ -7,7 +7,10 @@ import {
   useStore,
   repaintPropertyEditor,
   setSelection,
+  setActiveUUID,
+  setActiveMotionTool,
   updateVertexPoint,
+  addLane,
 } from './Store';
 import { ToolID } from './ToolID';
 import { CoordinateSystem } from './Site';
@@ -25,7 +28,8 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
-  const [activeMotionTool, setActiveMotionTool] = React.useState(ToolID.NONE);
+  const activeUUID = useStore(state => state.activeUUID);
+  const activeMotionTool = useStore(state => state.activeMotionTool);
   const coordinateSystem = useStore(state => state.site.coordinate_system);
   const captureTools = [ToolID.MOVE, ToolID.ADD_LANE];
 
@@ -61,6 +65,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
           event.stopPropagation();
         }}
         onPointerDown={(event) => {
+          //console.log(`vertex onPointerDown uuid=${props.vertex.uuid}`);
           if (activeTool === ToolID.SELECT) {
             setSelection(setStore, props.vertex);
             return;
@@ -68,25 +73,30 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
           else if (captureTools.includes(activeTool)) {
             event.stopPropagation();
             setActiveMotionTool(activeTool);
+            setActiveUUID(props.vertex.uuid);
             if (event.target) {
               (event.target as HTMLElement).setPointerCapture(event.pointerId);
             }
           }
         }}
         onPointerUp={(event) => {
-          console.log(`vertex onPointerUp uuid=${props.vertex.uuid}`);
           event.stopPropagation();
-          setActiveMotionTool(ToolID.NONE);
           if (event.target) {
             (event.target as HTMLElement).releasePointerCapture(event.pointerId);
           }
           setShowActiveMotionGeometry(false);
           repaintPropertyEditor(setStore);
 
+          //console.log(`vertex onPointerUp uuid=${props.vertex.uuid} activeMotionTool=${activeMotionTool}`);
           if (activeMotionTool === ToolID.ADD_LANE) {
             // calculate if we released the pointer on an existing vertex
             // if so, add a new lane between those vertices
+            //console.log(`activeUUID: ${activeUUID} props.vertex.uuid: ${props.vertex.uuid}`);
+            if (activeUUID !== props.vertex.uuid) {
+              addLane(activeUUID, props.vertex.uuid, props.level.uuid);
+            }
           }
+          setActiveMotionTool(ToolID.NONE);
         }}
         onPointerMove={(event) => {
           if (activeMotionTool === ToolID.NONE)

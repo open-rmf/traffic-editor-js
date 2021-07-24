@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { Vertex } from './Vertex';
 import { Level } from './Level';
 import { useStore, EditorLane, setSelection } from './Store';
+import { CoordinateSystem } from './Site';
 
 interface SceneLaneProps {
   vertex_start: Vertex,
@@ -15,6 +16,7 @@ interface SceneLaneProps {
 export function SceneLane(props: SceneLaneProps): JSX.Element {
   const selection = useStore(state => state.selection)
   const setStore = useStore(state => state.set);
+  const coordinateSystem = useStore(state => state.site.coordinate_system);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -23,6 +25,8 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const dy = v2.y - v1.y;
   const len = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
   const xyrot = Math.atan2(dy, dx);
+
+  const laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
 
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(0.6, 0.05, 0.05);
@@ -43,7 +47,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
         setSelection(setStore, props.lane);
       }}
     >
-      <boxGeometry args={[len, 0.5, 0.1]} />
+      <boxGeometry args={[len, laneWidth, 0.1]} />
       <meshStandardMaterial color={color} />
     </mesh>
   );

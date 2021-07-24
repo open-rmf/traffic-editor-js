@@ -260,10 +260,13 @@ export interface StoreState {
   editorMode: string,
   enableMotionControls: boolean,
   activeTool: ToolID,
+  activeMotionTool: ToolID,
   cameraInitialPose: CameraPose,
   cameraPose: CameraPose,
   propertyRepaintCount: number,
   repaintCount: number,
+  disableEditorTools: boolean,
+  activeUUID: string,
   set: (fn: (draftState: StoreState) => void) => void
 }
 
@@ -273,8 +276,11 @@ export const useStore = create<StoreState>(set => ({
   editorMode: '2d',
   enableMotionControls: true,
   activeTool: ToolID.SELECT,
+  activeMotionTool: ToolID.NONE,
   propertyRepaintCount: 0,
   repaintCount: 0,
+  disableEditorTools: false,
+  activeUUID: '',
   cameraInitialPose: {
     position: new THREE.Vector3(0, 0, 100),
     target: new THREE.Vector3(0, 0, 0),
@@ -308,16 +314,32 @@ export function setEditorMode(setStore: StoreSetter, newMode: string) {
   });
 }
 
-export function setActiveTool(setStore: StoreSetter, newTool: ToolID) {
-  setStore(state => {
-    state.activeTool = newTool;
+export function setActiveTool(newTool: ToolID) {
+  useStore.setState({
+    activeTool: newTool,
+    activeUUID: ''
   });
+}
+
+export function setActiveMotionTool(newTool: ToolID) {
+  useStore.setState({ activeMotionTool: newTool });
+}
+
+export function setActiveUUID(newUUID: string) {
+  useStore.setState({ activeUUID: newUUID });
 }
 
 export function repaintPropertyEditor(setStore: StoreSetter) {
   setStore(state => {
     state.propertyRepaintCount += 1;
   });
+}
+
+export function disableEditorTools(disable: boolean) {
+  let currentState = useStore.getState().disableEditorTools;
+  if (currentState === disable)
+    return; // nothing to do
+  useStore.setState({ disableEditorTools: disable });
 }
 
 export function addVertex(x: number, y: number) {
@@ -357,10 +379,6 @@ export function addVertex(x: number, y: number) {
     site: site,
     repaintCount: useStore.getState().repaintCount + 1,
   });
-
-  /*
-  }
-  */
 }
 
 export function updateVertexPoint(
@@ -429,5 +447,42 @@ export function updateFeaturePoint(
       return level;
     });
     state.repaintCount = state.repaintCount + 1;
+  });
+}
+
+export function addLane(start_uuid: string, end_uuid: string, level_uuid: string) {
+  console.log(`addLane(${start_uuid}, ${end_uuid})`);
+  let site = useStore.getState().site;
+  for (let level of site.levels) {
+    if (level.uuid === level_uuid) {
+      // look up the vertex indices
+      // TODO: something cooler than this
+      let start_idx = -1;
+      let end_idx = -1;
+      for (let i = 0; i < level.vertices.length; i++) {
+        if (level.vertices[i].uuid === start_uuid) {
+          start_idx = i;
+        }
+        if (level.vertices[i].uuid === end_uuid) {
+          end_idx = i;
+        }
+      }
+      if (start_idx < 0 || end_idx < 0) {
+        return;
+      }
+
+      let lane = new EditorLane();
+      lane.uuid = generate_uuid();
+      lane.start_idx = start_idx;
+      lane.end_idx = end_idx;
+
+      level.lanes = [...level.lanes, lane];
+      break;
+    }
+  }
+
+  useStore.setState({
+    site: site,
+    repaintCount: useStore.getState().repaintCount + 1,
   });
 }

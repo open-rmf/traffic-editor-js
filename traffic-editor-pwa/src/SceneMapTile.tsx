@@ -69,9 +69,13 @@ export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
         <boxGeometry args={[side_len, side_len, 0.1, 8]} />
         <meshStandardMaterial key={texture ? 'texture' : 'notexture'} map={texture} color={[1, 1, 1]} />
       </mesh>
-      <Text fontSize={10 * scale / Math.pow(2, props.zoom)} color="blue" position={[wx, wy, 10.2]}>
-        {key}
-      </Text>
     </group>
   );
 }
+
+/*
+ * debugging debris here...
+<Text fontSize={10 * scale / Math.pow(2, props.zoom)} color="blue" position={[wx, wy, 10.2]}>
+  {key}
+</Text>
+ */

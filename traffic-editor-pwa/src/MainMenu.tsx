@@ -88,6 +88,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
+  const disableEditorTools = useStore(state => state.disableEditorTools);
 
   const onModeChange = (event: React.MouseEvent<HTMLElement>, newMode: string | null) => {
     if (newMode !== null) {
@@ -112,7 +113,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
 
   const onToolChange = (event: React.MouseEvent<HTMLElement>, newTool: ToolID | null) => {
     if (newTool !== null) {
-      setActiveTool(setStore, newTool);
+      setActiveTool(newTool);
       clearSelection(setStore);
     }
   }
@@ -148,19 +149,22 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   }
 
   React.useEffect(() => {
+    if (disableEditorTools)
+      return;
+
     const keyDown = (event: KeyboardEvent) => {
       let key = event.key.toLowerCase();
       if (key === 'm') {
-        setActiveTool(setStore, ToolID.MOVE);
+        setActiveTool(ToolID.MOVE);
         clearSelection(setStore);
       } else if (key === 'escape') {
-        setActiveTool(setStore, ToolID.SELECT);
+        setActiveTool(ToolID.SELECT);
         clearSelection(setStore);
       } else if (key === 'v') {
-        setActiveTool(setStore, ToolID.ADD_VERTEX);
+        setActiveTool(ToolID.ADD_VERTEX);
         clearSelection(setStore);
       } else if (key === 'l') {
-        setActiveTool(setStore, ToolID.ADD_LANE);
+        setActiveTool(ToolID.ADD_LANE);
         clearSelection(setStore);
       } else if (key === 's' && event.ctrlKey) {
         event.preventDefault();
@@ -173,7 +177,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     return () => {
       window.removeEventListener('keydown', keyDown);
     };
-  }, [setStore, save]);
+  }, [setStore, save, disableEditorTools]);
 
   React.useEffect(() => {
     setStore(state => {
@@ -300,17 +304,17 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
               <PanToolIcon />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={ToolID.MOVE}>
+          <ToggleButton value={ToolID.MOVE} disabled={disableEditorTools}>
             <Tooltip title="Move tool [M]">
               <OpenWithIcon />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={ToolID.ADD_VERTEX}>
+          <ToggleButton value={ToolID.ADD_VERTEX} disabled={disableEditorTools}>
             <Tooltip title="Add vertex [V]">
               <AddCircleIcon />
             </Tooltip>
           </ToggleButton>
-          <ToggleButton value={ToolID.ADD_LANE}>
+          <ToggleButton value={ToolID.ADD_LANE} disabled={disableEditorTools}>
             <Tooltip title="Add lane [L]">
               <DirectionsCarIcon />
             </Tooltip>

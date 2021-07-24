@@ -3,6 +3,7 @@ import React from 'react';
 //import { useStore } from './Store';
 import { useThree } from '@react-three/fiber';
 import { SceneMapTile } from './SceneMapTile';
+import { disableEditorTools } from './Store';
 
 type SceneMapProps = {
 }
@@ -88,6 +89,8 @@ export function SceneMap(props: SceneMapProps): JSX.Element {
         else if (zoom_level > MAX_ZOOM)
           zoom_level = MAX_ZOOM;
         //console.log(`  zoom: ${zoom_level}`);
+
+        disableEditorTools(zoom_level < 17);
 
         let left_x_grid_idx = Math.floor(left_x / (256 * scale) * Math.pow(2, zoom_level));
         let right_x_grid_idx = Math.floor(right_x / (256 * scale) * Math.pow(2, zoom_level));
