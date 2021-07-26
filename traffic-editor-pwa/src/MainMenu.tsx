@@ -29,6 +29,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
+import TextureIcon from '@material-ui/icons/Texture'; 
 
 import * as THREE from 'three';
 
@@ -317,6 +318,11 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <ToggleButton value={ToolID.ADD_LANE} disabled={disableEditorTools}>
             <Tooltip title="Add lane [L]">
               <DirectionsCarIcon />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton value={ToolID.ADD_WALL} disabled={disableEditorTools}>
+            <Tooltip title="Add wall [W]">
+              <TextureIcon />
             </Tooltip>
           </ToggleButton>
         </StyledToggleButtonGroup>

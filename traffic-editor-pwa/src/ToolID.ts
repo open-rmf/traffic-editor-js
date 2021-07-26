@@ -3,5 +3,6 @@ export enum ToolID {
   MOVE,
   ADD_VERTEX,
   ADD_LANE,
+  ADD_WALL,
   NONE
 }
