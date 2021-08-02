@@ -5,7 +5,8 @@ import { v4 as generate_uuid } from 'uuid';
 import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
 import { EditorObject } from './EditorObject';
-import { Site, CoordinateSystem } from './Site';
+import { Site } from './Site';
+import { CoordinateSystem } from './CoordinateSystem';
 import { Feature } from './Feature';
 import { Level } from './Level';
 import { Vertex } from './Vertex';

@@ -13,7 +13,7 @@ import {
   addLane,
 } from './Store';
 import { ToolID } from './ToolID';
-import { CoordinateSystem } from './Site';
+import { CoordinateSystem } from './CoordinateSystem';
 
 interface SceneVertexProps {
   vertex: Vertex,

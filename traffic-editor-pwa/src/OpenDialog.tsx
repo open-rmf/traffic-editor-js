@@ -13,6 +13,8 @@ import MapIcon from '@material-ui/icons/Map';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { YAMLParser } from './YAMLParser';
+import { useStore } from './Store';
+import YAML from 'yaml';
 
 const useStyles = makeStyles((theme: Theme) => ({
   directoryButton: {
@@ -54,6 +56,18 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
       const file = await fileHandle.getFile();
       const text = await file.text();
       YAMLParser(text, '');
+
+      let site = useStore.getState().site;
+      site.filename = filename;
+      site.save = async () => {
+        const fileHandle = await directoryHandle.getFileHandle(filename, {create: true});
+        const writable = await fileHandle.createWritable();
+        Object.getPrototypeOf(YAML.YAMLMap).maxFlowStringSingleLineLength = 10000;
+        await writable.write(site.toYAMLString());
+        await writable.close();
+      }
+
+      useStore.setState({site: site});
     }
     props.onOpen();
   }

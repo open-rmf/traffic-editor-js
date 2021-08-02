@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@react-three/drei'
+//import { Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { TextureLoader } from 'three/src/loaders/TextureLoader';
 import { useStore, addVertex } from './Store';

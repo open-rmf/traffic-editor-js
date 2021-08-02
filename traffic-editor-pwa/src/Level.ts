@@ -4,6 +4,7 @@ import { EditorObject } from './EditorObject';
 import { EditorProp } from './EditorProp';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
+import { CoordinateSystem, CoordinateSystemToString } from './CoordinateSystem';
 
 //import { EditorParam } from './EditorParam';
 import {
@@ -31,19 +32,22 @@ export class Level extends EditorObject {
   images: EditorImage[] = [];
   features: Feature[] = [];
   constraints: EditorConstraint[] = [];
+  coordinateSystem: CoordinateSystem = CoordinateSystem.Legacy;
 
   constructor() {
     super();
     this.props.push(new EditorProp('name', () => this.name));
     this.props.push(new EditorProp('elevation', () => this.elevation));
     this.props.push(new EditorProp('scale', () => this.scale));
+    this.props.push(new EditorProp('coordinates', () => CoordinateSystemToString(this.coordinateSystem)));
   }
 
-  static fromYAML(_name: string, data: any): Level {
+  static fromYAML(_name: string, data: any, _coordinateSystem: CoordinateSystem): Level {
     let level = new Level();
     level.object_type_name = 'Level';
     level.uuid = generate_uuid();
     level.name = _name;
+    level.coordinateSystem = _coordinateSystem;
 
     if (data['drawing'] && data['drawing']['filename']) {
       let image = new EditorImage();
@@ -54,18 +58,46 @@ export class Level extends EditorObject {
     }
 
     level.elevation = data['elevation'];
-    level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.fromYAML(constraint));
-    level.doors = data['doors'].map((door: any) => EditorDoor.fromYAML(door));
-    level.features = data['features'].map((feature: any) => Feature.fromYAML(feature));
-    level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
+
+    if (data['constraints']) {
+      level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.fromYAML(constraint));
+    }
+
+    if (data['doors']) {
+      level.doors = data['doors'].map((door: any) => EditorDoor.fromYAML(door));
+    }
+
+    if (data['features']) {
+      level.features = data['features'].map((feature: any) => Feature.fromYAML(feature));
+    }
+
+    if (data['floors']) {
+      level.floors = data['floors'].map((floor: any) => EditorFloor.fromYAML(floor));
+    }
+
     for (const layer_name in data['layers']) {
       level.images.push(EditorImage.fromLayerYAML(layer_name, data['layers'][layer_name]));
     }
-    level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
-    level.models = data['models'].map((model: any) => EditorModel.fromYAML(model));
-    level.measurements = data['measurements'].map((measurement: any) => EditorMeasurement.fromYAML(measurement));
-    level.vertices = data['vertices'].map((vertex: any) => Vertex.fromYAML(vertex));
-    level.walls = data['walls'].map((wall: any) => EditorWall.fromYAML(wall));
+
+    if (data['lanes']) {
+      level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
+    }
+
+    if (data['models']) {
+      level.models = data['models'].map((model: any) => EditorModel.fromYAML(model));
+    }
+
+    if (data['measurements']) {
+      level.measurements = data['measurements'].map((measurement: any) => EditorMeasurement.fromYAML(measurement));
+    }
+
+    if (data['vertices']) {
+      level.vertices = data['vertices'].map((vertex: any) => Vertex.fromYAML(vertex));
+    }
+
+    if (data['walls']) {
+      level.walls = data['walls'].map((wall: any) => EditorWall.fromYAML(wall));
+    }
 
     level.calculateScale();
 
@@ -104,21 +136,29 @@ export class Level extends EditorObject {
   }
 
   calculateScale(): void {
-    let sum = 0.0;
-    let count = 0;
-    for (const meas of this.measurements) {
-      count++;
-      const dx = this.vertices[meas.start_idx].x - this.vertices[meas.end_idx].x;
-      const dy = this.vertices[meas.start_idx].y - this.vertices[meas.end_idx].y;
-      const d_pixels = Math.sqrt(dx*dx + dy*dy);
-      sum += meas.distance / d_pixels;
-    }
-
-    if (count > 0) {
-      this.scale = sum / count;
+    // if the coordinate system is defined as "Legacy", that means it's
+    // scaled relative to pixels of some "reference" image.
+    if (this.coordinateSystem === CoordinateSystem.Legacy) {
+      let sum = 0.0;
+      let count = 0;
+      for (const meas of this.measurements) {
+        count++;
+        const dx = this.vertices[meas.start_idx].x - this.vertices[meas.end_idx].x;
+        const dy = this.vertices[meas.start_idx].y - this.vertices[meas.end_idx].y;
+        const d_pixels = Math.sqrt(dx*dx + dy*dy);
+        sum += meas.distance / d_pixels;
+      }
+  
+      if (count > 0) {
+        this.scale = sum / count;
+      }
+      else {
+        this.scale = 0.05;  // just use something sane...
+      }
     }
     else {
-      this.scale = 0.05;  // just use something sane...
+      // other coordinate systems don't need this arbitrary pixel-scaling.
+      this.scale = 1.0;
     }
   }
 

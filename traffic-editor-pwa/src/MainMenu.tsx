@@ -19,6 +19,7 @@ import { useStore, setEditorMode, clearSelection, setActiveTool } from './Store'
 import { ToolID } from './ToolID';
 import { Site } from './Site';
 import OpenDialog from './OpenDialog';
+import NewDialog from './NewDialog';
 import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
@@ -83,6 +84,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const classes = useStyles(props);
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
+  const [isNewDialogOpen, setIsNewDialogOpen] = React.useState(false);
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [snackMessage, setSnackMessage] = React.useState('');
   const [mapType, setMapType] = React.useState('');
@@ -122,8 +124,9 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const save = useCallback(
     async () => {
       if (mapType === 'local_file') {
-        setSnackMessage('Cannot save. Local file save not yet implemented.');
-        setSnackOpen(true);
+        //setSnackMessage('Cannot save. Local file save not yet implemented.');
+        //setSnackOpen(true);
+        useStore.getState().site.save();
       }
       else if (mapType === 'local_rest') {
         try {
@@ -209,6 +212,21 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         >
           <MenuItem
             onClick={() => {
+              setIsNewDialogOpen(true);
+              setMapType('local_file');
+              setMenuAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <InsertDriveFileIcon />
+            </ListItemIcon>
+            <ListItemText>
+              New site map...
+            </ListItemText>
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
               const site = Site.fromNewCommand();
               const cameraInitialPose = site.computeInitialCameraPose();
               useStore.setState({
@@ -223,7 +241,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
               <InsertDriveFileIcon />
             </ListItemIcon>
             <ListItemText>
-              Create new geo-located site
+              New geo-located site
             </ListItemText>
           </MenuItem>
           <Divider />
@@ -341,6 +359,12 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           </ToggleButton>
         </StyledToggleButtonGroup>
       </ToolBar>
+      <NewDialog
+        open={isNewDialogOpen}
+        onNew={() => {}}
+        onCancel={() => setIsNewDialogOpen(false)}
+        close={() => setIsNewDialogOpen(false)}
+      />
       <OpenDialog
         open={isOpenDialogOpen}
         onOpen={() => setIsOpenDialogOpen(false)}

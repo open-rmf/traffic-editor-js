@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { Vertex } from './Vertex';
 import { Level } from './Level';
 import { useStore, EditorLane, setSelection } from './Store';
-import { CoordinateSystem } from './Site';
+import { CoordinateSystem } from './CoordinateSystem';
 
 interface SceneLaneProps {
   vertex_start: Vertex,

@@ -4,15 +4,15 @@ import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
 import { CameraPose } from './Store';
 import { Level } from './Level';
-
-export enum CoordinateSystem {
-  Legacy,
-  WGS84,
-  WebMercator
-}
+import {
+  CoordinateSystem,
+  CoordinateSystemFromString,
+  CoordinateSystemToString
+} from './CoordinateSystem';
 
 export class Site extends EditorObject {
   name: string = '';
+  filename: string = '';
   url_base: string = '';
   levels: Level[] = [];
   reference_level_name: string = '';
@@ -21,7 +21,8 @@ export class Site extends EditorObject {
   props = [];
   object_type_name = 'Site';
   coordinate_system: CoordinateSystem = CoordinateSystem.Legacy;
-  yaml_doc: YAML.Document = new YAML.Document();;
+  yaml_doc: YAML.Document = new YAML.Document();
+  save: () => void = () => {};
 
   static fromNewCommand(): Site {
     let site = new Site();
@@ -36,9 +37,12 @@ export class Site extends EditorObject {
     let site = new Site();
     site.uuid = generate_uuid();
     site.name = yaml['name'];
+    if (yaml['coordinate_system']) {
+      site.coordinate_system = CoordinateSystemFromString(yaml['coordinate_system']);
+    }
     for (const level_name in yaml['levels']) {
       const level_data = yaml['levels'][level_name];
-      site.levels.push(Level.fromYAML(level_name, level_data));
+      site.levels.push(Level.fromYAML(level_name, level_data, site.coordinate_system));
     }
     if (yaml['reference_level_name']) {
       site.reference_level_name = yaml['reference_level_name'];
@@ -58,6 +62,7 @@ export class Site extends EditorObject {
     for (const level of this.levels) {
       levels_node.add({ key: level.name, value: level.toYAML() });
     }
+    yaml_doc.add({ key: 'coordinate_system', value: CoordinateSystemToString(this.coordinate_system) });
     yaml_doc.add({ key: 'crowd_sim', value: this.yaml_doc.get('crowd_sim') });
     yaml_doc.add({ key: 'levels', value: levels_node });
 

@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import React from 'react'
 import { useStore } from './Store';
 import { SceneLevel } from './SceneLevel';
-import { CoordinateSystem } from './Site';
+import { CoordinateSystem } from './CoordinateSystem';
 import { useFrame } from '@react-three/fiber';
 
 type SceneSiteProps = {

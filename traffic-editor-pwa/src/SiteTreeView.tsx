@@ -260,6 +260,7 @@ export function SiteTreeView(): JSX.Element {
       defaultExpandIcon={<ChevronRightIcon />}
     >
       <TreeItem nodeId={site.uuid + '_name'} label={"site name: " + site.name} />
+      <TreeItem nodeId={site.uuid + '_filename'} label={"filename: " + site.filename} />
       <TreeItem
         nodeId={site.uuid + '_ref'}
         label={"reference level: " + site.reference_level_name }

@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import React, { useRef } from 'react';
 import { OrbitControls } from '@react-three/drei';
 import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei';
-import { CoordinateSystem } from './Site';
+import { CoordinateSystem } from './CoordinateSystem';
 
 import { useStore, clearSelection } from './Store';
 import { SceneSite } from './SceneSite';
