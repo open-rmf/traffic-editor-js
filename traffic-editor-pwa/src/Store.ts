@@ -1,6 +1,7 @@
 import create from 'zustand';
 import produce from 'immer';
 import * as THREE from 'three';
+//import * as net from 'net';
 import { v4 as generate_uuid } from 'uuid';
 import YAML from 'yaml';
 //import { EditorParam } from './EditorParam'
@@ -11,7 +12,7 @@ import { Feature } from './Feature';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
 import { ToolID } from './ToolID';
-//import { unstable_batchedUpdates } from 'react-dom';
+import mqtt from 'mqtt';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -255,6 +256,12 @@ export interface CameraPose {
   zoom: number,
 }
 
+export interface RobotTelemetry {
+  name: string,
+  position: THREE.Vector3,
+  heading: number,
+}
+
 export interface StoreState {
   site: Site,
   selection: EditorObject | null,
@@ -268,7 +275,9 @@ export interface StoreState {
   repaintCount: number,
   disableEditorTools: boolean,
   activeUUID: string,
-  set: (fn: (draftState: StoreState) => void) => void
+  set: (fn: (draftState: StoreState) => void) => void,
+  mqtt_client: mqtt.MqttClient | null,
+  mqtt_robot_telemetry: RobotTelemetry[],
 }
 
 export const useStore = create<StoreState>(set => ({
@@ -293,6 +302,8 @@ export const useStore = create<StoreState>(set => ({
     zoom: 20,
   },
   set: fn => set(produce(fn)),
+  mqtt_client: null,
+  mqtt_robot_telemetry: [],
 }));
 
 export type StoreSetter = (fn: (draftState: StoreState) => void) => void;

@@ -20,9 +20,11 @@ import { ToolID } from './ToolID';
 import { Site } from './Site';
 import OpenDialog from './OpenDialog';
 import NewDialog from './NewDialog';
+import MqttDialog from './MqttDialog';
 import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
+import RouterIcon from '@material-ui/icons/Router';
 
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
@@ -30,7 +32,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DirectionsCarIcon from '@material-ui/icons/DirectionsCar';
-import TextureIcon from '@material-ui/icons/Texture'; 
+import TextureIcon from '@material-ui/icons/Texture';
 
 import * as THREE from 'three';
 
@@ -85,6 +87,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
   const [isOpenDialogOpen, setIsOpenDialogOpen] = React.useState(false);
   const [isNewDialogOpen, setIsNewDialogOpen] = React.useState(false);
+  const [isMqttDialogOpen, setIsMqttDialogOpen] = React.useState(false);
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [snackMessage, setSnackMessage] = React.useState('');
   const [mapType, setMapType] = React.useState('');
@@ -306,6 +309,20 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
               Save
             </ListItemText>
           </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              setIsMqttDialogOpen(true);
+              setMenuAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <RouterIcon />
+            </ListItemIcon>
+            <ListItemText>
+              Connect MQTT...
+            </ListItemText>
+          </MenuItem>
         </Menu>
         <Typography variant="h6" color="inherit" className={classes.appTitle}>
           Traffic Editor
@@ -369,6 +386,10 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
         open={isOpenDialogOpen}
         onOpen={() => setIsOpenDialogOpen(false)}
         onCancel={() => setIsOpenDialogOpen(false)}
+      />
+      <MqttDialog
+        open={isMqttDialogOpen}
+        close={() => setIsMqttDialogOpen(false)}
       />
       <Snackbar
         anchorOrigin={{

@@ -11,7 +11,7 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, _map_dir, _map_filename):
         self.map_dir = _map_dir
         self.map_filename = _map_filename
-       
+
     # magic so that our constructor works as intended
     def __call__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -60,7 +60,13 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
             # todo: retrieve content-length and read only that many bytes
             body_len = int(self.headers['content-length'])
             post_body = self.rfile.read(body_len).decode('utf-8')
-            print(f'received body: {post_body}')
+            #print(f'received body: {post_body}')
+
+            if (self.map_filename):
+                print(f'writing {body_len} bytes to {self.map_filename}')
+                with open(self.map_filename, 'w') as f:
+                    f.write(post_body)
+
             self.send_response(200)
             self.send_header('access-control-allow-origin', '*')
             self.send_header('access-control-allow-credentials', 'true')
@@ -72,6 +78,7 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
+
 def main():
     parser = ArgumentParser(description='Map file server')
     parser.add_argument('--map_dir', type=str, help='Map directory', default='.')
@@ -82,7 +89,7 @@ def main():
     if not map_filenames:
         print(f'could not find a .building.yaml file in {args.map_dir}')
         sys.exit(1)
-    
+
     map_filename = map_filenames[0]
     print(f'using {map_filename} as the map')
 
