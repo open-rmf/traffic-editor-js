@@ -57,7 +57,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   return (
     <group>
       <mesh
-        position={[x, y, 0.25 + props.elevation]}
+        position={[x, y, vertexDiameter/2 + props.elevation]}
         scale={1.0}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
         key={props.vertex.uuid}
@@ -126,10 +126,10 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
           }
         }}
       >
-        <cylinderGeometry args={[vertexDiameter, vertexDiameter, 0.2, 16]} />
+        <cylinderGeometry args={[vertexDiameter, vertexDiameter, vertexDiameter, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <Text color="blue" position={[x, y, 0.36 + props.elevation]}>
+      <Text color="blue" position={[x, y, 1.5 * vertexDiameter + props.elevation]}>
         {props.vertex.name}
       </Text>
       {showActiveMotionGeometry && <lineSegments position={[x, y, props.elevation + 0.3]}>

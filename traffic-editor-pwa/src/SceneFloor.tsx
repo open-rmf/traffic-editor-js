@@ -45,6 +45,7 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
   return (
     <mesh
       key={props.floor.uuid}
+      position={[0, 0, -0.1]}
       onClick={(event) => {
         event.stopPropagation()
         console.log('floor onClick')

@@ -4,9 +4,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
-import * as THREE from 'three';
 
-import { useStore } from './Store';
+import { useStore, RobotTelemetry } from './Store';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import mqtt from 'mqtt';
@@ -47,39 +46,59 @@ export default function NewDialog(props: MqttDialogProps): JSX.Element {
         topic_tokens[3] === "state") {
         const robot_name = topic_tokens[2];
         console.log('robot name: ' + robot_name);
+        let telemetry_payload = {};
         try {
-          const telemetry_payload = JSON.parse(payload.toString());
-          console.log('parsed telemetry ok');
-          console.log(telemetry_payload);
-          if (telemetry_payload['latitude'] &&
-            telemetry_payload['longitude']) {
-            let robots = useStore.getState().mqtt_robot_telemetry;
-            let found_robot = false;
-            robots = robots.map(robot => {
-              if (robot.name === robot_name) {
-                robot.position.x = telemetry_payload['latitude'];
-                robot.position.y = telemetry_payload['longitude'];
-                found_robot = true;
-              }
-              return robot;
-            });
-            if (!found_robot) {
-              const robot_telemetry = {
-                name: robot_name,
-                position: new THREE.Vector3(
-                  telemetry_payload['latitude'],
-                  telemetry_payload['longitude'],
-                  0),
-                heading: 0,
-              };
-              robots = [...robots, robot_telemetry];
-            }
-            console.log(robots);
-            useStore.setState({ mqtt_robot_telemetry: robots });
-          }
+          telemetry_payload = JSON.parse(payload.toString());
         }
         catch (e) {
           console.log('unable to parse: ' + payload.toString());
+        }
+        if ('latitude' in telemetry_payload &&
+          'longitude' in telemetry_payload) {
+
+          // a bit of trig to convert lat/lon to web mercator
+          // the extra 1000 scale is needed to make the drag-threshold
+          // detection work nicely in OrbitControls
+          const lat_webm = 256000 * (telemetry_payload['longitude'] + 180) / 360;
+          const lat_radians = telemetry_payload['latitude'] * Math.PI / 180;
+          const lon_webm = -(128000 - 256000 * Math.log(Math.tan(Math.PI / 4 + lat_radians / 2)) / (2 * Math.PI));
+          console.log(`telemetry: (${telemetry_payload['latitude']}, ${telemetry_payload['longitude']}) -> (${lat_webm}, ${lon_webm})`);
+
+          // deal with heading
+          let heading = 0;
+          if ('heading' in telemetry_payload) {
+            heading = telemetry_payload['heading'];  // todo: radians?
+          }
+
+          let robots = useStore.getState().mqtt_robot_telemetry;
+          let found_robot = false;
+          robots = robots.map(robot => {
+            if (robot.name === robot_name) {
+              let updated_robot: RobotTelemetry = {
+                name: robot.name,
+                x: lat_webm,
+                y: lon_webm,
+                z: 0,
+                heading: heading,
+              };
+              found_robot = true;
+              return updated_robot;
+            }
+            else {
+              return robot;
+            }
+          });
+          if (!found_robot) {
+            const robot_telemetry = {
+              name: robot_name,
+              x: lat_webm,
+              y: lon_webm,
+              z: 0,
+              heading: heading,
+            };
+            robots = [...robots, robot_telemetry];
+          }
+          useStore.setState({ mqtt_robot_telemetry: robots });
         }
       }
     });
@@ -100,10 +119,21 @@ export default function NewDialog(props: MqttDialogProps): JSX.Element {
       <DialogTitle>MQTT Connection</DialogTitle>
       <DialogContent className={classes.dialog}>
         <div>
-          <TextField id="broker-host" inputRef={broker_host} variant="outlined" label="Broker Host" />
+          <TextField
+            id="broker-host"
+            inputRef={broker_host}
+            variant="outlined"
+            label="Broker Host"
+            defaultValue="localhost" />
         </div>
         <div>
-          <TextField id="broker-port" inputRef={broker_port} variant="outlined" label="Broker Port" />
+          <TextField
+            id="broker-port"
+            inputRef={broker_port}
+            type="number"
+            variant="outlined"
+            label="Broker Port"
+            defaultValue="9001" />
         </div>
       </DialogContent>
       <DialogActions>

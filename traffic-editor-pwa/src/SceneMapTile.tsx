@@ -40,7 +40,7 @@ export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
   return (
     <group>
       <mesh
-        position={[wx, wy, 0]}
+        position={[wx, wy, -0.05]}
         scale={1}
         rotation={new THREE.Euler(0, 0, 0)}
         key={key}
@@ -49,7 +49,7 @@ export function SceneMapTile(props: SceneMapTileProps): JSX.Element {
           if (activeTool === ToolID.ADD_VERTEX) {
             if (editorMode === '2d') {
               addVertex(event.unprojectedPoint.x, event.unprojectedPoint.y);
-              
+
               /*
               const [px, py] = props.level.inverseTransformPoint(event.unprojectedPoint.x, event.unprojectedPoint.y);
               updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, px, py);

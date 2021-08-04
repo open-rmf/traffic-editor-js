@@ -36,7 +36,7 @@ export function SceneImage(props: SceneImageProps): JSX.Element {
 
   return (
     <mesh
-      position={[x + width_meters / 2, y - height_meters / 2, props.elevation + 0.1]}
+      position={[x + width_meters / 2, y - height_meters / 2, props.elevation - 0.05 + .01]}
       scale={scale}
       rotation={new THREE.Euler(0, yaw, 0)}
       key={props.image.uuid}

@@ -258,7 +258,9 @@ export interface CameraPose {
 
 export interface RobotTelemetry {
   name: string,
-  position: THREE.Vector3,
+  x: number,
+  y: number,
+  z: number,
   heading: number,
 }
 

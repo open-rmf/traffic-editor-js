@@ -4,6 +4,7 @@ import { useStore } from './Store';
 import { SceneLevel } from './SceneLevel';
 import { CoordinateSystem } from './CoordinateSystem';
 import { useFrame } from '@react-three/fiber';
+import { SceneRobot } from './SceneRobot';
 
 type SceneSiteProps = {
 }
@@ -13,6 +14,7 @@ export function SceneSite(props: SceneSiteProps): JSX.Element {
   useStore(state => state.selection);  // needed to ensure repaints after de-selection
   useStore(state => state.repaintCount);  // needed to ensure repaints after tweaks
   const setStore = useStore(state => state.set);
+  const robots = useStore(state => state.mqtt_robot_telemetry);
 
   useFrame(state => {
     if (state.camera instanceof THREE.OrthographicCamera) {
@@ -35,6 +37,7 @@ export function SceneSite(props: SceneSiteProps): JSX.Element {
     <group>
       {(site.coordinate_system === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
       {site.levels.map((level) => <SceneLevel key={level.uuid} level={level} />)}
+      {robots.map((robot) => <SceneRobot telemetry={robot} />)}
     </group>
   );
 }

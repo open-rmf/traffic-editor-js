@@ -27,6 +27,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const xyrot = Math.atan2(dy, dx);
 
   const laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
+  const laneHeight = laneWidth / 10;
 
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(0.6, 0.05, 0.05);
@@ -38,7 +39,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
 
   return (
     <mesh
-      position={[cx, cy, 0.2 + props.elevation]}
+      position={[cx, cy, laneHeight/2 + props.elevation]}
       rotation={new THREE.Euler(0, 0, xyrot)}
       scale={1.0}
       key={props.lane.uuid}
@@ -47,7 +48,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
         setSelection(setStore, props.lane);
       }}
     >
-      <boxGeometry args={[len, laneWidth, 0.1]} />
+      <boxGeometry args={[len, laneWidth, laneHeight]} />
       <meshStandardMaterial color={color} />
     </mesh>
   );
