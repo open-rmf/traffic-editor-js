@@ -4,7 +4,6 @@ import {
   EditorDoor,
   EditorFloor,
   EditorImage,
-  EditorLane,
   EditorMeasurement,
   EditorModel,
   EditorWall,
@@ -12,6 +11,7 @@ import {
   useStore,
 } from './Store';
 import { EditorParam } from './EditorParam';
+import { Lane } from './Lane';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
@@ -159,7 +159,7 @@ function MeasurementTreeItem(props: { measurement: EditorMeasurement }): JSX.Ele
   );
 }
 
-function LaneTreeItem(props: { lane: EditorLane }): JSX.Element {
+function LaneTreeItem(props: { lane: Lane }): JSX.Element {
   const setStore = useStore(state => state.set);
   const label = `(${props.lane.start_idx} => ${props.lane.end_idx})`;
   return(

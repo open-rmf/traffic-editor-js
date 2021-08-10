@@ -10,6 +10,7 @@ import { Site } from './Site';
 import { CoordinateSystem } from './CoordinateSystem';
 import { Feature } from './Feature';
 import { Level } from './Level';
+import { Lane } from './Lane';
 import { Vertex } from './Vertex';
 import { ToolID } from './ToolID';
 import mqtt from 'mqtt';
@@ -60,30 +61,6 @@ export class EditorMeasurement extends EditorObject {
     let params_yaml = this.paramsToYAML();
     params_yaml.add({ key: 'distance', value: [3, this.distance] });
     node.add(params_yaml);
-    node.flow = true;
-    return node;
-  }
-}
-
-export class EditorLane extends EditorObject {
-  start_idx: number = -1;
-  end_idx: number = -1;
-
-  static fromYAML(data: any): EditorLane {
-    let lane = new EditorLane();
-    lane.object_type_name = 'Lane';
-    lane.uuid = generate_uuid();
-    lane.paramsFromYAML(data[2]);
-    lane.start_idx = data[0];
-    lane.end_idx = data[1];
-    return lane;
-  }
-
-  toYAML(): YAML.YAMLSeq {
-    let node = new YAML.YAMLSeq();
-    node.add(this.start_idx);
-    node.add(this.end_idx);
-    node.add(this.paramsToYAML());
     node.flow = true;
     return node;
   }
@@ -485,7 +462,7 @@ export function addLane(start_uuid: string, end_uuid: string, level_uuid: string
         return;
       }
 
-      let lane = new EditorLane();
+      let lane = new Lane();
       lane.uuid = generate_uuid();
       lane.start_idx = start_idx;
       lane.end_idx = end_idx;

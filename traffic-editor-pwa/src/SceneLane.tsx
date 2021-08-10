@@ -2,13 +2,16 @@ import React from 'react'
 import * as THREE from 'three'
 import { Vertex } from './Vertex';
 import { Level } from './Level';
-import { useStore, EditorLane, setSelection } from './Store';
+import { Lane } from './Lane';
+import { useStore, setSelection } from './Store';
 import { CoordinateSystem } from './CoordinateSystem';
+import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { useLoader } from '@react-three/fiber';
 
 interface SceneLaneProps {
   vertex_start: Vertex,
   vertex_end: Vertex,
-  lane: EditorLane,
+  lane: Lane,
   level: Level,
   elevation: number,
 }
@@ -37,6 +40,21 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
     return color;
   }, [selection, props.lane.uuid]);
 
+  const texture = useLoader(
+    TextureLoader, 
+    process.env.PUBLIC_URL + '/textures/lane_direction.png');
+
+  if (texture) {
+    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = THREE.NearestFilter;
+    //width_meters = texture.image.width * props.level.scale;
+    //height_meters = texture.image.height * props.level.scale;
+    // console.log(`texture size: ${width_meters}, ${height_meters}`);
+    //texture.wrapS = THREE.RepeatMapping;
+    //texture.wrapT = THREE.RepeatMapping;
+  }
+
+
   return (
     <mesh
       position={[cx, cy, laneHeight/2 + props.elevation]}
@@ -49,7 +67,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       }}
     >
       <boxGeometry args={[len, laneWidth, laneHeight]} />
-      <meshStandardMaterial color={color} />
+      <meshStandardMaterial color={color} map={texture} />
     </mesh>
   );
 }

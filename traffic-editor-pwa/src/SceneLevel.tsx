@@ -70,16 +70,16 @@ export function SceneLevel(props: SceneLevelProps): JSX.Element {
           vertices={floor.vertex_indices.map((idx) => props.level.vertices[idx])}
           elevation={z} />)}
 
-      {props.level.lanes.map(lane =>
-        <SceneLane
-          key={lane.uuid}
-          lane={lane}
-          level={props.level}
-          vertex_start={props.level.vertices[lane.start_idx]}
-          vertex_end={props.level.vertices[lane.end_idx]}
-          elevation={z} />)}
-
       <Suspense fallback={null}>
+        {props.level.lanes.map(lane =>
+          <SceneLane
+            key={lane.uuid}
+            lane={lane}
+            level={props.level}
+            vertex_start={props.level.vertices[lane.start_idx]}
+            vertex_end={props.level.vertices[lane.end_idx]}
+            elevation={z} />)}
+
         {props.level.images.filter(image => image.isLegacyDefaultImage).map(image =>
           <SceneImage
             key={image.uuid}

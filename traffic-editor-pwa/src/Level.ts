@@ -2,6 +2,7 @@ import YAML from 'yaml';
 import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
 import { EditorProp } from './EditorProp';
+import { Lane } from './Lane';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
 import { CoordinateSystem, CoordinateSystemToString } from './CoordinateSystem';
@@ -13,7 +14,6 @@ import {
   EditorMeasurement,
   EditorFloor,
   EditorImage,
-  EditorLane,
   EditorModel,
   EditorConstraint
 } from './Store';
@@ -27,7 +27,7 @@ export class Level extends EditorObject {
   walls: EditorWall[] = [];
   measurements: EditorMeasurement[] = [];
   floors: EditorFloor[] = [];
-  lanes: EditorLane[] = [];
+  lanes: Lane[] = [];
   models: EditorModel[] = [];
   images: EditorImage[] = [];
   features: Feature[] = [];
@@ -80,7 +80,7 @@ export class Level extends EditorObject {
     }
 
     if (data['lanes']) {
-      level.lanes = data['lanes'].map((lane: any) => EditorLane.fromYAML(lane));
+      level.lanes = data['lanes'].map((lane: any) => Lane.fromYAML(lane));
     }
 
     if (data['models']) {
