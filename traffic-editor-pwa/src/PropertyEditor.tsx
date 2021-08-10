@@ -6,6 +6,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import PropertyEditorParam from './PropertyEditorParam';
 
 const useStyles = makeStyles((theme: Theme) => ({
   noSelectionDiv: {
@@ -66,7 +67,9 @@ export default function PropertyEditor(): JSX.Element {
         {selection.params.map(param =>
           <TableRow>
             <TableCell className={classes.tableCell}>{param.name}</TableCell>
-            <TableCell className={classes.tableCell}>{param.value.toString()}</TableCell>
+            <TableCell className={classes.tableCell}>
+              <PropertyEditorParam param={param} />
+            </TableCell>
           </TableRow>
         )}
       </TableBody>

@@ -466,7 +466,7 @@ export function addLane(start_uuid: string, end_uuid: string, level_uuid: string
       lane.uuid = generate_uuid();
       lane.start_idx = start_idx;
       lane.end_idx = end_idx;
-
+      lane.addDefaultParams();
       level.lanes = [...level.lanes, lane];
       break;
     }

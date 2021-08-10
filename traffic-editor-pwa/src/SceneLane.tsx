@@ -20,6 +20,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const selection = useStore(state => state.selection)
   const setStore = useStore(state => state.set);
   const coordinateSystem = useStore(state => state.site.coordinate_system);
+  useStore(state => state.repaintCount);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -32,6 +33,8 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
   const laneHeight = laneWidth / 10;
 
+  const isBidirectional = props.lane.getParam('bidirectional', false);
+
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(0.6, 0.05, 0.05);
     if (selection && selection.uuid === props.lane.uuid) {
@@ -41,19 +44,17 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   }, [selection, props.lane.uuid]);
 
   const texture = useLoader(
-    TextureLoader, 
+    TextureLoader,
     process.env.PUBLIC_URL + '/textures/lane_direction3.png');
 
   if (texture) {
-    //texture.magFilter = THREE.NearestFilter;
-    //texture.minFilter = THREE.NearestFilter;
-    //width_meters = texture.image.width * props.level.scale;
-    //height_meters = texture.image.height * props.level.scale;
-    // console.log(`texture size: ${width_meters}, ${height_meters}`);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(len / laneWidth, 1);
   }
+
+  // todo: figure out how to set needsUpdate on the material
+  // to tell THREE to reload the material when we toggle isBidirectional
 
   return (
     <mesh
@@ -67,7 +68,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       }}
     >
       <boxGeometry args={[len, laneWidth, laneHeight]} />
-      <meshStandardMaterial color={[1, .3, .3]} map={texture} />
+      <meshStandardMaterial color={color} map={isBidirectional ? null : texture} />
     </mesh>
   );
 }

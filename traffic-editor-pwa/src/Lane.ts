@@ -24,4 +24,9 @@ export class Lane extends EditorObject {
     node.flow = true;
     return node;
   }
+
+  addDefaultParams(): void {
+    this.addParam('bidirectional', false, 4);
+    this.addParam('graph_idx', 0, 2);
+  }
 }
