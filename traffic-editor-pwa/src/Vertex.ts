@@ -10,7 +10,11 @@ export class Vertex extends EditorObject {
 
   constructor() {
     super();
-    this.props.push(new EditorProp('name', () => this.name));
+    this.props.push(
+      new EditorProp(
+        'name',
+        () => this.name,
+        (s: string) => { this.name = s; }));
     this.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(this.x)} ));
     this.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(this.y)} ));
   }
