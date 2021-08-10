@@ -42,18 +42,18 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
 
   const texture = useLoader(
     TextureLoader, 
-    process.env.PUBLIC_URL + '/textures/lane_direction.png');
+    process.env.PUBLIC_URL + '/textures/lane_direction3.png');
 
   if (texture) {
-    texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestFilter;
+    //texture.magFilter = THREE.NearestFilter;
+    //texture.minFilter = THREE.NearestFilter;
     //width_meters = texture.image.width * props.level.scale;
     //height_meters = texture.image.height * props.level.scale;
     // console.log(`texture size: ${width_meters}, ${height_meters}`);
-    //texture.wrapS = THREE.RepeatMapping;
-    //texture.wrapT = THREE.RepeatMapping;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(len / laneWidth, 1);
   }
-
 
   return (
     <mesh
@@ -67,7 +67,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       }}
     >
       <boxGeometry args={[len, laneWidth, laneHeight]} />
-      <meshStandardMaterial color={color} map={texture} />
+      <meshStandardMaterial color={[1, .3, .3]} map={texture} />
     </mesh>
   );
 }
