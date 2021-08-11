@@ -14,6 +14,7 @@ import { Lane } from './Lane';
 import { Vertex } from './Vertex';
 import { ToolID } from './ToolID';
 import mqtt from 'mqtt';
+import { YAMLSender } from './YAMLParser';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -141,7 +142,7 @@ export class EditorImage extends EditorObject {
     image.yaw = data['transform']['yaw'];
     image.isLegacyDefaultImage = false;
     image.visible = data['visible'];
-    image.features = data['features'].map((feature_yaml: any) => Feature.fromYAML(feature_yaml));
+    image.features = data['features'].map((feature_yaml: any) => Feature.fromYAML(feature_yaml, 1.0));
     return image;
   }
 
@@ -154,7 +155,7 @@ export class EditorImage extends EditorObject {
     color_node.add(this.color[3]);
     color_node.flow = true;
     node.add({ key: 'color', value: color_node });
-    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML()) });
+    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML(1.0)) });
     node.add({ key: 'filename', value: this.filename });
     let transform_node = new YAML.YAMLMap();
     transform_node.add({ key: 'scale', value: this.scale });
@@ -257,6 +258,7 @@ export interface StoreState {
   set: (fn: (draftState: StoreState) => void) => void,
   mqtt_client: mqtt.MqttClient | null,
   mqtt_robot_telemetry: RobotTelemetry[],
+  mapType: string,  // todo: enum
 }
 
 export const useStore = create<StoreState>(set => ({
@@ -283,6 +285,7 @@ export const useStore = create<StoreState>(set => ({
   set: fn => set(produce(fn)),
   mqtt_client: null,
   mqtt_robot_telemetry: [],
+  mapType: '',
 }));
 
 export type StoreSetter = (fn: (draftState: StoreState) => void) => void;
@@ -348,9 +351,9 @@ export function addVertex(x: number, y: number) {
     // add a default level
     let level = new Level();
     level.uuid = generate_uuid();
-
+    level.coordinateSystem = site.coordinateSystem;
     level.name = 'default';
-    level.scale = site.coordinate_system === CoordinateSystem.Legacy ? 0.05 : 1;
+    level.scale = site.coordinateSystem === CoordinateSystem.Legacy ? 0.05 : 1;
     vertex.x *= level.scale;
     vertex.y *= level.scale;
 
@@ -476,4 +479,29 @@ export function addLane(start_uuid: string, end_uuid: string, level_uuid: string
     site: site,
     repaintCount: useStore.getState().repaintCount + 1,
   });
+}
+
+export async function saveStore() {
+  const mapType = useStore.getState().mapType;
+  if (mapType === 'local_file') {
+    //setSnackMessage('Cannot save. Local file save not yet implemented.');
+    //setSnackOpen(true);
+    useStore.getState().site.save();
+  }
+  else if (mapType === 'local_rest') {
+    try {
+      await YAMLSender('http://localhost:8000/map_file');
+    } catch (error) {
+      //setSnackMessage('Error while saving to local REST server');
+      //setSnackOpen(true);
+    }
+  }
+  else if (mapType === 'demo') {
+    //setSnackMessage('Cannot save. Demo maps are read-only.');
+    //setSnackOpen(true);
+  }
+  else {
+    //setSnackMessage('Cannot save. No map loaded.');
+    //setSnackOpen(true);
+  }
 }

@@ -19,22 +19,22 @@ export class Vertex extends EditorObject {
     this.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(this.y)} ));
   }
 
-  static fromYAML(data: any): Vertex {
+  static fromYAML(data: any, coord_scale: number): Vertex {
     let vertex = new Vertex();
     vertex.object_type_name = 'Vertex';
     vertex.uuid = generate_uuid();
-    vertex.x = data[0];
-    vertex.y = -data[1];
+    vertex.x = data[0] * coord_scale;
+    vertex.y = -data[1] * coord_scale;
     vertex.name = data[3];
     vertex.paramsFromYAML(data[4]);
 
     return vertex;
   }
 
-  toYAML(): YAML.YAMLSeq {
+  toYAML(coord_scale: number): YAML.YAMLSeq {
     let node = new YAML.YAMLSeq();
-    node.add(this.x);
-    node.add(-this.y);
+    node.add(this.x / coord_scale);
+    node.add(-this.y / coord_scale);
     node.add(0.0);
     node.add(this.name);
     if (this.params.length)

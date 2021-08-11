@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Divider from '@material-ui/core/Divider';
 import ToolBar from '@material-ui/core/Toolbar';
@@ -15,13 +15,13 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { useStore, setEditorMode, clearSelection, setActiveTool } from './Store';
+import { useStore, setEditorMode, clearSelection, setActiveTool, saveStore } from './Store';
 import { ToolID } from './ToolID';
 import { Site } from './Site';
 import OpenDialog from './OpenDialog';
 import NewDialog from './NewDialog';
 import MqttDialog from './MqttDialog';
-import { YAMLRetriever, YAMLRetrieveDemo, YAMLSender } from './YAMLParser';
+import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import RouterIcon from '@material-ui/icons/Router';
@@ -90,7 +90,6 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
   const [isMqttDialogOpen, setIsMqttDialogOpen] = React.useState(false);
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [snackMessage, setSnackMessage] = React.useState('');
-  const [mapType, setMapType] = React.useState('');
   const setStore = useStore(state => state.set);
   const editorMode = useStore(state => state.editorMode);
   const activeTool = useStore(state => state.activeTool);
@@ -124,58 +123,15 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     }
   }
 
-  const save = useCallback(
-    async () => {
-      if (mapType === 'local_file') {
-        //setSnackMessage('Cannot save. Local file save not yet implemented.');
-        //setSnackOpen(true);
-        useStore.getState().site.save();
-      }
-      else if (mapType === 'local_rest') {
-        try {
-          await YAMLSender('http://localhost:8000/map_file');
-        } catch (error) {
-          setSnackMessage('Error while saving to local REST server');
-          setSnackOpen(true);
-        }
-      }
-      else if (mapType === 'demo') {
-        setSnackMessage('Cannot save. Demo maps are read-only.');
-        setSnackOpen(true);
-      }
-      else {
-        setSnackMessage('Cannot save. No map loaded.');
-        setSnackOpen(true);
-      }
-    },
-    [mapType]
-  );
-
-  const snackClose = () => {
-    setSnackOpen(false);
-  }
-
   React.useEffect(() => {
-    if (disableEditorTools)
-      return;
-
     const keyDown = (event: KeyboardEvent) => {
+      if (event.key === undefined)
+        return;  // somehow this happens sometimes
+
       let key = event.key.toLowerCase();
-      if (key === 'm') {
-        setActiveTool(ToolID.MOVE);
-        clearSelection(setStore);
-      } else if (key === 'escape') {
-        setActiveTool(ToolID.SELECT);
-        clearSelection(setStore);
-      } else if (key === 'v') {
-        setActiveTool(ToolID.ADD_VERTEX);
-        clearSelection(setStore);
-      } else if (key === 'l') {
-        setActiveTool(ToolID.ADD_LANE);
-        clearSelection(setStore);
-      } else if (key === 's' && event.ctrlKey) {
+      if (key === 's' && event.ctrlKey) {
         event.preventDefault();
-        save();
+        saveStore();
         return false;
       }
     };
@@ -184,7 +140,11 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
     return () => {
       window.removeEventListener('keydown', keyDown);
     };
-  }, [setStore, save, disableEditorTools]);
+  }, []);
+
+  const snackClose = () => {
+    setSnackOpen(false);
+  }
 
   React.useEffect(() => {
     setStore(state => {
@@ -216,7 +176,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={() => {
               setIsNewDialogOpen(true);
-              setMapType('local_file');
+              useStore.setState({ mapType: 'local_file' });
               setMenuAnchorEl(null);
             }}
           >
@@ -252,7 +212,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
             onClick={async () => {
               try {
                 await YAMLRetriever('http://localhost:8000/', 'map_file');
-                setMapType('local_rest');
+                useStore.setState({ mapType: 'local_rest' });
               } catch (error) {
                 setSnackMessage('could not open file from localhost:8000');
                 setSnackOpen(true);
@@ -270,7 +230,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={async () => {
               await YAMLRetrieveDemo('office');
-              setMapType('demo');
+              useStore.setState({ mapType: 'demo' });
               setMenuAnchorEl(null);
             }}
           >
@@ -284,7 +244,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={() => {
               setIsOpenDialogOpen(true);
-              setMapType('local_file');
+              useStore.setState({ mapType: 'local_file' });
               setMenuAnchorEl(null);
             }}
           >
@@ -298,7 +258,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <Divider />
           <MenuItem
             onClick={() => {
-              save();
+              saveStore();
               setMenuAnchorEl(null);
             }}
           >

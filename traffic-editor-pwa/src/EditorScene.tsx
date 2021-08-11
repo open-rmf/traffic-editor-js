@@ -8,16 +8,20 @@ import { CoordinateSystem } from './CoordinateSystem';
 import { useStore, clearSelection } from './Store';
 import { SceneSite } from './SceneSite';
 import { SceneMap } from './SceneMap';
+import { ShortcutKeys } from './ShortcutKeys';
+//import { ToolID } from './ToolID';
 
 type EditorSceneProps = {
 };
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
-  const showMap = useStore(state => (state.site.coordinate_system !== CoordinateSystem.Legacy));
+  const showMap = useStore(state => (state.site.coordinateSystem !== CoordinateSystem.Legacy));
   const setStore = useStore(state => state.set);
   //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
   const cameraInitialPose = useStore(state => state.cameraInitialPose);
+  //const activeTool = useStore(state => state.activeTool);
+  //const disableEditorTools = useStore(state => state.disableEditorTools);
 
   const Controls = (): JSX.Element => {
     THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
@@ -67,19 +71,21 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   console.log('EditorScene()');
   return (
     <Canvas
+      id="mainCanvas"
       frameloop="demand"
       mode="concurrent"
       linear={true}
+      tabIndex={0}
       onPointerMissed={() => {
         clearSelection(setStore);
       }}
     >
+      <ShortcutKeys />
       <Controls />
       <axesHelper />
       <ambientLight intensity={1.0}/>
       <SceneSite />
       {showMap && <SceneMap />}
-
     </Canvas>
   )
 }

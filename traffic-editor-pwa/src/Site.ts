@@ -20,7 +20,7 @@ export class Site extends EditorObject {
   params = [];
   props = [];
   object_type_name = 'Site';
-  coordinate_system: CoordinateSystem = CoordinateSystem.Legacy;
+  coordinateSystem: CoordinateSystem = CoordinateSystem.Legacy;
   yaml_doc: YAML.Document = new YAML.Document();
   save: () => void = () => {};
 
@@ -28,7 +28,7 @@ export class Site extends EditorObject {
     let site = new Site();
     site.uuid = generate_uuid();
     site.name = 'Unnamed Site';
-    site.coordinate_system = CoordinateSystem.WebMercator;
+    site.coordinateSystem = CoordinateSystem.WebMercator;
     return site;
   }
 
@@ -38,11 +38,11 @@ export class Site extends EditorObject {
     site.uuid = generate_uuid();
     site.name = yaml['name'];
     if (yaml['coordinate_system']) {
-      site.coordinate_system = CoordinateSystemFromString(yaml['coordinate_system']);
+      site.coordinateSystem = CoordinateSystemFromString(yaml['coordinate_system']);
     }
     for (const level_name in yaml['levels']) {
       const level_data = yaml['levels'][level_name];
-      site.levels.push(Level.fromYAML(level_name, level_data, site.coordinate_system));
+      site.levels.push(Level.fromYAML(level_name, level_data, site.coordinateSystem));
     }
     if (yaml['reference_level_name']) {
       site.reference_level_name = yaml['reference_level_name'];
@@ -62,7 +62,7 @@ export class Site extends EditorObject {
     for (const level of this.levels) {
       levels_node.add({ key: level.name, value: level.toYAML() });
     }
-    yaml_doc.add({ key: 'coordinate_system', value: CoordinateSystemToString(this.coordinate_system) });
+    yaml_doc.add({ key: 'coordinate_system', value: CoordinateSystemToString(this.coordinateSystem) });
     yaml_doc.add({ key: 'crowd_sim', value: this.yaml_doc.get('crowd_sim') });
     yaml_doc.add({ key: 'levels', value: levels_node });
 
@@ -113,7 +113,7 @@ export class Site extends EditorObject {
       };
     }
     else {
-      if (this.coordinate_system === CoordinateSystem.Legacy) {
+      if (this.coordinateSystem === CoordinateSystem.Legacy) {
         return {
           position: new THREE.Vector3(10, 10, 10),
           target: new THREE.Vector3(0, 0, 0),

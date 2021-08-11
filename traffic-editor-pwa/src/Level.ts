@@ -5,7 +5,11 @@ import { EditorProp } from './EditorProp';
 import { Lane } from './Lane';
 import { Vertex } from './Vertex';
 import { Feature } from './Feature';
-import { CoordinateSystem, CoordinateSystemToString } from './CoordinateSystem';
+import {
+  CoordinateSystem,
+  CoordinateSystemToString,
+  CoordinateSystemScale
+} from './CoordinateSystem';
 
 //import { EditorParam } from './EditorParam';
 import {
@@ -49,6 +53,8 @@ export class Level extends EditorObject {
     level.name = _name;
     level.coordinateSystem = _coordinateSystem;
 
+    const coord_scale = CoordinateSystemScale(level.coordinateSystem);
+
     if (data['drawing'] && data['drawing']['filename']) {
       let image = new EditorImage();
       image.uuid = generate_uuid();
@@ -68,7 +74,7 @@ export class Level extends EditorObject {
     }
 
     if (data['features']) {
-      level.features = data['features'].map((feature: any) => Feature.fromYAML(feature));
+      level.features = data['features'].map((feature: any) => Feature.fromYAML(feature, coord_scale));
     }
 
     if (data['floors']) {
@@ -92,12 +98,15 @@ export class Level extends EditorObject {
     }
 
     if (data['vertices']) {
-      level.vertices = data['vertices'].map((vertex: any) => Vertex.fromYAML(vertex));
+      level.vertices = data['vertices'].map((vertex: any) => Vertex.fromYAML(vertex, coord_scale));
     }
 
     if (data['walls']) {
       level.walls = data['walls'].map((wall: any) => EditorWall.fromYAML(wall));
     }
+
+    // if we're in the web_mercator system, we need to scale everything
+    // up by 1000 so that we can use OrbitControls out-of-the-box
 
     level.calculateScale();
 
@@ -114,8 +123,11 @@ export class Level extends EditorObject {
       node.add({ key: 'drawing', value: { 'filename': this.images[0].filename } });
     }
 
+    const coord_scale = CoordinateSystemScale(this.coordinateSystem);
+    console.log(`Level.toYAML() coord_scale = ${coord_scale}`);
+
     node.add({ key: 'elevation', value: this.elevation });
-    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML()) });
+    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML(coord_scale)) });
     node.add({ key: 'flattened_x_offset', value: 0 });
     node.add({ key: 'flattened_y_offset', value: 0 });
     node.add({ key: 'floors', value: this.floors.map(floor => floor.toYAML()) });
@@ -130,7 +142,9 @@ export class Level extends EditorObject {
     node.add({ key: 'layers', value: layers_node });
     node.add({ key: 'measurements', value: this.measurements.map(measurement => measurement.toYAML()) });
     node.add({ key: 'models', value: this.models.map(model => model.toYAML()) });
-    node.add({ key: 'vertices', value: this.vertices.map(vertex => vertex.toYAML()) });
+
+    node.add({ key: 'vertices', value: this.vertices.map(vertex => vertex.toYAML(coord_scale)) });
+
     node.add({ key: 'walls', value: this.walls.map(wall => wall.toYAML()) });
     return node;
   }
@@ -148,7 +162,7 @@ export class Level extends EditorObject {
         const d_pixels = Math.sqrt(dx*dx + dy*dy);
         sum += meas.distance / d_pixels;
       }
-  
+
       if (count > 0) {
         this.scale = sum / count;
       }

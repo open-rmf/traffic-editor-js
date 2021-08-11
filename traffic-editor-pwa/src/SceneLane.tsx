@@ -19,7 +19,7 @@ interface SceneLaneProps {
 export function SceneLane(props: SceneLaneProps): JSX.Element {
   const selection = useStore(state => state.selection)
   const setStore = useStore(state => state.set);
-  const coordinateSystem = useStore(state => state.site.coordinate_system);
+  const coordinateSystem = useStore(state => state.site.coordinateSystem);
   useStore(state => state.repaintCount);
 
   const v1 = props.vertex_start;

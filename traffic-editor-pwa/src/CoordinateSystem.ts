@@ -4,7 +4,7 @@ export enum CoordinateSystem {
   WGS84 = 2,
   WebMercator = 3,
 }
- 
+
 // Wanted to have these functions inside a CoordinateSystem
 // namespace, but this triggers @typescript-eslint/no-redeclare
 // so I'll just prefix the function names below. Not sure
@@ -40,4 +40,19 @@ export function CoordinateSystemFromString(s: string): CoordinateSystem {
     console.log("AHHHHH unknown coordinate system: " + s);
   }
   return cs;
+}
+
+export function CoordinateSystemScale(cs: CoordinateSystem): number {
+  if (cs === CoordinateSystem.Legacy) {
+    return 1.0;
+  }
+  else if (cs === CoordinateSystem.WGS84) {
+    return 1000.0;
+  }
+  else if (cs === CoordinateSystem.WebMercator) {
+    return 1000.0;
+  }
+  else {
+    return 1.0;
+  }
 }

@@ -35,7 +35,7 @@ export function SceneSite(props: SceneSiteProps): JSX.Element {
 
   return (
     <group>
-      {(site.coordinate_system === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
+      {(site.coordinateSystem === CoordinateSystem.Legacy) && <pointLight position={[10, 10, 10]} />}
       {site.levels.map((level) => <SceneLevel key={level.uuid} level={level} />)}
       {robots.map((robot) => <SceneRobot telemetry={robot} />)}
     </group>

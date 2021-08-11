@@ -29,15 +29,13 @@ export default function PropertyEditorProp(props: PropertyEditorPropProps): JSX.
 
   if (props.prop.canModify) {
     return (
-      <div>
-        <TextField
-          id={"field"}
-          inputRef={field}
-          variant="outlined"
-          margin="dense"
-          value={value}
-          onChange={handleFieldChange} />
-      </div>
+      <TextField
+        id={"field"}
+        inputRef={field}
+        variant="outlined"
+        margin="dense"
+        value={value}
+        onChange={handleFieldChange} />
     );
   }
   else

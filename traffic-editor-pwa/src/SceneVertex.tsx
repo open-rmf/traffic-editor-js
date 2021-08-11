@@ -30,7 +30,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const activeTool = useStore(state => state.activeTool);
   const activeUUID = useStore(state => state.activeUUID);
   const activeMotionTool = useStore(state => state.activeMotionTool);
-  const coordinateSystem = useStore(state => state.site.coordinate_system);
+  const coordinateSystem = useStore(state => state.site.coordinateSystem);
   const captureTools = [ToolID.MOVE, ToolID.ADD_LANE];
 
   const [activeMotionLinePoint, setActiveMotionLinePoint] = React.useState<[number, number]>([0, 0]);
@@ -129,7 +129,10 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
         <cylinderGeometry args={[vertexDiameter, vertexDiameter, vertexDiameter, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <Text color="blue" position={[x, y, 1.5 * vertexDiameter + props.elevation]}>
+      <Text
+        color="blue"
+        position={[x, y, 1.5 * vertexDiameter + props.elevation]}
+        fontSize={vertexDiameter*2}>
         {props.vertex.name}
       </Text>
       {showActiveMotionGeometry && <lineSegments position={[x, y, props.elevation + 0.3]}>

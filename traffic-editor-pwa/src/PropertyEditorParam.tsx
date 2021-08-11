@@ -11,7 +11,7 @@ interface PropertyEditorParamProps {
 
 export default function PropertyEditorParam(props: PropertyEditorParamProps): JSX.Element {
   const [checked, setChecked] = React.useState(props.param.value);
-  const selection = useStore(state => state.selection);
+  useStore(state => state.selection);
   const string_field = React.useRef<HTMLInputElement>();
 
   const handleCheckboxChange = (event: any) => {
