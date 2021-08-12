@@ -344,6 +344,7 @@ export function addVertex(x: number, y: number) {
   vertex.uuid = generate_uuid();
   vertex.x = x;
   vertex.y = y;
+  vertex.addDefaultParams();
 
   let site = useStore.getState().site;
 

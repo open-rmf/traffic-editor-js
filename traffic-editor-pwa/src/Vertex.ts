@@ -42,4 +42,10 @@ export class Vertex extends EditorObject {
     node.flow = true;
     return node;
   }
+
+  addDefaultParams(): void {
+    this.addParam('is_charger', false, 4);
+    this.addParam('is_parking_spot', false, 4);
+    this.addParam('is_holding_point', false, 4);
+  }
 }
