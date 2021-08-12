@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { Vertex } from './Vertex';
 import { Level } from './Level';
 import { useStore, EditorWall, setSelection } from './Store';
+import { CoordinateSystem } from './CoordinateSystem';
 
 interface SceneWallProps {
   vertex_start: Vertex,
@@ -23,6 +24,9 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
   const dy = v2.y - v1.y;
   const len = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
   const xyrot = Math.atan2(dy, dx);
+  const coordinateSystem = useStore(state => state.site.coordinateSystem);
+  const width = coordinateSystem === CoordinateSystem.Legacy ? 0.1 : 0.01;
+  const height = 20 * width;
 
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(0.1, 0.1, 0.9);
@@ -34,7 +38,7 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
 
   return (
     <mesh
-      position={[cx, cy, 1.0 + props.elevation]}
+      position={[cx, cy, props.elevation]}
       rotation={new THREE.Euler(0, 0, xyrot)}
       scale={1.0}
       key={props.wall.uuid}
@@ -43,7 +47,7 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
         setSelection(setStore, props.wall);
       }}
     >
-      <boxGeometry args={[len, 0.1, 2]} />
+      <boxGeometry args={[len, width, height]} />
       <meshStandardMaterial color={color} />
     </mesh>
   );

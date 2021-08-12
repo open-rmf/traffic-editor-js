@@ -11,6 +11,7 @@ import {
   setActiveMotionTool,
   updateVertexPoint,
   addLane,
+  addWall,
 } from './Store';
 import { ToolID } from './ToolID';
 import { CoordinateSystem } from './CoordinateSystem';
@@ -31,7 +32,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const activeUUID = useStore(state => state.activeUUID);
   const activeMotionTool = useStore(state => state.activeMotionTool);
   const coordinateSystem = useStore(state => state.site.coordinateSystem);
-  const captureTools = [ToolID.MOVE, ToolID.ADD_LANE];
+  const captureTools = [ToolID.MOVE, ToolID.ADD_LANE, ToolID.ADD_WALL];
 
   const [activeMotionLinePoint, setActiveMotionLinePoint] = React.useState<[number, number]>([0, 0]);
   const [showActiveMotionGeometry, setShowActiveMotionGeometry] = React.useState(false);
@@ -96,6 +97,11 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
               addLane(activeUUID, props.vertex.uuid, props.level.uuid);
             }
           }
+          else if (activeMotionTool === ToolID.ADD_WALL) {
+            if (activeUUID !== props.vertex.uuid) {
+              addWall(activeUUID, props.vertex.uuid, props.level.uuid);
+            }
+          }
           setActiveMotionTool(ToolID.NONE);
         }}
         onPointerMove={(event) => {
@@ -121,6 +127,10 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
             updateVertexPoint(setStore, props.level_uuid, props.vertex.uuid, mouse_x, mouse_y);
           }
           else if (activeMotionTool === ToolID.ADD_LANE) {
+            setShowActiveMotionGeometry(true);
+            setActiveMotionLinePoint([mouse_x - x, mouse_y - y]);
+          }
+          else if (activeMotionTool === ToolID.ADD_WALL) {
             setShowActiveMotionGeometry(true);
             setActiveMotionLinePoint([mouse_x - x, mouse_y - y]);
           }

@@ -38,6 +38,10 @@ export class EditorWall extends EditorObject {
     node.flow = true;
     return node;
   }
+
+  addDefaultParams(): void {
+    this.addParam('texture_name', 'default', 1);
+  }
 }
 
 export class EditorMeasurement extends EditorObject {
@@ -472,6 +476,43 @@ export function addLane(start_uuid: string, end_uuid: string, level_uuid: string
       lane.end_idx = end_idx;
       lane.addDefaultParams();
       level.lanes = [...level.lanes, lane];
+      break;
+    }
+  }
+
+  useStore.setState({
+    site: site,
+    repaintCount: useStore.getState().repaintCount + 1,
+  });
+}
+
+export function addWall(start_uuid: string, end_uuid: string, level_uuid: string) {
+  console.log(`addWall(${start_uuid}, ${end_uuid})`);
+  let site = useStore.getState().site;
+  for (let level of site.levels) {
+    if (level.uuid === level_uuid) {
+      // look up the vertex indices
+      // TODO: something cooler than this
+      let start_idx = -1;
+      let end_idx = -1;
+      for (let i = 0; i < level.vertices.length; i++) {
+        if (level.vertices[i].uuid === start_uuid) {
+          start_idx = i;
+        }
+        if (level.vertices[i].uuid === end_uuid) {
+          end_idx = i;
+        }
+      }
+      if (start_idx < 0 || end_idx < 0) {
+        return;
+      }
+
+      let wall = new EditorWall();
+      wall.uuid = generate_uuid();
+      wall.start_idx = start_idx;
+      wall.end_idx = end_idx;
+      wall.addDefaultParams();
+      level.walls = [...level.walls, wall];
       break;
     }
   }
