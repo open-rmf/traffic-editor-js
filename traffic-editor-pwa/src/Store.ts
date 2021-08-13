@@ -40,7 +40,7 @@ export class EditorWall extends EditorObject {
   }
 
   addDefaultParams(): void {
-    this.addParam('texture_name', 'default', 1);
+    this.addParam('texture_name', 'default', 1, false);
   }
 }
 

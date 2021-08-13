@@ -17,6 +17,10 @@ export class Vertex extends EditorObject {
         (s: string) => { this.name = s; }));
     this.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(this.x)} ));
     this.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(this.y)} ));
+
+    // add a few "optional" params that we only save if non-empty:
+    this.addParam<string>('spawn_robot_type', '', 1, true);
+    this.addParam<string>('spawn_robot_name', '', 1, true);
   }
 
   static fromYAML(data: any, coord_scale: number): Vertex {
@@ -37,15 +41,16 @@ export class Vertex extends EditorObject {
     node.add(-this.y / coord_scale);
     node.add(0.0);
     node.add(this.name);
-    if (this.params.length)
+    if (this.params.length) {
       node.add(this.paramsToYAML());
+    }
     node.flow = true;
     return node;
   }
 
   addDefaultParams(): void {
-    this.addParam('is_charger', false, 4);
-    this.addParam('is_parking_spot', false, 4);
-    this.addParam('is_holding_point', false, 4);
+    this.addParam('is_charger', false, 4, false);
+    this.addParam('is_parking_spot', false, 4, false);
+    this.addParam('is_holding_point', false, 4, false);
   }
 }

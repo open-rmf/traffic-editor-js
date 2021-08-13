@@ -26,7 +26,7 @@ export class Lane extends EditorObject {
   }
 
   addDefaultParams(): void {
-    this.addParam('bidirectional', false, 4);
-    this.addParam('graph_idx', 0, 2);
+    this.addParam('bidirectional', false, 4, false);
+    this.addParam('graph_idx', 0, 2, false);
   }
 }

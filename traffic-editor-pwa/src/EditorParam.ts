@@ -6,6 +6,7 @@ export class EditorParam {
   name: string = '';
   value: any = 0;
   uuid: string = '';
+  optional: boolean = false;
 
   static fromYAML(_name: string, data: any): EditorParam {
     let p = new EditorParam();
@@ -13,6 +14,7 @@ export class EditorParam {
     p.type_idx = data[0];
     p.value = data[1];
     p.uuid = generate_uuid();
+    p.optional = false;
     return p;
   }
 }
