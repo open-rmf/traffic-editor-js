@@ -39,13 +39,13 @@ export default function NewDialog(props: MqttDialogProps): JSX.Element {
     });
     client.on('message', (topic, payload, packet) => {
       //if (top
-      console.log('topic: ' + topic + '   payload: ' + payload);
+      // console.log('topic: ' + topic + '   payload: ' + payload);
       const topic_tokens = topic.split('/');
       if (topic_tokens.length === 4 &&
         topic_tokens[1] === "robots" &&
         topic_tokens[3] === "state") {
         const robot_name = topic_tokens[2];
-        console.log('robot name: ' + robot_name);
+        // console.log('robot name: ' + robot_name);
         let telemetry_payload = {};
         try {
           telemetry_payload = JSON.parse(payload.toString());
@@ -62,7 +62,7 @@ export default function NewDialog(props: MqttDialogProps): JSX.Element {
           const lat_webm = 256000 * (telemetry_payload['longitude'] + 180) / 360;
           const lat_radians = telemetry_payload['latitude'] * Math.PI / 180;
           const lon_webm = -(128000 - 256000 * Math.log(Math.tan(Math.PI / 4 + lat_radians / 2)) / (2 * Math.PI));
-          console.log(`telemetry: (${telemetry_payload['latitude']}, ${telemetry_payload['longitude']}) -> (${lat_webm}, ${lon_webm})`);
+          // console.log(`telemetry: (${telemetry_payload['latitude']}, ${telemetry_payload['longitude']}) -> (${lat_webm}, ${lon_webm})`);
 
           // deal with heading
           let heading = 0;
