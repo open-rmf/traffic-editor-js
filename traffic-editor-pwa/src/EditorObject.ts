@@ -18,7 +18,7 @@ export class EditorObject {
       // see if this param already exists as an "optional" one,
       // and set it if it's already there
       let found = false;
-      this.params.map(param => {
+      this.params = this.params.map(param => {
         if (param.name === param_name) {
           found = true;
           return paramFromYaml;
