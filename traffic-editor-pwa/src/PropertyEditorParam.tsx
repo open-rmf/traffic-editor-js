@@ -11,8 +11,15 @@ interface PropertyEditorParamProps {
 
 export default function PropertyEditorParam(props: PropertyEditorParamProps): JSX.Element {
   const [checked, setChecked] = React.useState(props.param.value);
-  useStore(state => state.selection);
+  const [stringValue, setStringValue] = React.useState(props.param.value);
+  const selection = useStore(state => state.selection);
   const string_field = React.useRef<HTMLInputElement>();
+  console.log(`PropertyEditorParam(${props.param.name})`);
+
+  React.useEffect(() => {
+    setChecked(props.param.value);
+    setStringValue(props.param.value);
+  }, [selection, props.param]);
 
   const handleCheckboxChange = (event: any) => {
     setChecked(event.target.checked);
@@ -38,6 +45,7 @@ export default function PropertyEditorParam(props: PropertyEditorParamProps): JS
     return (
       <Checkbox
         color="primary"
+        id={props.param.name + '_checkbox'}
         checked={checked}
         onChange={handleCheckboxChange}
       />
@@ -48,11 +56,11 @@ export default function PropertyEditorParam(props: PropertyEditorParamProps): JS
     return (
       <div>
         <TextField
-          id="string_field"
+          id={props.param.name + '_string_field'}
           inputRef={string_field}
           variant="outlined"
           margin="dense"
-          defaultValue={props.param.value}
+          value={stringValue}
           onChange={handleStringFieldChange} />
       </div>
     );

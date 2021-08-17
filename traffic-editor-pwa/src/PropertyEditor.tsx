@@ -62,7 +62,7 @@ export default function PropertyEditor(): JSX.Element {
         {selection.props.map(prop =>
           <TableRow>
             <TableCell className={classes.tableCell}>{prop.name}</TableCell>
-            <TableCell className={classes.tableCell}>
+            <TableCell key={prop.name + '_control'} className={classes.tableCell}>
               <PropertyEditorProp prop={prop} />
             </TableCell>
           </TableRow>
@@ -70,7 +70,7 @@ export default function PropertyEditor(): JSX.Element {
         {selection.params.map(param =>
           <TableRow>
             <TableCell className={classes.tableCell}>{param.name}</TableCell>
-            <TableCell className={classes.tableCell}>
+            <TableCell key={param.name + '_control'} className={classes.tableCell}>
               <PropertyEditorParam param={param} />
             </TableCell>
           </TableRow>
