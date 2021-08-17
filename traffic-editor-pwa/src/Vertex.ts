@@ -18,6 +18,18 @@ export class Vertex extends EditorObject {
     this.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(this.x)} ));
     this.props.push(new EditorProp('y', () => { return EditorObject.roundNicely(this.y)} ));
 
+    this.props.push(new EditorProp('lat', () => {
+      const R = 6378137;
+      const meters_north = R * Math.PI * (128 + this.y / 1000) / 128;
+      //let lat = meters_north / R * 180 / Math.PI;
+      const lat = 180 / Math.PI * (2 * Math.atan(Math.exp(meters_north / R)) - Math.PI / 2);
+      return lat;
+    }));
+
+    this.props.push(new EditorProp('lon', () => {
+      return ((this.x / 1000) - 128) / 128 * 180;
+    }));
+
     // add a few "optional" params that we only save if non-empty:
     this.addParam<string>('spawn_robot_type', '', 1, true);
     this.addParam<string>('spawn_robot_name', '', 1, true);

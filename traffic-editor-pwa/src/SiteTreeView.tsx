@@ -239,6 +239,7 @@ function LevelTreeItem(props: { level: Level }): JSX.Element {
 
 export function SiteTreeView(): JSX.Element {
   const site = useStore(state => state.site);
+  const setStore = useStore(state => state.set);
 
   if (site.name === '') {
     return (
@@ -252,14 +253,22 @@ export function SiteTreeView(): JSX.Element {
       </div>
     );
   }
- 
+
   // defaultExpanded={[building.uuid + '_levels']}
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
     >
-      <TreeItem nodeId={site.uuid + '_name'} label={"site name: " + site.name} />
+      <TreeItem
+        nodeId={site.uuid + '_name'}
+        key={site.uuid + '_name'}
+        label={"site name: " + site.name}
+        onClick={(event) => {
+          setSelection(setStore, site);
+        }}>
+      </TreeItem>
+
       <TreeItem nodeId={site.uuid + '_filename'} label={"filename: " + site.filename} />
       <TreeItem
         nodeId={site.uuid + '_ref'}

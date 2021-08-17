@@ -48,7 +48,7 @@ export default function App(props: React.PropsWithChildren<{}>): JSX.Element {
           <Grid item style={{height: '40vh', overflow: 'auto'}}>
             <SiteTreeView />
           </Grid>
-          <Grid item className={classes.propertyGridItem} style={{height: '40vh', overflow: 'auto'}}>
+          <Grid item className={classes.propertyGridItem} style={{height: '50vh', overflow: 'auto'}}>
             <PropertyEditor />
           </Grid>
         </Grid>

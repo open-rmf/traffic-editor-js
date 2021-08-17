@@ -14,7 +14,7 @@ export default function PropertyEditorParam(props: PropertyEditorParamProps): JS
   const [stringValue, setStringValue] = React.useState(props.param.value);
   const selection = useStore(state => state.selection);
   const string_field = React.useRef<HTMLInputElement>();
-  console.log(`PropertyEditorParam(${props.param.name})`);
+  //console.log(`PropertyEditorParam(${props.param.name})`);
 
   React.useEffect(() => {
     setChecked(props.param.value);
@@ -31,6 +31,7 @@ export default function PropertyEditorParam(props: PropertyEditorParamProps): JS
   }
 
   const handleStringFieldChange = (event: any) => {
+    setStringValue(event.target.value);
     props.param.value = event.target.value;
     useStore.setState({
       site: useStore.getState().site,

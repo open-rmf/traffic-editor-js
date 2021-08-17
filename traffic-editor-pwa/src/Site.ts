@@ -24,6 +24,12 @@ export class Site extends EditorObject {
   yaml_doc: YAML.Document = new YAML.Document();
   save: () => void = () => {};
 
+  constructor() {
+    super();
+    this.addParam<string>('crs', '', 1, true);
+    this.addParam<string>('origin_vertex', '', 1, true);
+  }
+
   static fromNewCommand(): Site {
     let site = new Site();
     site.uuid = generate_uuid();
@@ -37,6 +43,10 @@ export class Site extends EditorObject {
     let site = new Site();
     site.uuid = generate_uuid();
     site.name = yaml['name'];
+    if (yaml['params']) {
+      site.paramsFromYAML(yaml['params']);
+    }
+
     if (yaml['coordinate_system']) {
       site.coordinateSystem = CoordinateSystemFromString(yaml['coordinate_system']);
     }
@@ -73,6 +83,9 @@ export class Site extends EditorObject {
 
     yaml_doc.add({ key: 'lifts', value: lifts_node });
     yaml_doc.add({ key: 'name', value: this.name });
+
+    yaml_doc.add({ key: 'params', value: this.paramsToYAML() });
+
     return yaml_doc.toString({lineWidth: 0, minContentWidth: 2});
   }
 
