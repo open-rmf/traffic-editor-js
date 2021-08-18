@@ -26,8 +26,8 @@ export class Site extends EditorObject {
 
   constructor() {
     super();
-    this.addParam<string>('crs', '', 1, true);
-    this.addParam<string>('origin_vertex', '', 1, true);
+    this.addParam<string>('generate_crs', '', 1, true);
+    this.addParam<string>('generate_origin_vertex', '', 1, true);
   }
 
   static fromNewCommand(): Site {
