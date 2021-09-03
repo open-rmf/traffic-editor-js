@@ -63,7 +63,9 @@ export class Level extends EditorObject {
       level.images.push(image);
     }
 
-    level.elevation = data['elevation'];
+    if (data['elevation']) {
+      level.elevation = data['elevation'];
+    }
 
     if (data['constraints']) {
       level.constraints = data['constraints'].map((constraint: any) => EditorConstraint.fromYAML(constraint));
@@ -188,5 +190,9 @@ export class Level extends EditorObject {
       x / this.scale,
       y / this.scale,
     ];
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate center point
   }
 }

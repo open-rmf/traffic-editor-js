@@ -18,9 +18,9 @@ interface SceneLaneProps {
 
 export function SceneLane(props: SceneLaneProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setStore = useStore(state => state.set);
   const coordinateSystem = useStore(state => state.site.coordinateSystem);
   useStore(state => state.repaintCount);
+  const graphs = useStore(state => state.site.graphs);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -30,7 +30,14 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const len = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
   const xyrot = Math.atan2(dy, dx);
 
-  const laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
+  const graph_id = props.lane.graph_idx;
+  // try to find this graph
+  let laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
+  for (const graph of graphs) {
+    if (graph.id === graph_id) {
+      laneWidth = graph.default_lane_width;
+    }
+  }
   const laneHeight = laneWidth / 10;
 
   const isBidirectional = props.lane.getParam('bidirectional', false);
@@ -43,6 +50,7 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
     return color;
   }, [selection, props.lane.uuid]);
 
+  /*
   const texture = useLoader(
     TextureLoader,
     process.env.PUBLIC_URL + '/textures/lane_direction3.png');
@@ -52,9 +60,11 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(len / laneWidth, 1);
   }
+  */
 
   // todo: figure out how to set needsUpdate on the material
   // to tell THREE to reload the material when we toggle isBidirectional
+  // console.log(`SceneLane center (${cx}, ${cy}), len ${len}, xyrot ${xyrot}, ele ${props.elevation}`);
 
   return (
     <mesh
@@ -64,12 +74,13 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       key={props.lane.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(setStore, props.lane);
+        setSelection(props.lane);
       }}
     >
       <boxGeometry args={[len, laneWidth, laneHeight]} />
-      <meshStandardMaterial color={color} map={isBidirectional ? null : texture} />
+      <meshStandardMaterial color={color} transparent={true} opacity={0.7} />
     </mesh>
   );
 }
 //<meshStandardMaterial color={color} transparent={true} opacity={0.7} />
+//<meshStandardMaterial color={color} map={isBidirectional ? null : texture} />

@@ -33,6 +33,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   const activeMotionTool = useStore(state => state.activeMotionTool);
   const coordinateSystem = useStore(state => state.site.coordinateSystem);
   const captureTools = [ToolID.MOVE, ToolID.ADD_LANE, ToolID.ADD_WALL];
+  const site = useStore(state => state.site);
 
   const [activeMotionLinePoint, setActiveMotionLinePoint] = React.useState<[number, number]>([0, 0]);
   const [showActiveMotionGeometry, setShowActiveMotionGeometry] = React.useState(false);
@@ -45,7 +46,9 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   }, [activeMotionLinePoint]);
 
   // todo: inflate vertex diameter when far away?
-  const vertexDiameter = coordinateSystem === CoordinateSystem.Legacy ? 0.1 : 0.01;
+  const radius = site.getParam<number>(
+    'default_vertex_radius',
+    coordinateSystem === CoordinateSystem.Legacy ? 0.1 : 0.01);
 
   const [x, y] = props.level.transformPoint(props.vertex.x, props.vertex.y);
 
@@ -58,7 +61,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
   return (
     <group>
       <mesh
-        position={[x, y, vertexDiameter/2 + props.elevation]}
+        position={[x, y, radius/2 + props.elevation]}
         scale={1.0}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
         key={props.vertex.uuid}
@@ -68,7 +71,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
         onPointerDown={(event) => {
           //console.log(`vertex onPointerDown uuid=${props.vertex.uuid}`);
           if (activeTool === ToolID.SELECT) {
-            setSelection(setStore, props.vertex);
+            setSelection(props.vertex);
             return;
           }
           else if (captureTools.includes(activeTool)) {
@@ -136,13 +139,13 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
           }
         }}
       >
-        <cylinderGeometry args={[vertexDiameter, vertexDiameter, vertexDiameter, 16]} />
+        <cylinderGeometry args={[radius, radius, radius, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
       <Text
         color="blue"
-        position={[x, y, 1.5 * vertexDiameter + props.elevation]}
-        fontSize={vertexDiameter*2}>
+        position={[x, y, 1.5 * radius + props.elevation]}
+        fontSize={radius * 2}>
         {props.vertex.name}
       </Text>
       {showActiveMotionGeometry && <lineSegments position={[x, y, props.elevation + 0.3]}>

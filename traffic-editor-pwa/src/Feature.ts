@@ -32,4 +32,8 @@ export class Feature extends EditorObject {
     node.flow = true;
     return node;
   }
+
+  getCenterXY(): [number, number] {
+    return [this.x, this.y];
+  }
 }

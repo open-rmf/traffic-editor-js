@@ -14,7 +14,6 @@ interface SceneDoorProps {
 
 export function SceneDoor(props: SceneDoorProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setStore = useStore(state => state.set);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -40,7 +39,7 @@ export function SceneDoor(props: SceneDoorProps): JSX.Element {
       key={props.door.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(setStore, props.door);
+        setSelection(props.door);
       }}
     >
       <boxGeometry args={[len, 0.5, 2]} />

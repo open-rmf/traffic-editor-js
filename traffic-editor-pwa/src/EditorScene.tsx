@@ -19,15 +19,16 @@ export function EditorScene(props: EditorSceneProps): JSX.Element {
   const setStore = useStore(state => state.set);
   //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);
-  const cameraInitialPose = useStore(state => state.cameraInitialPose);
   //const activeTool = useStore(state => state.activeTool);
   //const disableEditorTools = useStore(state => state.disableEditorTools);
 
   const Controls = (): JSX.Element => {
     THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
+    const cameraInitialPose = useStore(state => state.cameraInitialPose);
     const perspective_camera = useRef<THREE.Camera>(null);
     const orthographic_camera = useRef<THREE.Camera>(null);
     const enableMotionControls = useStore(state => state.enableMotionControls);
+    // const zoomToSelection = useStore(state => state.zoomToSelection);
 
     // todo: there is probably a better way to do this than having two cameras
     return (

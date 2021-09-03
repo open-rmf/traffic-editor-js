@@ -42,7 +42,9 @@ export class Vertex extends EditorObject {
     vertex.x = data[0] * coord_scale;
     vertex.y = -data[1] * coord_scale;
     vertex.name = data[3];
-    vertex.paramsFromYAML(data[4]);
+    if (data.length > 4) {
+      vertex.paramsFromYAML(data[4]);
+    }
 
     return vertex;
   }
@@ -64,5 +66,9 @@ export class Vertex extends EditorObject {
     this.addParam('is_charger', false, 4, false);
     this.addParam('is_parking_spot', false, 4, false);
     this.addParam('is_holding_point', false, 4, false);
+  }
+
+  getCenterXY(): [number, number] {
+    return [this.x, this.y];
   }
 }

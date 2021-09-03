@@ -11,6 +11,7 @@ import {
   useStore,
 } from './Store';
 import { EditorParam } from './EditorParam';
+import { Graph } from './Graph';
 import { Lane } from './Lane';
 import { Level } from './Level';
 import { Vertex } from './Vertex';
@@ -21,14 +22,27 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 function FeatureTreeItem(props: { feature: Feature }): JSX.Element {
-  const setStore = useStore(state => state.set);
   return (
     <TreeItem
       nodeId={props.feature.uuid}
       key={props.feature.uuid}
       label={`${props.feature.x}, ${props.feature.y}`}
       onClick={(event) => {
-        setSelection(setStore, props.feature);
+        setSelection(props.feature);
+      }}
+    >
+    </TreeItem>
+  );
+}
+
+function GraphTreeItem(props: { graph: Graph }): JSX.Element {
+  return (
+    <TreeItem
+      nodeId={props.graph.uuid}
+      key={props.graph.uuid}
+      label={`${props.graph.id}: ${props.graph.name}`}
+      onClick={(event) => {
+        setSelection(props.graph);
       }}
     >
     </TreeItem>
@@ -36,30 +50,27 @@ function FeatureTreeItem(props: { feature: Feature }): JSX.Element {
 }
 
 function ModelTreeItem(props: { model: EditorModel }): JSX.Element {
-  const setStore = useStore(state => state.set);
   return (
     <TreeItem
       nodeId={props.model.uuid}
       key={props.model.uuid}
       label={`${props.model.instance_name}`}
       onClick={(event) => {
-        setSelection(setStore, props.model);
+        setSelection(props.model);
       }}
     >
     </TreeItem>
   );
 }
 
-
 function ConstraintTreeItem(props: { constraint: EditorConstraint }): JSX.Element {
-  const setStore = useStore(state => state.set);
   return (
     <TreeItem
       nodeId={props.constraint.uuid}
       key={props.constraint.uuid}
       label={`${props.constraint.ids[0].substring(1, 9)} - ${props.constraint.ids[1].substring(1, 9)}`}
       onClick={(event) => {
-        setSelection(setStore, props.constraint);
+        setSelection(props.constraint);
       }}
     >
       {props.constraint.params.map((param) => <ParamTreeItem param={param} />)}
@@ -68,14 +79,13 @@ function ConstraintTreeItem(props: { constraint: EditorConstraint }): JSX.Elemen
 }
 
 function DoorTreeItem(props: { door: EditorDoor }): JSX.Element {
-  const setStore = useStore(state => state.set);
   const label = `(${props.door.start_idx} => ${props.door.end_idx})`;
   return(
     <TreeItem
       nodeId={props.door.uuid}
       key={props.door.uuid}
       onClick={(event) => {
-        setSelection(setStore, props.door);
+        setSelection(props.door);
       }}
       label={label} />
   );
@@ -92,14 +102,13 @@ function ParamTreeItem(props: { param: EditorParam }): JSX.Element {
 }
 
 function ImageTreeItem(props: { image: EditorImage }): JSX.Element {
-  const setStore = useStore(state => state.set);
   return (
     <TreeItem
       nodeId={props.image.uuid}
       key={props.image.uuid}
       label={props.image.filename}
       onClick={(event) => {
-        setSelection(setStore, props.image);
+        setSelection(props.image);
       }}
     >
       {props.image.params.map((param) => <ParamTreeItem param={param} />)}
@@ -115,7 +124,6 @@ function ImageTreeItem(props: { image: EditorImage }): JSX.Element {
 }
 
 function FloorTreeItem(props: { floor: EditorFloor }): JSX.Element {
-  const setStore = useStore(state => state.set);
   const label = 'floor (' + props.floor.vertex_indices.map((idx) => idx.toString()).join(', ') + ')';
   return(
     <TreeItem
@@ -123,7 +131,7 @@ function FloorTreeItem(props: { floor: EditorFloor }): JSX.Element {
       key={props.floor.uuid}
       label={label}
       onClick={(event) => {
-        setSelection(setStore, props.floor);
+        setSelection(props.floor);
       }}
     >
       {props.floor.params.map((param) => <ParamTreeItem param={param} />)}
@@ -132,35 +140,32 @@ function FloorTreeItem(props: { floor: EditorFloor }): JSX.Element {
 }
 
 function WallTreeItem(props: { wall: EditorWall }): JSX.Element {
-  const setStore = useStore(state => state.set);
   const label = `(${props.wall.start_idx} => ${props.wall.end_idx})`;
   return(
     <TreeItem
       nodeId={props.wall.uuid}
       key={props.wall.uuid}
       onClick={(event) => {
-        setSelection(setStore, props.wall);
+        setSelection(props.wall);
       }}
       label={label} />
   );
 }
 
 function MeasurementTreeItem(props: { measurement: EditorMeasurement }): JSX.Element {
-  const setStore = useStore(state => state.set);
   const label = `(${props.measurement.start_idx}-${props.measurement.end_idx}) = ${props.measurement.distance}`;
   return(
     <TreeItem
       nodeId={props.measurement.uuid}
       key={props.measurement.uuid}
       onClick={(event) => {
-        setSelection(setStore, props.measurement);
+        setSelection(props.measurement);
       }}
       label={label} />
   );
 }
 
 function LaneTreeItem(props: { lane: Lane }): JSX.Element {
-  const setStore = useStore(state => state.set);
   const label = `(${props.lane.start_idx} => ${props.lane.end_idx})`;
   return(
     <TreeItem
@@ -168,39 +173,36 @@ function LaneTreeItem(props: { lane: Lane }): JSX.Element {
       key={props.lane.uuid}
       label={label}
       onClick={(event) => {
-        setSelection(setStore, props.lane);
+        setSelection(props.lane, true);
       }}
     />
   );
 }
 
 function VertexTreeItem(props: { vertex: Vertex }): JSX.Element {
-  const setStore = useStore(state => state.set);
   let label = "(" + props.vertex.x + ", " + props.vertex.y + ")";
   if (props.vertex.name)
-    label = props.vertex.name + ': ' + label;
+    label = props.vertex.name;
   return (
     <TreeItem
       nodeId={props.vertex.uuid}
       key={props.vertex.uuid}
       onClick={(event) => {
-        setSelection(setStore, props.vertex);
+        setSelection(props.vertex, true);
       }}
       label={label}>
-      {props.vertex.params.map((param) => <ParamTreeItem param={param} />)}
     </TreeItem>
   );
 }
 
 function LevelTreeItem(props: { level: Level }): JSX.Element {
-  const setStore = useStore(state => state.set);
   return (
     <TreeItem
       nodeId={props.level.uuid}
       key={props.level.uuid}
       label={props.level.name}
       onClick={(event) => {
-        setSelection(setStore, props.level);
+        setSelection(props.level);
       }}>
 
       <TreeItem nodeId={props.level.uuid + '_constraints'} label="constraints">
@@ -239,7 +241,6 @@ function LevelTreeItem(props: { level: Level }): JSX.Element {
 
 export function SiteTreeView(): JSX.Element {
   const site = useStore(state => state.site);
-  const setStore = useStore(state => state.set);
 
   if (site.name === '') {
     return (
@@ -265,7 +266,7 @@ export function SiteTreeView(): JSX.Element {
         key={site.uuid + '_name'}
         label={"site name: " + site.name}
         onClick={(event) => {
-          setSelection(setStore, site);
+          setSelection(site);
         }}>
       </TreeItem>
 
@@ -274,6 +275,9 @@ export function SiteTreeView(): JSX.Element {
         nodeId={site.uuid + '_ref'}
         label={"reference level: " + site.reference_level_name }
       />
+      <TreeItem nodeId={site.uuid + '_graphs'} label="graphs">
+        {site.graphs.map(graph => <GraphTreeItem graph={graph} /> )}
+      </TreeItem>
       <TreeItem nodeId={site.uuid + '_levels'} label="levels">
         {site.levels.map(level => <LevelTreeItem level={level} /> )}
       </TreeItem>

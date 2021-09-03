@@ -3,7 +3,7 @@ import { EditorParam } from './EditorParam';
 import { EditorProp } from './EditorProp';
 import { v4 as generate_uuid } from 'uuid'
 
-export class EditorObject {
+export abstract class EditorObject {
   uuid: string = '';
   params: EditorParam[] = [];
   props: EditorProp[] = [];
@@ -77,4 +77,6 @@ export class EditorObject {
     param.optional = optional;
     this.params = [...this.params, param];
   }
+
+  abstract getCenterXY(): [number, number];
 }

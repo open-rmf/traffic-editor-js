@@ -4,6 +4,7 @@ import { v4 as generate_uuid } from 'uuid';
 import { EditorObject } from './EditorObject';
 import { CameraPose } from './Store';
 import { Level } from './Level';
+import { Graph } from './Graph';
 import {
   CoordinateSystem,
   CoordinateSystemFromString,
@@ -15,6 +16,7 @@ export class Site extends EditorObject {
   filename: string = '';
   url_base: string = '';
   levels: Level[] = [];
+  graphs: Graph[] = [];
   reference_level_name: string = '';
   uuid: string = '';
   params = [];
@@ -50,6 +52,11 @@ export class Site extends EditorObject {
     if (yaml['coordinate_system']) {
       site.coordinateSystem = CoordinateSystemFromString(yaml['coordinate_system']);
     }
+
+    for (const graph_id in yaml['graphs']) {
+      site.graphs.push(Graph.fromYAML(+graph_id, yaml['graphs'][graph_id]));
+    }
+
     for (const level_name in yaml['levels']) {
       const level_data = yaml['levels'][level_name];
       site.levels.push(Level.fromYAML(level_name, level_data, site.coordinateSystem));
@@ -142,5 +149,9 @@ export class Site extends EditorObject {
         };
       }
     }
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
   }
 }

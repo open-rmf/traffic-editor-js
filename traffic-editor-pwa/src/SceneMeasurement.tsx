@@ -14,7 +14,6 @@ interface SceneMeasurementProps {
 
 export function SceneMeasurement(props: SceneMeasurementProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setStore = useStore(state => state.set);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -40,7 +39,7 @@ export function SceneMeasurement(props: SceneMeasurementProps): JSX.Element {
       key={props.measurement.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(setStore, props.measurement);
+        setSelection(props.measurement);
       }}
     >
       <boxGeometry args={[len, 0.5, 0.1]} />

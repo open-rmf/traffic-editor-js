@@ -42,6 +42,10 @@ export class EditorWall extends EditorObject {
   addDefaultParams(): void {
     this.addParam('texture_name', 'default', 1, false);
   }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
+  }
 }
 
 export class EditorMeasurement extends EditorObject {
@@ -69,6 +73,10 @@ export class EditorMeasurement extends EditorObject {
     node.flow = true;
     return node;
   }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
+  }
 }
 
 export class EditorDoor extends EditorObject {
@@ -92,6 +100,10 @@ export class EditorDoor extends EditorObject {
     node.add(this.paramsToYAML());
     node.flow = true;
     return node;
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
   }
 }
 
@@ -117,6 +129,10 @@ export class EditorFloor extends EditorObject {
     vertices_node.flow = true;
     node.add({ key: 'vertices', value: vertices_node });
     return node;
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
   }
 }
 
@@ -175,6 +191,10 @@ export class EditorImage extends EditorObject {
     this.blob = _blob;
     console.log(`image ${this.filename} retrieved ${this.blob.size} bytes`);
   }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
+  }
 }
 
 export class EditorConstraint extends EditorObject {
@@ -192,6 +212,10 @@ export class EditorConstraint extends EditorObject {
     node.add({ key: 'ids', value: this.ids });
     node.flow = true;
     return node;
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
   }
 }
 
@@ -229,6 +253,10 @@ export class EditorModel extends EditorObject {
     node.add({ key: 'z', value: this.z });
     node.flow = true;
     return node;
+  }
+
+  getCenterXY(): [number, number] {
+    return [0, 0];  // todo: calculate somehow
   }
 }
 
@@ -294,10 +322,18 @@ export const useStore = create<StoreState>(set => ({
 
 export type StoreSetter = (fn: (draftState: StoreState) => void) => void;
 
-export function setSelection(setStore: StoreSetter, newSelection: EditorObject) {
-  setStore(state => {
-    state.selection = newSelection;
-  });
+export function setSelection(selection: EditorObject, zoomTo: boolean = false) {
+  useStore.setState({ selection: selection });
+
+  if (zoomTo) {
+    const [x, y] = selection.getCenterXY();
+    const pose = {
+      position: new THREE.Vector3(x, y, 100),
+      target: new THREE.Vector3(x, y, 0),
+      zoom: 20,
+    };
+    useStore.setState({ cameraInitialPose: pose });
+  }
 }
 
 export function clearSelection(setStore: StoreSetter) {

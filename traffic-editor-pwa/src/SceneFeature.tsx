@@ -42,7 +42,7 @@ export function SceneFeature(props: SceneFeatureProps): JSX.Element {
           event.stopPropagation();
         }}
         onPointerDown={(event) => {
-          setSelection(setStore, props.feature);
+          setSelection(props.feature);
           if (!isMoveToolActive)
             return;
           event.stopPropagation();

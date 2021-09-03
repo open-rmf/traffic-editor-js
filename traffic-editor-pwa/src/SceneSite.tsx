@@ -3,7 +3,7 @@ import React from 'react'
 import { useStore } from './Store';
 import { SceneLevel } from './SceneLevel';
 import { CoordinateSystem } from './CoordinateSystem';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { SceneRobot } from './SceneRobot';
 
 type SceneSiteProps = {
@@ -15,6 +15,8 @@ export function SceneSite(props: SceneSiteProps): JSX.Element {
   useStore(state => state.repaintCount);  // needed to ensure repaints after tweaks
   const setStore = useStore(state => state.set);
   const robots = useStore(state => state.mqtt_robot_telemetry);
+  const scene = useThree(state => state.scene);
+  scene.background = new THREE.Color('white');
 
   useFrame(state => {
     if (state.camera instanceof THREE.OrthographicCamera) {

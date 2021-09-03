@@ -15,7 +15,6 @@ interface SceneWallProps {
 
 export function SceneWall(props: SceneWallProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setStore = useStore(state => state.set);
 
   const v1 = props.vertex_start;
   const v2 = props.vertex_end;
@@ -44,7 +43,7 @@ export function SceneWall(props: SceneWallProps): JSX.Element {
       key={props.wall.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(setStore, props.wall);
+        setSelection(props.wall);
       }}
     >
       <boxGeometry args={[len, width, height]} />

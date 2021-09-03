@@ -13,7 +13,6 @@ type SceneFloorProps = {
 
 export function SceneFloor(props: SceneFloorProps): JSX.Element {
   const selection = useStore(state => state.selection)
-  const setStore = useStore(state => state.set);
 
   const shape = React.useMemo(() => {
     const shape = new THREE.Shape();
@@ -49,7 +48,7 @@ export function SceneFloor(props: SceneFloorProps): JSX.Element {
       onClick={(event) => {
         event.stopPropagation()
         console.log('floor onClick')
-        setSelection(setStore, props.floor)
+        setSelection(props.floor)
       }}
     >
       <extrudeGeometry args={[shape, { 'depth': 0.1, 'bevelEnabled': false } ]} />

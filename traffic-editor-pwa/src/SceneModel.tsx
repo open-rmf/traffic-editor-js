@@ -33,7 +33,7 @@ export function SceneModel(props: SceneModelProps): JSX.Element {
       key={props.model.uuid}
       onClick={(event) => {
         event.stopPropagation();
-        setSelection(setStore, props.model);
+        setSelection(props.model);
       }}
       onPointerDown={(event) => {
         if (!isMoveToolActive)
