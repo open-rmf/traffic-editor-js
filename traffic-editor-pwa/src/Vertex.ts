@@ -40,7 +40,7 @@ export class Vertex extends EditorObject {
     vertex.object_type_name = 'Vertex';
     vertex.uuid = generate_uuid();
     vertex.x = data[0] * coord_scale;
-    vertex.y = -data[1] * coord_scale;
+    vertex.y = data[1] * coord_scale;
     vertex.name = data[3];
     if (data.length > 4) {
       vertex.paramsFromYAML(data[4]);
@@ -52,7 +52,7 @@ export class Vertex extends EditorObject {
   toYAML(coord_scale: number): YAML.YAMLSeq {
     let node = new YAML.YAMLSeq();
     node.add(this.x / coord_scale);
-    node.add(-this.y / coord_scale);
+    node.add(this.y / coord_scale);
     node.add(0.0);
     node.add(this.name);
     if (this.params.length) {

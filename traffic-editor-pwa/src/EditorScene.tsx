@@ -15,7 +15,7 @@ type EditorSceneProps = {
 };
 
 export function EditorScene(props: EditorSceneProps): JSX.Element {
-  const showMap = useStore(state => (state.site.coordinateSystem !== CoordinateSystem.Legacy));
+  const showMap = useStore(state => (state.site.coordinateSystem === CoordinateSystem.WebMercator));
   const setStore = useStore(state => state.set);
   //const clearSelection = useStore(state => state.clearSelection);
   const editorMode = useStore(state => state.editorMode);

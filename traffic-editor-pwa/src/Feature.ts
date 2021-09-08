@@ -14,7 +14,7 @@ export class Feature extends EditorObject {
     feature.uuid = data['id'];
     feature.name = data['name'];
     feature.x = data['x'] * coord_scale;
-    feature.y = -data['y'] * coord_scale;
+    feature.y = data['y'] * coord_scale;
 
     feature.props.push(new EditorProp('name', () => feature.name));
     feature.props.push(new EditorProp('x', () => { return EditorObject.roundNicely(feature.x)} ));
@@ -28,7 +28,7 @@ export class Feature extends EditorObject {
     node.add({ key: 'id', value: this.uuid });
     node.add({ key: 'name', value: this.name });
     node.add({ key: 'x', value: this.x / coord_scale });
-    node.add({ key: 'y', value: -this.y / coord_scale });
+    node.add({ key: 'y', value: this.y / coord_scale });
     node.flow = true;
     return node;
   }

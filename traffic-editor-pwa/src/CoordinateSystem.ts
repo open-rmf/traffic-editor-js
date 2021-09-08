@@ -1,7 +1,7 @@
 export enum CoordinateSystem {
   Undefined = 0,
   Legacy = 1,
-  WGS84 = 2,
+  CartesianMeters = 2,
   WebMercator = 3,
 }
 
@@ -14,8 +14,8 @@ export function CoordinateSystemToString(cs: CoordinateSystem): string {
   if (cs === CoordinateSystem.Legacy) {
     return "legacy";
   }
-  else if (cs === CoordinateSystem.WGS84) {
-    return "wgs84";
+  else if (cs === CoordinateSystem.CartesianMeters) {
+    return "cartesian_meters";
   }
   else if (cs === CoordinateSystem.WebMercator) {
     return "web_mercator";
@@ -30,8 +30,8 @@ export function CoordinateSystemFromString(s: string): CoordinateSystem {
   if (s === "legacy") {
     cs = CoordinateSystem.Legacy;
   }
-  else if (s === "wgs84") {
-    cs = CoordinateSystem.WGS84;
+  else if (s === "cartesian_meters") {
+    cs = CoordinateSystem.CartesianMeters;
   }
   else if (s === "web_mercator") {
     cs = CoordinateSystem.WebMercator;
@@ -44,10 +44,10 @@ export function CoordinateSystemFromString(s: string): CoordinateSystem {
 
 export function CoordinateSystemScale(cs: CoordinateSystem): number {
   if (cs === CoordinateSystem.Legacy) {
-    return 1.0;
+    return -1.0;
   }
-  else if (cs === CoordinateSystem.WGS84) {
-    return 1000.0;
+  else if (cs === CoordinateSystem.CartesianMeters) {
+    return 1.0;
   }
   else if (cs === CoordinateSystem.WebMercator) {
     return 1000.0;
