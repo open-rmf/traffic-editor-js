@@ -50,7 +50,6 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
     return color;
   }, [selection, props.lane.uuid]);
 
-  /*
   const texture = useLoader(
     TextureLoader,
     process.env.PUBLIC_URL + '/textures/lane_direction3.png');
@@ -60,7 +59,6 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(len / laneWidth, 1);
   }
-  */
 
   // todo: figure out how to set needsUpdate on the material
   // to tell THREE to reload the material when we toggle isBidirectional
@@ -78,9 +76,8 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
       }}
     >
       <boxGeometry args={[len, laneWidth, laneHeight]} />
-      <meshStandardMaterial color={color} transparent={true} opacity={0.7} />
+      <meshStandardMaterial color={color} transparent={true} map={isBidirectional ? null : texture} opacity={0.7} />
     </mesh>
   );
 }
 //<meshStandardMaterial color={color} transparent={true} opacity={0.7} />
-//<meshStandardMaterial color={color} map={isBidirectional ? null : texture} />
