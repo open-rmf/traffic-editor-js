@@ -46,7 +46,7 @@ export default function NewDialog(props: MqttDialogProps): JSX.Element {
         topic_tokens[3] === "state") {
         const robot_name = topic_tokens[2];
         // console.log('robot name: ' + robot_name);
-        let telemetry_payload = {};
+        let telemetry_payload: any = {};
         try {
           telemetry_payload = JSON.parse(payload.toString());
         }

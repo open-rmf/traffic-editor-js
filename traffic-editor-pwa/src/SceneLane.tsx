@@ -27,20 +27,31 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   const [cx, cy] = props.level.transformPoint((v1.x + v2.x) / 2, (v1.y + v2.y) / 2);
   const dx = v2.x - v1.x;
   const dy = v2.y - v1.y;
-  const len = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
+  const length = Math.sqrt(dx*dx + dy*dy) * props.level.scale;
   const xyrot = Math.atan2(dy, dx);
 
   const graph_id = props.lane.graph_idx;
   // try to find this graph
-  let laneWidth = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
+  let width = coordinateSystem === CoordinateSystem.Legacy ? 0.5 : 0.02;
   for (const graph of graphs) {
     if (graph.id === graph_id) {
-      laneWidth = graph.default_lane_width;
+      width = graph.default_lane_width;
     }
   }
-  const laneHeight = laneWidth / 10;
+  const height = width / 20;
 
   const isBidirectional = props.lane.getParam('bidirectional', false);
+
+  const texture_scale = 0.2;
+  const uvRef = React.useRef();
+
+  const uvs = React.useMemo(() => {
+    return new Float32Array([
+      0, 1,
+      length * texture_scale, 1,
+      0, 0,
+      length * texture_scale, 0])
+  }, [length]);
 
   const color: THREE.Color = React.useMemo(() => {
     let color = new THREE.Color(0.6, 0.05, 0.05);
@@ -57,16 +68,21 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
   if (texture) {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(len / laneWidth, 1);
   }
 
   // todo: figure out how to set needsUpdate on the material
   // to tell THREE to reload the material when we toggle isBidirectional
   // console.log(`SceneLane center (${cx}, ${cy}), len ${len}, xyrot ${xyrot}, ele ${props.elevation}`);
 
+  const geometry = React.useRef();
+
+  const update = React.useCallback(({parent}) => {
+    parent.attributes.uv.needsUpdate = true;
+  }, []);
+
   return (
     <mesh
-      position={[cx, cy, laneHeight/2 + props.elevation]}
+      position={[cx, cy, height + props.elevation]}
       rotation={new THREE.Euler(0, 0, xyrot)}
       scale={1.0}
       key={props.lane.uuid}
@@ -75,9 +91,16 @@ export function SceneLane(props: SceneLaneProps): JSX.Element {
         setSelection(props.lane);
       }}
     >
-      <boxGeometry args={[len, laneWidth, laneHeight]} />
       <meshStandardMaterial color={color} transparent={true} map={isBidirectional ? null : texture} opacity={0.7} />
+      <planeBufferGeometry args={[length, width, 1, 1]} ref={geometry}>
+        <bufferAttribute
+          attachObject={['attributes', 'uv']}
+          count={4}
+          itemSize={2}
+          array={uvs}
+          ref={uvRef}
+          onUpdate={update} />
+      </planeBufferGeometry>
     </mesh>
   );
 }
-//<meshStandardMaterial color={color} transparent={true} opacity={0.7} />

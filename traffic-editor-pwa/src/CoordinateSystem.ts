@@ -42,17 +42,17 @@ export function CoordinateSystemFromString(s: string): CoordinateSystem {
   return cs;
 }
 
-export function CoordinateSystemScale(cs: CoordinateSystem): number {
+export function CoordinateSystemScale(cs: CoordinateSystem): [number, number] {
   if (cs === CoordinateSystem.Legacy) {
-    return -1.0;
+    return [1.0, -1.0];
   }
   else if (cs === CoordinateSystem.CartesianMeters) {
-    return 1.0;
+    return [1.0, 1.0];
   }
   else if (cs === CoordinateSystem.WebMercator) {
-    return 1000.0;
+    return [1000.0, 1000.0];
   }
   else {
-    return 1.0;
+    return [1.0, 1.0];
   }
 }

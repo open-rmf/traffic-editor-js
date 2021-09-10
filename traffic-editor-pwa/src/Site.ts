@@ -105,7 +105,7 @@ export class Site extends EditorObject {
           vec_min.x = vertex.x;
         if (vertex.x > vec_max.x)
           vec_max.x = vertex.x;
-  
+
         if (vertex.y < vec_min.y)
           vec_min.y = vertex.y;
         if (vertex.y > vec_max.y)

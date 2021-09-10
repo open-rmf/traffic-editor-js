@@ -162,7 +162,7 @@ export class EditorImage extends EditorObject {
     image.yaw = data['transform']['yaw'];
     image.isLegacyDefaultImage = false;
     image.visible = data['visible'];
-    image.features = data['features'].map((feature_yaml: any) => Feature.fromYAML(feature_yaml, 1.0));
+    image.features = data['features'].map((feature_yaml: any) => Feature.fromYAML(feature_yaml, [1.0, 1.0]));
     return image;
   }
 
@@ -175,7 +175,7 @@ export class EditorImage extends EditorObject {
     color_node.add(this.color[3]);
     color_node.flow = true;
     node.add({ key: 'color', value: color_node });
-    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML(1.0)) });
+    node.add({ key: 'features', value: this.features.map(feature => feature.toYAML([1.0, 1.0])) });
     node.add({ key: 'filename', value: this.filename });
     let transform_node = new YAML.YAMLMap();
     transform_node.add({ key: 'scale', value: this.scale });
