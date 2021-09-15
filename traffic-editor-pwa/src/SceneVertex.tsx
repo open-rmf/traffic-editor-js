@@ -145,7 +145,7 @@ export function SceneVertex(props: SceneVertexProps): JSX.Element {
       <Text
         color="blue"
         position={[x, y, 1.5 * radius + props.elevation]}
-        fontSize={radius * 2}>
+        fontSize={radius * 1}>
         {props.vertex.name}
       </Text>
       {showActiveMotionGeometry && <lineSegments position={[x, y, props.elevation + 0.3]}>
