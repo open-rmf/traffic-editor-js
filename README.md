@@ -12,24 +12,24 @@ On the GUI, just select "Open Demo Map" on the drop-down menu.
 
 ![](webpage_view.png)
 
-# install dependencies
+## Install dependencies
 
 ```
 cd traffic-editor-pwa
 npm i
 ```
 
-# run stuff
+## Run stuff
 ```
 cd traffic-editor-pwa
 npm run start
 ```
 Now open `localhost:3000` in Chrome (has to be Chrome for local filesystem acecss)
 
-# Load custom building Map
+## Load custom building Map
 
 We will use [rmf_demos](https://github.com/open-rmf/rmf_demos) maps as an example.
-This will load a building map from a building map server.
+User can provide a rmf building map folder to a minimal "building map server", and this will provide an endpoint for the web GUI to retrieve the map.
 
 ```bash
 cd traffic-editor-minimal-map-server
