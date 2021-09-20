@@ -33,7 +33,9 @@ User can provide a rmf building map folder to a minimal "building map server", a
 
 ```bash
 cd traffic-editor-minimal-map-server
-python3 server.py --map_dir ${../rmf_demos/rmf_demos_maps/maps/airport_terminal/}
+
+# replace $BUILDING_MAP_DIR, e.g. : ../rmf_demos/rmf_demos_maps/maps/airport_terminal/
+python3 server.py --map_dir $BUILDING_MAP_DIR
 ```
 
 Now, on the GUI, click " Open map from localhost:8000" on the drop-down menu.
