@@ -14,7 +14,7 @@ jobs:
       - name: Install and Build
         run: |
           cd traffic-editor-pwa
-          npm run start
+          npm i
       ## Will only deploy page during merge to main
       - name: deploy_page
         # if: github.event_name == 'push'
