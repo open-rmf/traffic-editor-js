@@ -84,7 +84,7 @@ export default function NewDialog(props: NewDialogProps): JSX.Element {
       const fileHandle = await directoryHandle.getFileHandle(filename);
       const file = await fileHandle.getFile();
       const text = await file.text();
-      YAMLParser(text, '');
+      Parser(text, '');
     }
     props.onOpen();
   }

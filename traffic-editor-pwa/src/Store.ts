@@ -14,7 +14,7 @@ import { Lane } from './Lane';
 import { Vertex } from './Vertex';
 import { ToolID } from './ToolID';
 import mqtt from 'mqtt';
-import { YAMLSender } from './YAMLParser';
+import { Sender } from './Parser';
 
 export class EditorWall extends EditorObject {
   start_idx: number = -1;
@@ -568,7 +568,7 @@ export async function saveStore() {
   }
   else if (mapType === 'local_rest') {
     try {
-      await YAMLSender('http://localhost:8000/map_file');
+      await Sender('http://localhost:8000/map_file');
     } catch (error) {
       //setSnackMessage('Error while saving to local REST server');
       //setSnackOpen(true);

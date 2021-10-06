@@ -40,6 +40,12 @@ export class Site extends EditorObject {
     return site;
   }
 
+  static fromGPKG(blob: Blob): Site {
+    let site = new Site();
+    site.uuid = generate_uuid();
+    return site;
+  }
+
   static fromYAML(yaml_text: string): Site {
     const yaml = YAML.parse(yaml_text);
     let site = new Site();

@@ -12,7 +12,7 @@ import MapIcon from '@material-ui/icons/Map';
 
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { YAMLParser } from './YAMLParser';
+import { Parser } from './Parser';
 import { useStore } from './Store';
 import YAML from 'yaml';
 
@@ -54,8 +54,8 @@ export default function OpenDialog(props: OpenDialogProps): JSX.Element {
     if (directoryHandle) {
       const fileHandle = await directoryHandle.getFileHandle(filename);
       const file = await fileHandle.getFile();
-      const text = await file.text();
-      YAMLParser(text, '');
+      // const text = await file.text();
+      Parser(file, '');
 
       let site = useStore.getState().site;
       site.filename = filename;

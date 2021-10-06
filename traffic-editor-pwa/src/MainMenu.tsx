@@ -21,7 +21,7 @@ import { Site } from './Site';
 import OpenDialog from './OpenDialog';
 import NewDialog from './NewDialog';
 import MqttDialog from './MqttDialog';
-import { YAMLRetriever, YAMLRetrieveDemo } from './YAMLParser';
+import { Retriever, RetrieveDemo } from './Parser';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import RouterIcon from '@material-ui/icons/Router';
@@ -211,7 +211,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           <MenuItem
             onClick={async () => {
               try {
-                await YAMLRetriever('http://localhost:8000/', 'map_file');
+                await Retriever('http://localhost:8000/', 'map_file');
                 useStore.setState({ mapType: 'local_rest' });
               } catch (error) {
                 setSnackMessage('could not open file from localhost:8000');
@@ -229,7 +229,7 @@ export default function MainMenu(props: React.PropsWithChildren<{}>): JSX.Elemen
           </MenuItem>
           <MenuItem
             onClick={async () => {
-              await YAMLRetrieveDemo('office');
+              await RetrieveDemo('office');
               useStore.setState({ mapType: 'demo' });
               setMenuAnchorEl(null);
             }}

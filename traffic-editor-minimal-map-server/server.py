@@ -81,13 +81,28 @@ class MapServerRequestHandler(BaseHTTPRequestHandler):
 
 def main():
     parser = ArgumentParser(description='Map file server')
-    parser.add_argument('--map_dir', type=str, help='Map directory', default='.')
+    parser.add_argument('--map_dir',
+                        type=str,
+                        help='Map directory',
+                        default='.')
+    parser.add_argument('--map_type',
+                        type=str,
+                        help='Map type: yaml or gpkg',
+                        default='yaml')
+
     args = parser.parse_args()
     print(f'serving map from directory {args.map_dir}')
 
-    map_filenames = glob(os.path.join(args.map_dir, '*.building.yaml'))
+    if args.map_type == 'yaml':
+        glob_filter = '*.building.yaml'
+    elif args.map_type == 'gpkg':
+        glob_filter = '*.gpkg'
+    else:
+        raise ValueError(f'unexpected map_type: {args.map_type}')
+
+    map_filenames = glob(os.path.join(args.map_dir, glob_filter))
     if not map_filenames:
-        print(f'could not find a .building.yaml file in {args.map_dir}')
+        print(f'could not find a {args.map_type} map in {args.map_dir}')
         sys.exit(1)
 
     map_filename = map_filenames[0]

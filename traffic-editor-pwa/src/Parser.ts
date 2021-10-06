@@ -3,8 +3,18 @@ import { Site } from './Site';
 import YAML from 'yaml';
 
 
-export function YAMLParser(yaml_text: string, url_base: string): Site {
-  const site = Site.fromYAML(yaml_text);
+export async function Parser(blob: Blob, url_base: string): Promise<Site> {
+  let site = null;
+  const beginning: string = await blob.slice(0, 15).text();
+  if (beginning === 'SQLite format 3') {
+    console.log('parsing GPKG');
+    site = Site.fromGPKG(blob);
+  }
+  else {
+    console.log('parsing YAML');
+    const text = await blob.text();
+    site = Site.fromYAML(text);
+  }
   site.url_base = url_base;
   const cameraInitialPose = site.computeInitialCameraPose();
 
@@ -17,19 +27,19 @@ export function YAMLParser(yaml_text: string, url_base: string): Site {
   return site;
 }
 
-export async function YAMLRetriever(url_base: string, resource_name: string): Promise<void> {
+export async function Retriever(url_base: string, resource_name: string): Promise<void> {
   await fetch(url_base + resource_name)
-    .then(response => response.text())
-    .then(text => YAMLParser(text, url_base))
+    .then(response => response.blob())
+    .then(blob => Parser(blob, url_base))
 }
 
-export async function YAMLRetrieveDemo(name: string): Promise<void> {
-  await YAMLRetriever(
+export async function RetrieveDemo(name: string): Promise<void> {
+  await Retriever(
     process.env.PUBLIC_URL + `/demos/${name}/`,
     `${name}.building.yaml`);
 }
 
-export async function YAMLSender(url: string): Promise<void> {
+export async function Sender(url: string): Promise<void> {
   Object.getPrototypeOf(YAML.YAMLMap).maxFlowStringSingleLineLength = 10000;
   const { site } = useStore.getState();
   let yaml_text: string = site.toYAMLString();
