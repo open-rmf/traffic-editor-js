@@ -15,10 +15,11 @@ jobs:
         run: |
           cd traffic-editor-pwa
           npm i
+          npm run build
       ## Will only deploy page during merge to main
       - name: deploy_page
         if: github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: traffic-editor-pwa/public
+          publish_dir: traffic-editor-pwa/build
