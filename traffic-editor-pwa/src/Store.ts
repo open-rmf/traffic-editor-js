@@ -307,12 +307,12 @@ export const useStore = create<StoreState>(set => ({
   cameraInitialPose: {
     position: new THREE.Vector3(0, 0, 100),
     target: new THREE.Vector3(0, 0, 0),
-    zoom: 18,
+    zoom: 20,
   },
   cameraPose: {
     position: new THREE.Vector3(0, 0, 100),
     target: new THREE.Vector3(0, 0, 0),
-    zoom: 18,
+    zoom: 20,
   },
   set: fn => set(produce(fn)),
   mqtt_client: null,
@@ -330,7 +330,7 @@ export function setSelection(selection: EditorObject, zoomTo: boolean = false) {
     const pose = {
       position: new THREE.Vector3(x, y, 100),
       target: new THREE.Vector3(x, y, 0),
-      zoom: 18,
+      zoom: 20,
     };
     useStore.setState({ cameraInitialPose: pose });
   }

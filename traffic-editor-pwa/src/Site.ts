@@ -129,7 +129,7 @@ export class Site extends EditorObject {
       return {
         position: position,
         target: target,
-        zoom: 1,
+        zoom: 20,
       };
     }
     else {
