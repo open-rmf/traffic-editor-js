@@ -1,3 +1,10 @@
+# THIS REPO IS NOW ARCHIVED
+
+Development has moved to a Rust-based GUI for Open-RMF that can run both locally and in a web browser:
+https://github.com/open-rmf/rmf_site
+
+For historical continuity, the contents of this repo will be left intact and archived.
+
 # traffic-editor-web
 
 **EVERYTHING HEREIN IS UNDER CONSTRUCTION**
